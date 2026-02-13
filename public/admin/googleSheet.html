@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Google Sheet Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+
+    <link href="../plugins/dropify/css/dropify.min.css" rel="stylesheet">
+
+    <!-- App css -->
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
+    <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+
+    <style>
+        /* =========================
+   MOBILE RESPONSIVE FIXES
+   ========================= */
+
+        @media (max-width: 767px) {
+
+            /* Page wrapper padding */
+            .page-content {
+                padding: 12px !important;
+            }
+
+            /* Cards spacing */
+            .card {
+                margin-bottom: 15px;
+            }
+
+            .card-header {
+                padding: 12px;
+            }
+
+            .card-body {
+                padding: 12px !important;
+            }
+
+            /* Card titles */
+            .card-title {
+                font-size: 1rem;
+            }
+
+            /* File upload input group stack */
+            .input-group {
+                flex-direction: column;
+            }
+
+            .input-group .custom-file,
+            .input-group-append {
+                width: 100%;
+            }
+
+            .input-group-append {
+                margin-top: 10px;
+            }
+
+            .input-group-append button {
+                width: 100%;
+            }
+
+            /* Custom file label wrap */
+            .custom-file-label {
+                white-space: normal;
+                text-overflow: unset;
+                overflow: visible;
+            }
+
+            /* Progress row stack */
+            #progressSection .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            #progressPercent {
+                margin-top: 5px;
+            }
+
+            /* Result section grid fix */
+            #resultsSection .row>div {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            /* Topbar user name hide */
+            .nav-user span {
+                display: none !important;
+            }
+
+            /* Sidebar overlay behavior */
+            body.enlarge-menu .left-sidenav {
+                transform: translateX(0);
+            }
+
+            .left-sidenav {
+                position: fixed;
+                z-index: 1051;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            body.enlarge-menu .left-sidenav {
+                transform: translateX(0);
+            }
+
+            /* Prevent horizontal scroll */
+            body {
+                overflow-x: hidden;
+            }
+        }
+
+        /* Form styling inside Dastone card */
+        #addForm {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            /* space between inputs */
+            width: 100%;
+            margin: 20px auto;
+        }
+
+        #addForm input {
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+        }
+
+        #addForm button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #addForm button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Existing rows list */
+        #rowsList {
+            list-style: none;
+            padding: 0;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #rowsList li {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            font-size: 16px;
+        }
+
+        /* Headings */
+        h1,
+        h2 {
+            text-align: center;
+            color: #343a40;
+        }
+
+        /* dynamic data field */
+
+
+        /* Custom styling for dynamic form inside Dastone card */
+
+        /* Main heading */
+        h2 {
+            color: #343a40;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .total-display {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            float: right;
+        }
+
+        /* Alert messages */
+        .alert {
+            border-radius: 0.25rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+            display: none;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.875rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-group input:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Input grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            align-items: end;
+        }
+
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-grid select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            height: calc(2.25rem + 2px);
+        }
+
+        .input-grid .add-entry-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+            white-space: nowrap;
+            height: calc(2.25rem + 2px);
+        }
+
+        .input-grid .add-entry-btn:hover {
+            background-color: #218838;
+        }
+
+        .input-grid .add-entry-btn span {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        /* Entries list */
+        .entries-list {
+            background-color: #f8f9fa;
+            border-radius: 0.25rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+            font-style: italic;
+            font-size: 0.875rem;
+        }
+
+        /* Entry item */
+        .entry-item {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .entry-details {
+            flex: 1;
+        }
+
+        .entry-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .month-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 10rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .value-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 10rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .remove-entry {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+            margin-left: 1rem;
+        }
+
+        .remove-entry:hover {
+            background-color: #c82333;
+        }
+
+        /* Submit button */
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background-color 0.15s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: #0069d9;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Make sure card content has proper padding */
+        .card-body {
+            padding: 1.5rem !important;
+        }
+
+        /* uses toast */
+
+
+        /* Confirmation Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-dialog {
+            margin: 10% auto;
+            max-width: 500px;
+        }
+
+        .modal-content {
+            border-radius: 0.3rem;
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 0.3rem 0.3rem 0 0;
+            padding: 1rem;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+            padding: 1rem;
+            text-align: right;
+        }
+
+        /* Toast Styles */
+        .toast {
+            background-color: white;
+            border-radius: 0.25rem;
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .toast-header {
+            border-radius: 0.25rem 0.25rem 0 0;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .toast-body {
+            padding: 0.75rem;
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.25rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Entry List Styles */
+        .entries-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        .entry-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .month-badge {
+            background-color: #6c757d;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .value-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 2rem;
+            font-style: italic;
+        }
+
+        .total-display {
+            background-color: #007bff;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+            float: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="side-navbar"></div>
+
+
+
+    <div class="page-wrapper">
+        <!-- Top Bar Start -->
+        <div class="topbar">
+            <!-- Navbar -->
+            <nav class="navbar-custom">
+                <ul class="list-unstyled topbar-nav float-right mb-0">
+
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown"
+                            href="#" role="button">
+
+                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">
+                                Nick
+                            </span>
+
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
+                                class="rounded-circle thumb-sm border" />
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+
+                            <a class="dropdown-item d-flex align-items-center" href="profile.html">
+                                <i data-feather="user" class="icon-xs mr-2"></i>
+                                <span>Profile</span>
+                            </a>
+
+                            <a class="dropdown-item d-flex align-items-center" href="settings.html">
+                                <i data-feather="settings" class="icon-xs mr-2"></i>
+                                <span>Settings</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
+                                <i data-feather="power" class="icon-xs mr-2"></i>
+                                <span>Logout</span>
+                            </a>
+
+
+                        </div>
+                    </li>
+
+                </ul><!--end topbar-nav-->
+
+                <ul class="list-unstyled topbar-nav mb-0">
+                    <li>
+                        <button class="nav-link button-menu-mobile">
+                            <i data-feather="menu" class="align-self-center topbar-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <!-- end navbar-->
+        </div>
+        <!-- Top Bar End -->
+
+        <!-- Page Content-->
+        <div class="page-content">
+            <div class="container-fluid">
+                <!-- Page-Title -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="page-title-box">
+
+                        </div><!--end page-title-box-->
+                    </div><!--end col-->
+                </div><!--end row-->
+                <!-- end page title end breadcrumb -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Uploads Excell File</h4>
+
+                            </div><!--end card-header-->
+
+                            <div class="card">
+
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Import Data to Google Sheets</h4>
+                                        <p class="text-muted mb-0">Upload Excel file to import data directly</p>
+                                    </div><!--end card-header-->
+
+                                    <div class="card-body">
+                                        <!-- Simple Notification -->
+                                        <div id="notificationAlert" class="alert" style="display: none;"></div>
+
+                                        <!-- File Upload Section - Simple -->
+                                        <div class="form-group">
+                                            <label for="fileUpload">
+                                                <i class="fas fa-file-excel mr-2 text-success"></i>
+                                                Select Excel/CSV File *
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="custom-file">
+                                                    <input type="file" class="custom-file-input" id="fileUpload"
+                                                        accept=".csv,.xlsx,.xls" required>
+                                                    <label class="custom-file-label" for="fileUpload" id="fileLabel">
+                                                        <span class="text-muted">Click to choose file...</span>
+                                                    </label>
+                                                </div>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button"
+                                                        id="uploadBtn" disabled>
+                                                        <i class="fas fa-upload mr-1"></i> Upload
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted mt-2 d-block">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                Supported: Excell File should have columns: Cuenta,
+                                                Ape, and months (Ene, Feb, etc.)
+                                            </small>
+                                        </div>
+
+                                        <!-- Progress Section (Hidden by default) -->
+                                        <div id="progressSection" class="mt-3" style="display: none;">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span id="progressStatus">Processing...</span>
+                                                <span id="progressPercent">0%</span>
+                                            </div>
+                                            <div class="progress" style="height: 8px;">
+                                                <div id="progressBar"
+                                                    class="progress-bar progress-bar-striped progress-bar-animated"
+                                                    role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <div class="text-center mt-2">
+                                                <button class="btn btn-sm btn-outline-danger" id="cancelBtn"
+                                                    style="display: none;">
+                                                    <i class="fas fa-times mr-1"></i> Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Results Section (Hidden by default) -->
+                                        <div id="resultsSection" class="mt-3" style="display: none;">
+                                            <div class="alert alert-success">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-check-circle fa-2x mr-3"></i>
+                                                    <div>
+                                                        <h5 class="mb-1">Import Successful!</h5>
+                                                        <div id="resultsDetails" class="small"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="text-center mt-2">
+                                                <button class="btn btn-sm btn-outline-primary" id="uploadAnotherBtn">
+                                                    <i class="fas fa-plus mr-1"></i> Upload Another File
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div><!--end card-body-->
+                                </div><!--end card-->
+                            </div><!--end card-->
+
+
+
+                        </div><!--end card-->
+                    </div><!--end col-->
+                </div>
+
+
+
+
+
+            </div><!-- container -->
+
+
+        </div>
+        <!-- end page content -->
+    </div>
+    <!-- end page-wrapper -->
+
+
+
+
+    <!-- jQuery  -->
+    <script src="../admin/side_navbar.js"></script>
+    <script src="../admin/assets/js/jquery.min.js"></script>
+    <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../admin/assets/js/metismenu.min.js"></script>
+    <script src="../admin/assets/js/waves.js"></script>
+    <script src="../admin/assets/js/feather.min.js"></script>
+    <script src="../admin/assets/js/simplebar.min.js"></script>
+    <script src="../admin/assets/js/moment.js"></script>
+    <script src="../plugins/daterangepicker/daterangepicker.js"></script>
+
+    <script src="../plugins/dropify/js/dropify.min.js"></script>
+    <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
+    <!-- App js -->
+    <!-- <script src="side_navbar.js"></script> -->
+
+    <script>
+        // DOM elements
+        const fileUpload = document.getElementById('fileUpload');
+        const fileLabel = document.getElementById('fileLabel');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const notificationAlert = document.getElementById('notificationAlert');
+        const progressSection = document.getElementById('progressSection');
+        const progressBar = document.getElementById('progressBar');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressPercent = document.getElementById('progressPercent');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsDetails = document.getElementById('resultsDetails');
+        const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
+
+        let isUploading = false;
+        let abortController = null;
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notificationAlert.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
+                <span>${message}</span>
+                <button type="button" class="close ml-auto" onclick="this.parentElement.parentElement.style.display='none'">
+                    <span>&times;</span>
+                </button>
+            </div>
+        `;
+            notificationAlert.className = `alert alert-${type} alert-dismissible`;
+            notificationAlert.style.display = 'block';
+
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    notificationAlert.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Update progress
+        function updateProgress(percent, status) {
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+            progressStatus.textContent = status;
+        }
+
+        // Reset form
+        function resetForm() {
+            fileUpload.value = '';
+            fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+            uploadBtn.disabled = true;
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            isUploading = false;
+        }
+
+        // Upload file
+        async function uploadFile() {
+            const file = fileUpload.files[0];
+            if (!file || isUploading) return;
+
+            isUploading = true;
+            abortController = new AbortController();
+
+            // Show progress
+            progressSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            uploadBtn.disabled = true;
+            cancelBtn.style.display = 'inline-block';
+
+            try {
+                updateProgress(10, 'Validating file...');
+
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    throw new Error('File size must be less than 10MB');
+                }
+
+                // Check file type
+                const validExtensions = ['.csv', '.xlsx', '.xls'];
+                const fileName = file.name.toLowerCase();
+                if (!validExtensions.some(ext => fileName.endsWith(ext))) {
+                    throw new Error('Please upload CSV or Excel files only');
+                }
+
+                updateProgress(30, 'Uploading to server...');
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/importExcelFile', {
+                    method: 'POST',
+                    body: formData,
+                    signal: abortController.signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                updateProgress(70, 'Processing data...');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    updateProgress(100, 'Import complete!');
+
+                    // Show results after a delay
+                    setTimeout(() => {
+                        showResults(result);
+                        showNotification('✅ Data imported successfully to Google Sheets!', 'success');
+                    }, 500);
+
+                } else {
+                    throw new Error(result.error || 'Import failed');
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showNotification('Upload cancelled', 'info');
+                } else {
+                    showNotification(`❌ Error: ${error.message}`, 'error');
+                    console.error('Upload error:', error);
+                }
+                resetForm();
+            }
+        }
+
+        // Show results
+        function showResults(result) {
+            const imported = result.importedRows || 0;
+            const failed = result.failedRows || 0;
+            const total = imported + failed;
+
+            resultsDetails.innerHTML = `
+            <div class="row">
+                <div class="col-6">
+                    <div class="text-success">
+                        <i class="fas fa-check mr-1"></i>
+                        <strong>${imported}</strong> rows imported
+                    </div>
+                </div>
+                ${failed > 0 ? `
+                <div class="col-6">
+                    <div class="text-warning">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        <strong>${failed}</strong> rows failed
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+            ${result.googleSheets?.range ? `
+            <div class="mt-2">
+                <i class="fas fa-table mr-1"></i>
+                <small>Added to: ${result.googleSheets.range}</small>
+            </div>
+            ` : ''}
+            ${result.totalAmount ? `
+            <div class="mt-1">
+                <i class="fas fa-dollar-sign mr-1"></i>
+                <small>Total: ${formatCurrency(result.totalAmount)}</small>
+            </div>
+            ` : ''}
+        `;
+
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Cancel upload
+        function cancelUpload() {
+            if (abortController) {
+                abortController.abort();
+            }
+            resetForm();
+            showNotification('Upload cancelled', 'info');
+        }
+
+        // Event Listeners
+        fileUpload.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileLabel.innerHTML = `
+                <i class="fas fa-file-excel mr-2 text-success"></i>
+                <strong>${file.name}</strong>
+                <small class="text-muted ml-2">(${(file.size / 1024).toFixed(2)} KB)</small>
+            `;
+                uploadBtn.disabled = false;
+            } else {
+                resetForm();
+            }
+        });
+
+        uploadBtn.addEventListener('click', uploadFile);
+        cancelBtn.addEventListener('click', cancelUpload);
+        uploadAnotherBtn.addEventListener('click', resetForm);
+
+        // Drag and drop functionality (optional)
+        const cardBody = document.querySelector('.card-body');
+        cardBody.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '#f8f9fa';
+        });
+
+        cardBody.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '';
+        });
+
+        cardBody.addEventListener('drop', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '';
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileUpload.files = files;
+                const event = new Event('change', { bubbles: true });
+                fileUpload.dispatchEvent(event);
+            }
+        });
+
+        console.log("Simple file upload form initialized");
+
+        function logout() {
+            fetch('/logout', { // <-- updated endpoint
+                method: 'POST',
+                credentials: 'include' // important to send cookies
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Logged out",
+                            text: data.message,
+                            timer: 1200,
+                            showConfirmButton: false
+                        });
+
+                        setTimeout(() => {
+                            window.location.href = "/login";
+                        }, 1200);
+                    } else {
+                        Swal.fire("Error", data.message || "Logout failed", "error");
+                    }
+                })
+                .catch(() => {
+                    Swal.fire("Error", "Server error", "error");
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const menuBtn = document.querySelector(".button-menu-mobile");
+            if (menuBtn) {
+                menuBtn.addEventListener("click", () => {
+                    document.body.classList.toggle("enlarge-menu");
+                });
+            }
+        });
+
+    </script>
+
+
+
+
+</body>
+
+</html>

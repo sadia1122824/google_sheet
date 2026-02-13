@@ -1,0 +1,1 @@
+mv /var/www/google_sheet_automation /var/www/vhosts/xn--analticatech-vfb.es/google_sheet_automation
