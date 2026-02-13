@@ -1,4 +1,12 @@
 require('dotenv').config()
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const fastify = require('fastify')
 const multipart = require("@fastify/multipart");
 const { google } = require("googleapis");
@@ -59,8 +67,11 @@ app.register(googleSheet)
 const port = process.env.PORT || 3000
 const start = async(req,reply)=>{
     try {
-       await app.listen({port})
-        console.log(`http://localhost ${port}`)
+       await app.listen({ port, host: '0.0.0.0' });
+        if (process.stdout.writable) {
+            console.log(`Server running on http://localhost:${port}`);
+        }
+
         
     } catch (error) {
 
