@@ -13,9 +13,6 @@ class SheetService {
     this.token = TOKEN;
     this.excelFilePath = EXCEL_FILE_PATH;
 
-
-    console.log("🔑 Token:", this.token ? "SET" : "NOT SET");
-    console.log("📁 Excel File:", this.excelFilePath || "NOT SET");
   }
 
   // ✅ Connection test method
