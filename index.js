@@ -56,7 +56,7 @@ app.register(googleSheet)
 
 
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 3000
 const start = async(req,reply)=>{
     try {
        await app.listen({port})
