@@ -4,7 +4,7 @@
   "description": "sadia ismail developer create full stack project in school menegment system",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js",
+    "start": "nodemon index.js",
     "testConnection": "nodemon src/test_connection.js"
   },
   "keywords": [
