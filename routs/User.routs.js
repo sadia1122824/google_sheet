@@ -3,9 +3,9 @@
 
 
 const userRouts = async(app,options)=>{
-    // app.get('/',(req,reply)=>{
-    //     return reply.send('this project is running successfully')
-    // })
+    app.get('/',(req,reply)=>{
+        return reply.send('this project is running successfully')
+    })
 
   
     app.get('/login',getLoginUser);
