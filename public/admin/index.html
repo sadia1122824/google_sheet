@@ -189,7 +189,7 @@ document.getElementById('submitBtn').addEventListener('click', function () {
     if (response.success) {
       sweetAlert('success', response.message, () => {
         // Redirect to home page after SweetAlert closes
-        window.location.href = '/dataUpload';
+        window.location.href = '/';
       });
     } else {
       sweetAlert('error', response.message);

@@ -12,7 +12,7 @@
     // })
 
   
-  app.get("/dataUpload", { preHandler: [app.authenticate] }, dataUpload);
+  app.get("/", { preHandler: [app.authenticate] }, dataUpload);
   
   app.post("/importExcelFile", importExcelFile);
   
