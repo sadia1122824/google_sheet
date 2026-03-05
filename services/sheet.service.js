@@ -63,7 +63,7 @@ class SheetService {
       console.log("✅ Using Apps Script Web App, no Google API auth required");
       return true;
     } catch (error) {
-      console.error("❌ Authorization failed:", error.message);
+      console.error("Authorization failed:", error.message);
       throw error;
     }
   }
@@ -74,7 +74,7 @@ async addMultipleRows(rows) {
     await this.authorize();
 
     if (!Array.isArray(rows) || rows.length === 0) {
-      return { success: false, error: "Invalid rows data" };
+      return { success: false, error: "Invalid rows " };
     }
 
    
