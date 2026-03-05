@@ -80,7 +80,7 @@ async addMultipleRows(rows) {
    
 
     // 🔹 1️⃣ GET START ROW FROM SHEET
-    console.log("🔍 Getting next available row...");
+    console.log(" Getting next available row...");
     const rowRes = await axios.post(this.webAppUrl, {
       token: this.token,
       action: "getNextRow",
@@ -99,7 +99,7 @@ async addMultipleRows(rows) {
       throw new Error(`Invalid start row returned: ${startRow}`);
     }
 
-    console.log("📍 Start inserting at row:", startRow);
+    console.log(" Start inserting at row:", startRow);
 
     // 🔹 2️⃣ PREPARE FORMULAS WITH REAL ROW NUMBER
     console.log("🔄 Preparing rows with formulas...");
@@ -107,7 +107,7 @@ async addMultipleRows(rows) {
     console.log(`✅ Prepared ${processedRows.length} rows with formulas`);
 
     // 🔹 3️⃣ INSERT ROWS WITH MONTH COLUMNS CONFIG
-    console.log("📤 Sending rows to Google Sheets...");
+    console.log(" Sending rows to Google Sheets...");
     const response = await axios.post(this.webAppUrl, {
       token: this.token,
       action: "addRows",
@@ -117,7 +117,7 @@ async addMultipleRows(rows) {
       monthColumns: [1, 2, 3], // ✅ Specify month columns A, B, C
     });
 
-    console.log("📊 Insert response:", JSON.stringify(response.data, null, 2));
+    console.log(" Insert response:", JSON.stringify(response.data, null, 2));
 
     return {
       success: true,
@@ -144,12 +144,12 @@ prepareRowsForGoogleSheets(rows, startRow) {
     (row) => Array.isArray(row) && row[1] && row[1].toString().trim() !== ""
   );
 
-  console.log(`📊 Preparing ${validRows.length} valid rows starting from row ${startRow}`);
+  console.log(` Preparing ${validRows.length} valid rows starting from row ${startRow}`);
 
   const processedRows = validRows.map((row, index) => {
     const currentRow = startRow + index;
     
-    console.log(`📝 Processing row ${index + 1} -> Sheet row ${currentRow}`);
+    console.log(` Processing row ${index + 1} -> Sheet row ${currentRow}`);
     
     const processedRow = new Array(30).fill("");
 
