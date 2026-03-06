@@ -15,48 +15,7 @@ class SheetService {
 
   }
 
-  // ✅ Connection test method
-  // async testConnection() {
-  //   try {
-  //     console.log("🔍 Testing Apps Script connection...");
-  //     console.log("📤 Web App URL:", this.webAppUrl);
 
-  //     // Since we only have doPost, we need to test with POST
-  //     const testData = [["", "Connection Test", new Date().toISOString()]];
-
-  //     const payload = {
-  //       token: this.token,
-  //       sheetName: "Explotacion comparativa",
-  //       startRow: 999, // Very high row for testing
-  //       data: testData,
-  //     };
-
-  //     const response = await axios.post(this.webAppUrl, payload, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "User-Agent": "Connection Test",
-  //       },
-  //       timeout: 15000,
-  //     });
-
-  //     console.log("✅ Connection test response:", response.data);
-  //     return { success: true, data: response.data };
-  //   } catch (error) {
-  //     console.error("❌ Connection test failed:", error.message);
-
-  //     if (error.response) {
-  //       console.error("❌ Response status:", error.response.status);
-  //       console.error("❌ Response data:", error.response.data);
-  //     } else if (error.request) {
-  //       console.error("❌ No response received");
-  //     }
-
-  //     return {
-  //       success: false,
-  //       error: error.message,
-  //     };
-  //   }
-  // }
 
   async authorize() {
     try {
