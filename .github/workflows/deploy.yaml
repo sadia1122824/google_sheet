@@ -20,18 +20,18 @@ jobs:
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to VPS
-  run: |
-    ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-      set -e &&
-      cd /var/www/vhosts/analiticamos.com/google_sheet_automation &&
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
+          set -e
+          cd /var/www/vhosts/analiticamos.com/google_sheet_automation
 
-      if [ ! -d .git ]; then
-        git clone https://github.com/sadia1122824/google_sheet.git .
-      else
-        git pull origin main
-      fi &&
+          if [ ! -d .git ]; then
+            git clone https://github.com/sadia1122824/google_sheet.git .
+          else
+            git pull origin main
+          fi
 
-      npm install &&
-      pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js &&
-      pm2 save
-    "
+          npm install
+          pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+          pm2 save
+          "
