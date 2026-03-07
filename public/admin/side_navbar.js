@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
 
            <li>
-  <a href="/dataUpload">
+  <a href="/">
     <i data-feather="upload" class="menu-icon"></i>  <!-- valid feather icon -->
     <span>Upload Excel Data</span>
   </a>
