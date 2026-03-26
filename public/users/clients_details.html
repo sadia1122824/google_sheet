@@ -206,7 +206,17 @@ let rowsPerPage = 25;
 
 async function loadSheetData() {
   try {
-    const res = await fetch('/getLatestSheetResult');
+    // JWT token localStorage se uthao
+    const token = localStorage.getItem('jwt'); // ya jahan store hai
+
+    const res = await fetch('/getLatestSheetResult', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,  // Fastify JWT decorator ke liye
+        'Content-Type': 'application/json'
+      }
+    });
+
     const result = await res.json();
     const loader = document.getElementById('loader');
 
