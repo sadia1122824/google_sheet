@@ -20,7 +20,7 @@
   
   
   app.get("/clientsResults",{ preHandler: [app.authenticate] },  spreadsheetData);
-  app.get("/getLatestSheetResult", { preHandler: [app.authenticate] }, getLatestSheetResult);
+  app.get("/getLatestSheetResult", getLatestSheetResult);
   
  
 

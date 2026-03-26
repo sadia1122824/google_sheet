@@ -206,18 +206,24 @@ let rowsPerPage = 25;
 
 async function loadSheetData() {
   try {
-    // JWT token localStorage se uthao
-    const token = localStorage.getItem('jwt'); // ya jahan store hai
+    const token = localStorage.getItem('jwt');
 
     const res = await fetch('/getLatestSheetResult', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,  // Fastify JWT decorator ke liye
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
 
-    const result = await res.json();
+    const text = await res.text();
+
+    if (!res.ok) {
+      throw new Error(`Server error: ${res.status} - ${text}`);
+    }
+
+    const result = JSON.parse(text);
+
     const loader = document.getElementById('loader');
 
     if (!result.success) {
@@ -227,6 +233,7 @@ async function loadSheetData() {
     }
 
     const data = result.data;
+
     if (!data || data.length === 0) {
       document.getElementById('tableBody').innerHTML = `<tr><td>No data</td></tr>`;
       loader.style.display = "none";
