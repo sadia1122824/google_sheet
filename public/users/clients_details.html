@@ -206,7 +206,8 @@ let rowsPerPage = 25;
 
 async function loadSheetData() {
   try {
-    const res = await fetch('/getLatestSheetResult');
+    // const res = await fetch('/getLatestSheetResult');
+    const res = await fetch('https://analiticamos.com/getLatestSheetResult');
     const result = await res.json();
     const loader = document.getElementById('loader');
 
