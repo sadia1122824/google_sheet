@@ -2,6 +2,8 @@
     
     dataUpload, 
     importExcelFile,
+    getLatestSheetResult,
+    spreadsheetData
     
   } 
 = require('../controllers/Sheet.controller');
@@ -15,6 +17,10 @@
   app.get("/", { preHandler: [app.authenticate] }, dataUpload);
   
   app.post("/importExcelFile", importExcelFile);
+  
+  
+  app.get("/spreadsheetData", spreadsheetData);
+  app.get("/getLatestSheetResult", getLatestSheetResult);
   
  
 
