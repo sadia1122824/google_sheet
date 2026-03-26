@@ -19,8 +19,8 @@
   app.post("/importExcelFile", importExcelFile);
   
   
-  app.get("/spreadsheetData",  spreadsheetData);
-  app.get("/getLatestSheetResult", getLatestSheetResult);
+  app.get("/spreadsheetData",{ preHandler: [app.authenticate] },  spreadsheetData);
+  app.get("/getLatestSheetResult", { preHandler: [app.authenticate] }, getLatestSheetResult);
   
  
 
