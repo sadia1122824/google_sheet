@@ -27,6 +27,22 @@
    MOBILE RESPONSIVE FIXES
    ========================= */
 
+   @media (max-width: 767px) {
+    .left-sidenav {
+        position: fixed;
+        z-index: 1051;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        top: 0;
+        left: 0;
+        height: 100vh;
+    }
+
+    body.enlarge-menu .left-sidenav {
+        transform: translateX(0) !important;
+    }
+}
+
         @media (max-width: 767px) {
 
             /* Page wrapper padding */
@@ -638,7 +654,7 @@
 
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
 
-                          
+
 
                             <div class="dropdown-divider"></div>
 
@@ -721,7 +737,7 @@
                                             </div>
                                             <small class="text-muted mt-2 d-block">
                                                 <i class="fas fa-info-circle mr-1"></i>
-                                                Supported: Excell File 
+                                                Supported: Excell File
                                             </small>
                                         </div>
 
@@ -1063,13 +1079,44 @@
                 });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+        // document.addEventListener("DOMContentLoaded", () => {
+        //     const menuBtn = document.querySelector(".button-menu-mobile");
+        //     if (menuBtn) {
+        //         menuBtn.addEventListener("click", () => {
+        //             document.body.classList.toggle("enlarge-menu");
+        //         });
+        //     }
+        // });
+
+
+        // Mobile hamburger fix
+        function initMobileMenu() {
             const menuBtn = document.querySelector(".button-menu-mobile");
             if (menuBtn) {
-                menuBtn.addEventListener("click", () => {
+                // Remove old listener to avoid duplicates
+                menuBtn.replaceWith(menuBtn.cloneNode(true));
+                const newBtn = document.querySelector(".button-menu-mobile");
+                newBtn.addEventListener("click", () => {
                     document.body.classList.toggle("enlarge-menu");
                 });
             }
+        }
+
+        // Run after DOM ready
+        document.addEventListener("DOMContentLoaded", () => {
+            initMobileMenu();
+
+            // Also watch for dynamically injected sidebar
+            const observer = new MutationObserver(() => {
+                const menuBtn = document.querySelector(".button-menu-mobile");
+                if (menuBtn && !menuBtn.dataset.listenerAttached) {
+                    menuBtn.dataset.listenerAttached = "true";
+                    menuBtn.addEventListener("click", () => {
+                        document.body.classList.toggle("enlarge-menu");
+                    });
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
         });
 
     </script>
