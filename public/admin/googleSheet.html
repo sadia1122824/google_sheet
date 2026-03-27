@@ -27,18 +27,19 @@
    MOBILE RESPONSIVE FIXES
    ========================= */
 
-   @media (max-width: 767px) {
+@media (max-width: 767px) {
     .left-sidenav {
-        position: fixed;
-        z-index: 1051;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        top: 0;
-        left: 0;
-        height: 100vh;
+        position: fixed !important;
+        z-index: 1051 !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        top: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        width: 260px !important;
     }
-
-    body.enlarge-menu .left-sidenav {
+    
+    body.mobile-menu-open .left-sidenav {
         transform: translateX(0) !important;
     }
 }
@@ -1089,35 +1090,49 @@
         // });
 
 
-        // Mobile hamburger fix
-        function initMobileMenu() {
-            const menuBtn = document.querySelector(".button-menu-mobile");
-            if (menuBtn) {
-                // Remove old listener to avoid duplicates
-                menuBtn.replaceWith(menuBtn.cloneNode(true));
-                const newBtn = document.querySelector(".button-menu-mobile");
-                newBtn.addEventListener("click", () => {
-                    document.body.classList.toggle("enlarge-menu");
-                });
+     function initMobileMenu() {
+    const menuBtn = document.querySelector(".button-menu-mobile");
+    if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
+        menuBtn.dataset.mobileListenerAttached = "true";
+        menuBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            
+            if (window.innerWidth <= 767) {
+                // Mobile: use separate class to avoid conflict
+                document.body.classList.toggle("mobile-menu-open");
+            } else {
+                // Desktop: original behavior
+                document.body.classList.toggle("enlarge-menu");
             }
-        }
-
-        // Run after DOM ready
-        document.addEventListener("DOMContentLoaded", () => {
-            initMobileMenu();
-
-            // Also watch for dynamically injected sidebar
-            const observer = new MutationObserver(() => {
-                const menuBtn = document.querySelector(".button-menu-mobile");
-                if (menuBtn && !menuBtn.dataset.listenerAttached) {
-                    menuBtn.dataset.listenerAttached = "true";
-                    menuBtn.addEventListener("click", () => {
-                        document.body.classList.toggle("enlarge-menu");
-                    });
-                }
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
         });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener("click", function (e) {
+            if (window.innerWidth <= 767) {
+                const sidebar = document.querySelector(".left-sidenav");
+                if (
+                    sidebar &&
+                    !sidebar.contains(e.target) &&
+                    !menuBtn.contains(e.target)
+                ) {
+                    document.body.classList.remove("mobile-menu-open");
+                }
+            }
+        });
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initMobileMenu();
+
+    const observer = new MutationObserver(() => {
+        const menuBtn = document.querySelector(".button-menu-mobile");
+        if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
+            initMobileMenu();
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+});
 
     </script>
 

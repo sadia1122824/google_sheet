@@ -306,7 +306,7 @@ const importExcelFile = async (request, reply) => {
 
 
 
-// ******************************** get ids from db **************************************
+// ******************************** get ids from db and show data in table  **************************************
 
 const spreadsheetData = async (req, reply) => {
   return reply.sendFile("users/clients_details.html");
