@@ -56,6 +56,14 @@ app.decorate("authenticate", async (req, reply) => {
   }
 });
 
+app.decorate("webauthenticate", async (req, reply) => {
+  try {
+    await req.jwtVerify(); 
+  } catch (err) {
+    return reply.redirect("/webLogin"); 
+  }
+});
+
 
 
 app.register(userRouts)

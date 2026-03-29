@@ -1,5 +1,5 @@
 
- const {getLoginUser,loginUser ,Logout} = require('../controllers/Auth.controller');
+ const {getLoginUser,loginUser , webLogin, webLoginUser ,Logout} = require('../controllers/Auth.controller');
 
 
 const userRouts = async(app,options)=>{
@@ -10,6 +10,8 @@ const userRouts = async(app,options)=>{
   
     app.get('/login',getLoginUser);
     app.post('/login',loginUser);
+    app.get("/webLogin", webLogin);
+    app.post("/webLogin", webLoginUser);
     app.post('/logout',Logout);
 
 }

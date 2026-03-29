@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/users/manifest.json">
+  <meta name="theme-color" content="#007bff">
+  <link rel="stylesheet" href="/users/styles.css">
+  <title>Client Web App Login</title>
+</head>
+<body>
+  <div class="container">
+    <!-- Left Image -->
+    <div class="left-image">
+      <img src="/users/image.webp" alt="Left Image">
+    </div>
+
+    <!-- Right Login Card -->
+    <div class="right-card">
+      <div class="login-card">
+        <h2>Webapp Login</h2>
+        <form>
+          <input type="text" placeholder="User">
+          <input type="password" placeholder="Password">
+          <div class="remember">
+            <input type="checkbox" id="remember">
+            <label for="remember">Remember my password for next time!</label>
+          </div>
+          <button type="submit">Access</button>
+        </form>
+
+        <p class="webmail-choice">
+          Choose the webmail you want to log in with:
+          <label><input type="radio" name="mail" checked> Advanced</label>
+          <label><input type="radio" name="mail"> Roundcube</label>
+        </p>
+
+        <a href="#" class="lost-password">Oops! I've lost my password</a>
+
+        <!-- PWA Install Button -->
+        <button id="installBtn" class="install-btn" style="display:none;">
+          Install App
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/users/main.js"></script>
+</body>
+</html>

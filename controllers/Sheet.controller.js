@@ -308,6 +308,8 @@ const importExcelFile = async (request, reply) => {
 
 // ******************************** get ids from db and show data in table  **************************************
 
+
+
 const spreadsheetData = async (req, reply) => {
   return reply.sendFile("users/clients_details.html");
 };
@@ -355,6 +357,7 @@ module.exports = {
   dataUpload,
   importExcelFile,
   getLatestSheetResult,
- spreadsheetData
+ spreadsheetData,
+ 
 
 };
