@@ -304,16 +304,11 @@ const importExcelFile = async (request, reply) => {
   }
 };
 
-
-
 // ******************************** get ids from db and show data in table  **************************************
-
-
 
 const spreadsheetData = async (req, reply) => {
   return reply.sendFile("users/clients_details.html");
 };
-
 
 const getLatestSheetResult = async (req, reply) => {
   try {
@@ -339,17 +334,183 @@ const getLatestSheetResult = async (req, reply) => {
     console.log(JSON.stringify(response.data, null, 2));
 
     return reply.send(response.data);
-
   } catch (err) {
     console.error("❌ ERROR:", err.message);
     return reply.status(500).send({ success: false, error: err.message });
   }
 };
 
+// **************************** AI Controller Logic ****************************
+
+const AI_chat = async (req, reply) => {
+  try {
+    const { question, jsResult, history = [], metric = null } = req.body;
+
+    // ── No jsResult → general question
+ // ── No jsResult → general question (UPDATED with better AI answer)
+if (!jsResult) {
+  try {
+    const conversationHistory = (history || [])
+      .slice(-6)
+      .map(m => ({
+        role: m.role === "user" ? "user" : "model",
+        parts: [{ text: m.content }]
+      }));
+
+    // 🆕 System context add karo taake AI samjhe ye financial tool hai
+    const systemContext = `You are a helpful financial assistant for a business analytics tool. 
+You help users understand financial concepts, accounting terms, and general questions.
+If asked about specific data from the sheet, say you need them to ask with specific period names.
+Answer clearly and concisely in the same language the user writes in (English, Spanish, or Urdu).`;
+
+    const formatRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemContext }] }, // 🆕
+          contents: [
+            ...conversationHistory, 
+            { role: "user", parts: [{ text: question }] }
+          ],
+          generationConfig: { 
+            temperature: 0.4,      // 🆕 thoda zyada natural answers
+            maxOutputTokens: 500   // 🆕 longer answers allowed
+          }
+        })
+      }
+    );
+    const formatData = await formatRes.json();
+    if (formatData.error) throw new Error("Gemini quota");
+    const geminiAnswer = formatData?.candidates?.[0]?.content?.parts?.[0]?.text;
+    return reply.send({ 
+      success: true, 
+      answer: geminiAnswer || "I couldn't answer that. Please try rephrasing.", 
+      intent: { type: "general" } 
+    });
+  } catch {
+    return reply.send({ 
+      success: true, 
+      answer: "I'm having trouble connecting to AI right now. For financial data questions, please mention a specific period (month/year).", 
+      intent: { type: "general" } 
+    });
+  }
+}
+
+    // ── jsResult error
+    if (jsResult.error) {
+      return reply.send({ success: true, answer: `⚠️ ${jsResult.error}`, intent: {} });
+    }
+
+    // ── jsResult exists → ALWAYS use JS answer directly, skip Gemini
+    const jsAnswer = buildAnswerFromJs(jsResult, question, metric);
+    return reply.send({ success: true, answer: jsAnswer, intent: {} });
+
+  } catch (err) {
+    console.error("AI_chat error:", err);
+    return reply.send({ success: false, error: err.message });
+  }
+};
+
+function buildAnswerFromJs(jsResult, question, metric = null) {
+  const q = (question || "").toLowerCase();
+
+  // Detect metric from passed value OR question keywords
+  const m = metric || (
+    /income|ingreso|importe|revenue/.test(q) ? "income" :
+    /expense|gasto|explot/.test(q)           ? "expense" :
+    /profit|loss|resultado|ganancia/.test(q) ? "profit"  :
+    null
+  );
+
+  function f(n) {
+    if (n === null || n === undefined || isNaN(n)) return "0.00";
+    const abs = Math.abs(n);
+    const str = abs.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    return n < 0 ? "-" + str : str;
+  }
+
+  // ── SINGLE period ─────────────────────────────────────────────
+  if (jsResult.period !== undefined) {
+    const p = jsResult.period;
+
+    if (m === "income")
+      return `**${p} — Income**\n\nIncome: ${f(jsResult.income)}`;
+
+    if (m === "expense")
+      return `**${p} — Explotación**\n\nExplotación: ${f(jsResult.explotacion)}`;
+
+    if (m === "profit") {
+      if (jsResult.profit > 0)
+        return `**${p} — Profit**\n\n**Final Profit: ${f(jsResult.profit)}**`;
+      if (jsResult.loss < 0)
+        return `**${p} — Loss**\n\n**Final Loss: ${f(jsResult.loss)}**`;
+      return `**${p} — Result**\n\nBreak Even: 0.00`;
+    }
+
+    // No metric → full summary
+    if (jsResult.profit > 0)
+      return `**${p} — Result**\n\nIncome: ${f(jsResult.income)}\nExplotación: ${f(jsResult.explotacion)}\nBank Interest: ${f(jsResult.bankInterest)}\n**Final Profit: ${f(jsResult.profit)}**`;
+    if (jsResult.loss < 0)
+      return `**${p} — Result**\n\nIncome: ${f(jsResult.income)}\nExplotación: ${f(jsResult.explotacion)}\nBank Interest: ${f(jsResult.bankInterest)}\n**Final Loss: ${f(jsResult.loss)}**`;
+    return `**${p} — Summary**\n\nIncome: ${f(jsResult.income)}\nExplotación: ${f(jsResult.explotacion)}\nBank Interest: ${f(jsResult.bankInterest)}\n**Final Result: ${f(jsResult.finalResult)}**`;
+  }
+
+  // ── COMPARE two periods ───────────────────────────────────────
+  if (jsResult.period1 && jsResult.period2 && jsResult.period1.label) {
+    const p1 = jsResult.period1;
+    const p2 = jsResult.period2;
+    const d  = jsResult.difference;
+
+    if (m === "income")
+      return `**${p1.label} vs ${p2.label} — Income**\n\n` +
+        `${p1.label}: ${f(p1.income)}\n` +
+        `${p2.label}: ${f(p2.income)}\n` +
+        `Change: ${d.income >= 0 ? "+" : ""}${f(d.income)}` +
+        `${d.income_pct !== null ? ` (${d.income_pct}%)` : ""}`;
+
+    if (m === "expense")
+      return `**${p1.label} vs ${p2.label} — Explotación**\n\n` +
+        `${p1.label}: ${f(p1.explotacion)}\n` +
+        `${p2.label}: ${f(p2.explotacion)}\n` +
+        `Change: ${d.explotacion >= 0 ? "+" : ""}${f(d.explotacion)}` +
+        `${d.explotacion_pct !== null ? ` (${d.explotacion_pct}%)` : ""}`;
+
+    if (m === "profit")
+      return `**${p1.label} vs ${p2.label} — Result**\n\n` +
+        `${p1.label}: ${f(p1.finalResult)}\n` +
+        `${p2.label}: ${f(p2.finalResult)}\n` +
+        `Change: ${d.finalResult >= 0 ? "+" : ""}${f(d.finalResult)}` +
+        `${d.finalResult_pct !== null ? ` (${d.finalResult_pct}%)` : ""}\n` +
+        `Trend: **${d.direction}**`;
+
+    // No metric → full compare
+    return `**Comparison: ${p1.label} vs ${p2.label}**\n\n` +
+      `Income: ${f(p1.income)} → ${f(p2.income)} (${d.income >= 0 ? "+" : ""}${f(d.income)})\n` +
+      `Explotación: ${f(p1.explotacion)} → ${f(p2.explotacion)}\n` +
+      `Final Result: ${f(p1.finalResult)} → ${f(p2.finalResult)}\n` +
+      `Trend: **${d.direction}**`;
+  }
+
+  // ── TREND ─────────────────────────────────────────────────────
+  if (jsResult.best) {
+    return `**Trend Analysis (${jsResult.periodsAnalyzed} periods)**\n\n` +
+      `Best: ${jsResult.best.period} — ${f(jsResult.best.finalResult)}\n` +
+      `Worst: ${jsResult.worst.period} — ${f(jsResult.worst.finalResult)}\n` +
+      `Overall trend: **${jsResult.trend}**\n` +
+      `Overall change: ${jsResult.overallChange_pct !== null ? jsResult.overallChange_pct + "%" : "N/A"}`;
+  }
+
+  return "Please ask about a specific period or metric.";
+}
 
 
 
-// **************************** Get results from google sheet ****************************
+
 
 
 
@@ -357,7 +518,6 @@ module.exports = {
   dataUpload,
   importExcelFile,
   getLatestSheetResult,
- spreadsheetData,
- 
-
+  spreadsheetData,
+  AI_chat,
 };

@@ -4,6 +4,7 @@
     importExcelFile,
     getLatestSheetResult,
     spreadsheetData,
+    AI_chat
     
     
   } 
@@ -18,6 +19,7 @@
   app.get("/", { preHandler: [app.authenticate] }, dataUpload);
   
   app.post("/importExcelFile", importExcelFile);
+  app.post("/AI_chat", AI_chat);
   
   
   app.get("/clientsResults",{ preHandler: [app.webauthenticate] },  spreadsheetData);
