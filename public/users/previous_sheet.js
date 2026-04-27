@@ -917,7 +917,7 @@ function resetAllFilters() {
 async function loadSheetData() {
   try {
     const token = localStorage.getItem("jwt");
-    const res = await fetch("/getLatestSheetResult", {
+    const res = await fetch("/getPreviousSheetResult", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

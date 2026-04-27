@@ -3,7 +3,9 @@
     dataUpload, 
     importExcelFile,
     getLatestSheetResult,
-    spreadsheetData,
+    LiveSheetData,
+    previousSheetData,
+    getPreviousSheetResult,
     AI_chat
     
     
@@ -22,10 +24,11 @@
   app.post("/AI_chat", AI_chat);
   
   
-  app.get("/clientsResults",{ preHandler: [app.webauthenticate] },  spreadsheetData);
+  app.get("/LiveSheetData",{ preHandler: [app.webauthenticate] },  LiveSheetData);
   app.get("/getLatestSheetResult", getLatestSheetResult);
+  app.get("/previousSheetData",{ preHandler: [app.webauthenticate] }, previousSheetData);
+  app.get("/getPreviousSheetResult", getPreviousSheetResult);
 
-  
   
  
 
