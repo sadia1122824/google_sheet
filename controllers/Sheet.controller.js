@@ -194,7 +194,7 @@ const importExcelFile = async (request, reply) => {
 
 
 
-// ******************************** Live data in google sheet and show data in table  **************************************
+//  ******************************** Live data in google sheet and show data in table  **************************************
 
 
 
@@ -259,6 +259,7 @@ const importExcelFile = async (request, reply) => {
 
 const LiveSheetData = async (req, reply) => {
   return reply.sendFile("users/Live_Sheet.html");
+  console.log("📊 Serving Live_Sheet.html");
 };
 
 
