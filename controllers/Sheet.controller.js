@@ -1,14 +1,16 @@
 const sheetService = require("../services/sheet.service");
-const ClientCredentials = require("../models/client_credentials");
+const Latest_ClientCredentials = require("../models/latest_googlesheet_credentials");
+const Previous_ClientCredentials = require("../models/previous_googlesheet_credentials");
 const axios = require("axios");
 const XLSX = require("xlsx");
 const mongoose = require("mongoose");
 
+
+
+
 const dataUpload = async (request, reply) => {
   return reply.sendFile("admin/googleSheet.html");
 };
-
-// **************************** Add raw data excell to google sheet ****************************
 
 function cleanNumber(value) {
   if (value === null || value === undefined || value === "") return "";
@@ -19,14 +21,11 @@ function cleanNumber(value) {
       .replace(/[€$,]/g, "")
       .replace(/\s/g, "")
       .trim();
-
-    // Handle negative numbers in parentheses: (123) = -123
     if (cleanStr.startsWith("(") && cleanStr.endsWith(")")) {
       const numStr = cleanStr.substring(1, cleanStr.length - 1);
       const num = parseFloat(numStr);
       return isNaN(num) ? "" : -num;
     }
-
     const num = parseFloat(cleanStr);
     return isNaN(num) ? "" : num;
   }
@@ -38,8 +37,8 @@ const importExcelFile = async (request, reply) => {
     const parts = request.parts();
     let fileBuffer = null;
     let fileName = null;
+    let selectedYear = "latest";
 
-    // Extract file
     for await (const part of parts) {
       if (part.type === "file") {
         const chunks = [];
@@ -48,50 +47,39 @@ const importExcelFile = async (request, reply) => {
         }
         fileBuffer = Buffer.concat(chunks);
         fileName = part.filename;
-        break;
+        // ✅ break nahi — year bhi padhna hai
+      } else if (part.type === "field" && part.fieldname === "year") {
+        selectedYear = part.value;
+        console.log(`📅 Selected Year: ${selectedYear}`);
       }
     }
 
     if (!fileBuffer) {
-      return reply.code(400).send({
-        success: false,
-        error: "Please upload an Excel file",
-      });
+      return reply.code(400).send({ success: false, error: "Please upload an Excel file" });
     }
 
     console.log(`📁 Processing file: ${fileName}`);
 
-    // Parse Excel file
     const workbook = XLSX.read(fileBuffer, {
-      type: "buffer",
-      cellDates: true,
-      cellNF: false,
-      cellText: false,
+      type: "buffer", cellDates: true, cellNF: false, cellText: false,
     });
 
-    // Get the "C.Resultado" sheet
     const sheetName = "C.Resultado";
     if (!workbook.SheetNames.includes(sheetName)) {
       return reply.code(400).send({
         success: false,
-        error: `Sheet "${sheetName}" not found in the Excel file`,
+        error: `Sheet "${sheetName}" not found`,
         availableSheets: workbook.SheetNames,
       });
     }
 
     const worksheet = workbook.Sheets[sheetName];
-
-    // Get ALL data
     const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1,
-      defval: null,
-      raw: true,
-      blankrows: false,
+      header: 1, defval: null, raw: true, blankrows: false,
     });
 
-    console.log(`📊 Sheet loaded: ${jsonData.length} total rows found`);
+    console.log(`📊 Sheet loaded: ${jsonData.length} total rows`);
 
-    // Find the header row
     let headerRowIndex = -1;
     let excelHeaders = [];
 
@@ -100,17 +88,14 @@ const importExcelFile = async (request, reply) => {
       if (row && row.length > 0) {
         for (let j = 0; j < row.length; j++) {
           const cell = row[j];
-          if (
-            cell &&
-            typeof cell === "string" &&
-            (cell.includes("PERDIDAS Y GANANCIAS") ||
-              cell.includes("CUENTA") ||
-              cell.includes("DESCRIPCION") ||
-              cell.includes("DESCRIPCIÓN"))
-          ) {
+          if (cell && typeof cell === "string" && (
+            cell.includes("PERDIDAS Y GANANCIAS") ||
+            cell.includes("CUENTA") ||
+            cell.includes("DESCRIPCION") ||
+            cell.includes("DESCRIPCIÓN")
+          )) {
             headerRowIndex = i;
             excelHeaders = jsonData[i];
-            console.log(`✅ Found header row at row ${i + 1}`);
             break;
           }
         }
@@ -119,128 +104,55 @@ const importExcelFile = async (request, reply) => {
     }
 
     if (headerRowIndex === -1) {
-      return reply.code(400).send({
-        success: false,
-        error: "Could not find header row",
-      });
+      return reply.code(400).send({ success: false, error: "Could not find header row" });
     }
 
-    // ✅ DYNAMIC MONTH COLUMN DETECTION
-    // Maps Spanish/English month abbreviations → month index (0=Jan ... 11=Dec)
     const monthNameMap = {
-      ene: 0,
-      jan: 0,
-      feb: 1,
-      mar: 2,
-      abr: 3,
-      apr: 3,
-      may: 4,
-      jun: 5,
-      jul: 6,
-      ago: 7,
-      aug: 7,
-      sep: 8,
-      set: 8,
-      oct: 9,
-      nov: 10,
-      dic: 11,
-      dec: 11,
+      ene: 0, jan: 0, feb: 1, mar: 2, abr: 3, apr: 3,
+      may: 4, jun: 5, jul: 6, ago: 7, aug: 7,
+      sep: 8, set: 8, oct: 9, nov: 10, dic: 11, dec: 11,
     };
 
-    // Google Sheets target columns for each month (Jan=index 0 → gsCol 6, Feb → 8, etc.)
     const gsColByMonthIndex = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
-
-    // Build dynamic mapping: monthIndex → excelColIndex
     const monthColIndices = new Array(12).fill(-1);
 
     excelHeaders.forEach((header, colIndex) => {
       if (!header) return;
       const key = header.toString().toLowerCase().trim();
       if (monthNameMap.hasOwnProperty(key)) {
-        const monthIndex = monthNameMap[key];
-        monthColIndices[monthIndex] = colIndex;
+        monthColIndices[monthNameMap[key]] = colIndex;
       }
     });
 
-    console.log(`📅 Detected month columns (0=Jan..11=Dec):`, monthColIndices);
-
-    // Warn if any months are missing
-    const missingMonths = monthColIndices
-      .map((col, i) => (col === -1 ? i : null))
-      .filter((i) => i !== null);
-    if (missingMonths.length > 0) {
-      console.warn(
-        `⚠️ Could not find columns for month indices: ${missingMonths}`,
-      );
-    }
-
-    // Find where actual data starts
     let startDataRow = headerRowIndex + 1;
-
-    for (
-      let i = headerRowIndex + 1;
-      i < Math.min(headerRowIndex + 10, jsonData.length);
-      i++
-    ) {
+    for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + 10, jsonData.length); i++) {
       const row = jsonData[i];
       if (row && row.length > 1 && row[1] && row[1].toString().trim() !== "") {
         startDataRow = i;
-        console.log(`✅ Found first data row at row ${startDataRow + 1}`);
         break;
       }
     }
 
-    console.log(`📊 Data extraction will start from row: ${startDataRow + 1}`);
-
-    // Process for Google Sheets
     const rowsForGoogleSheets = [];
-
-    console.log(
-      `🔍 Processing rows ${startDataRow + 1} to ${jsonData.length} for Google Sheets...`,
-    );
 
     for (let i = startDataRow; i < jsonData.length; i++) {
       const excelRow = jsonData[i];
+      if (!excelRow || excelRow.length === 0 ||
+        excelRow.every((cell) => cell === null || cell === "" || cell === undefined)) continue;
 
-      // Skip empty rows
-      if (
-        !excelRow ||
-        excelRow.length === 0 ||
-        excelRow.every(
-          (cell) => cell === null || cell === "" || cell === undefined,
-        )
-      ) {
-        continue;
-      }
+      if (!excelRow[1] || excelRow[1].toString().trim() === "") continue;
 
-      // Check if this row has description
-      const hasDescription =
-        excelRow[1] && excelRow[1].toString().trim() !== "";
-      if (!hasDescription) {
-        continue;
-      }
-
-      // Create Google Sheets row (30 columns A-AD)
       const processedRow = new Array(30).fill("");
-
-      // COLUMN A: EMPTY (Index 0)
       processedRow[0] = "";
-
-      // COLUMN B: Description (Index 1)
       processedRow[1] = excelRow[1].toString().trim();
 
-      // ✅ COPY MONTHLY VALUES USING DYNAMIC MAPPING
       monthColIndices.forEach((excelCol, monthIndex) => {
-        if (excelCol === -1) return; // Month column not found in this file, skip
-
+        if (excelCol === -1) return;
         const gsCol = gsColByMonthIndex[monthIndex];
-
-        if (
-          excelCol < excelRow.length &&
+        if (excelCol < excelRow.length &&
           excelRow[excelCol] !== null &&
           excelRow[excelCol] !== undefined &&
-          excelRow[excelCol] !== ""
-        ) {
+          excelRow[excelCol] !== "") {
           processedRow[gsCol] = cleanNumber(excelRow[excelCol]);
         }
       });
@@ -248,59 +160,34 @@ const importExcelFile = async (request, reply) => {
       rowsForGoogleSheets.push(processedRow);
     }
 
-    console.log(
-      `✅ Total rows for Google Sheets: ${rowsForGoogleSheets.length}`,
-    );
+    console.log(`✅ Total rows prepared: ${rowsForGoogleSheets.length}`);
 
     if (rowsForGoogleSheets.length === 0) {
-      return reply.send({
-        success: true,
-        message: "⚠️ No data rows found",
-        importedRows: 0,
-      });
+      return reply.send({ success: true, message: "⚠️ No data rows found", importedRows: 0 });
     }
 
-    // Send to Google Sheets
-    console.log(
-      `📤 Sending ${rowsForGoogleSheets.length} rows to Google Sheets...`,
-    );
-    const result = await sheetService.addMultipleRows(rowsForGoogleSheets);
+    // ✅ sheetService ko yearType pass karo — woh khud URL choose karega + DB mein save karega
+    const result = await sheetService.addMultipleRows(rowsForGoogleSheets, selectedYear);
 
-    if (!result.success) {
-      throw new Error(result.error);
-    }
+    if (!result.success) throw new Error(result.error);
 
-    // ✅ ab response fully aa chuka hai
-    if (result.originalSpreadsheetId && result.newSpreadsheetId) {
-      await ClientCredentials.create({
-        originalSpreadsheetId: result.originalSpreadsheetId,
-        newSpreadsheetId: result.newSpreadsheetId,
-        originalSheetUrl: result.originalSheetUrl,
-        newSpreadsheetUrl: result.newSpreadsheetUrl,
-        newSpreadsheetName: result.newSpreadsheetName,
-        createdAt: new Date(),
-      });
+    // ✅ Koi duplicate save nahi — sheetService ne already kiya
 
-      console.log("✅ IDs saved in DB");
-    } else {
-      console.log("❌ IDs missing in response", result);
-    }
     return reply.send({
       success: true,
-      message: `✅ Successfully imported ${rowsForGoogleSheets.length} rows`,
+      message: `✅ Successfully imported ${rowsForGoogleSheets.length} rows to ${selectedYear} sheet`,
       importedRows: rowsForGoogleSheets.length,
+      yearType: selectedYear,
       googleSheets: {
         startRow: result.startRow,
         insertedRows: result.insertedRows,
         sheetUrl: result.sheetUrl,
       },
     });
+
   } catch (error) {
     console.error("❌ Import error:", error);
-    return reply.code(500).send({
-      success: false,
-      error: error.message,
-    });
+    return reply.code(500).send({ success: false, error: error.message });
   }
 };
 
@@ -368,6 +255,8 @@ const importExcelFile = async (request, reply) => {
 // ==============================
 
 
+
+
 const LiveSheetData = async (req, reply) => {
   return reply.sendFile("users/Live_Sheet.html");
 };
@@ -375,8 +264,7 @@ const LiveSheetData = async (req, reply) => {
 
 const getLatestSheetResult = async (req, reply) => {
   try {
-    
-    console.log("📊 Fetching latest sheet data from Google Sheet...");
+    console.log("📊 Fetching latest sheet data...");
     const result = await sheetService.fetchLatestSheetData();
 
     if (!result.success) {
@@ -390,7 +278,6 @@ const getLatestSheetResult = async (req, reply) => {
       totalRows: result.data.length,
       data: result.data,
     });
-
   } catch (err) {
     console.error("❌ ERROR (latest):", err.message);
     return reply.status(500).send({ success: false, error: err.message });
@@ -403,8 +290,7 @@ const previousSheetData = async (req, reply) => {
 }
 const getPreviousSheetResult = async (req, reply) => {
   try {
-    // ✅ Hamesha Google Sheet se fresh data fetch karo
-    console.log("📊 Fetching previous sheet data from Google Sheet...");
+    console.log("📊 Fetching previous sheet data...");
     const result = await sheetService.fetchPreviousSheetData();
 
     if (!result.success) {
@@ -418,7 +304,6 @@ const getPreviousSheetResult = async (req, reply) => {
       totalRows: result.data.length,
       data: result.data,
     });
-
   } catch (err) {
     console.error("❌ ERROR (previous):", err.message);
     return reply.status(500).send({ success: false, error: err.message });

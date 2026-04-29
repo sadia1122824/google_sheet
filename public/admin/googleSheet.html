@@ -625,11 +625,6 @@
             font-weight: 600;
             float: right;
         }
-
-        
-
-      
-       
     </style>
 
 </head>
@@ -707,19 +702,27 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
+                            <!-- Card Header mein yeh dropdown add karein (line ~200 ke paas) -->
                             <div class="card-header">
-                                <h4 class="card-title">Uploads Excell File</h4>
+                                <h4 class="card-title">Import Data to Google Sheets</h4>
+                                <p class="text-muted mb-0">Upload Excel file to import data directly</p>
 
-                            </div><!--end card-header-->
+                                <!-- Year Selector Dropdown -->
+                                <div class="mt-2">
+                                    <label for="yearSelect" class="font-weight-bold">Select Year:</label>
+                                    <select id="yearSelect" class="form-control"
+                                        style="max-width: 200px; display: inline-block; margin-left: 10px;">
+                                        <option value="latest">Latest Year</option>
+                                        <option value="previous">Previous Year</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="card">
 
 
                                 <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="card-title">Import Data to Google Sheets</h4>
-                                        <p class="text-muted mb-0">Upload Excel file to import data directly</p>
-                                    </div><!--end card-header-->
+                                 
 
                                     <div class="card-body">
                                         <!-- Simple Notification -->
@@ -804,7 +807,7 @@
 
             </div><!-- container -->
 
-           
+
 
 
         </div>
@@ -892,7 +895,7 @@
         async function uploadFile() {
             const file = fileUpload.files[0];
             if (!file || isUploading) return;
-
+ const selectedYear = document.getElementById('yearSelect').value;
             isUploading = true;
             abortController = new AbortController();
 
@@ -921,6 +924,7 @@
 
                 const formData = new FormData();
                 formData.append('file', file);
+                formData.append('year', document.getElementById('yearSelect').value);
 
                 const response = await fetch('/importExcelFile', {
                     method: 'POST',
@@ -1100,7 +1104,7 @@
         //         });
         //     }
         // });
- 
+
 
         function initMobileMenu() {
             const menuBtn = document.querySelector(".button-menu-mobile");
@@ -1147,7 +1151,7 @@
         });
 
 
-       
+
 
 
     </script>
