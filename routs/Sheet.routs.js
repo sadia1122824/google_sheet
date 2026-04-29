@@ -13,7 +13,7 @@
 = require('../controllers/Sheet.controller');
 
  const googleSheet = async(app,options)=>{
-    app.get('/',(req,reply)=>{
+    app.get('/debug',(req,reply)=>{
         return reply.send('this project is running successfully')
     })
 
