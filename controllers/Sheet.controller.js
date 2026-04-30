@@ -287,7 +287,7 @@ const getLatestSheetResult = async (req, reply) => {
 
 
 const previousSheetData = async (req, reply) => {
-  return reply.sendFile("users/Previous_Sheet.html");
+  return reply.sendFile("users/previous_Sheet.html");
 }
 
 const getPreviousSheetResult = async (req, reply) => {
