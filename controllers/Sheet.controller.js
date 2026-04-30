@@ -259,7 +259,7 @@ const importExcelFile = async (request, reply) => {
 
 const LiveSheetData = async (req, reply) => {
   return reply.sendFile("users/Live_Sheet.html");
-  console.log("📊 Serving Live_Sheet.html");
+ 
 };
 
 
@@ -287,8 +287,9 @@ const getLatestSheetResult = async (req, reply) => {
 
 
 const previousSheetData = async (req, reply) => {
-  return reply.sendFile("users/previous_sheet.html");
+  return reply.sendFile("users/Previous_Sheet.html");
 }
+
 const getPreviousSheetResult = async (req, reply) => {
   try {
     console.log("📊 Fetching previous sheet data...");
