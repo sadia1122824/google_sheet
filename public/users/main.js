@@ -62,7 +62,7 @@ window.addEventListener('DOMContentLoaded', () => {
         loginForm.querySelector('input[type="password"]').value = "";
 
         Swal.fire({ icon: "success", title: data.message, toast:true, position:"top-end", timer:2000, timerProgressBar:true })
-          .then(() => window.location.href = "/previousSheetData");
+          .then(() => window.location.href = "/LiveSheetData");
       } else {
         Swal.fire({ icon: "error", title: data.message, toast:true, position:"top-end", timer:2000, timerProgressBar:true });
       }
