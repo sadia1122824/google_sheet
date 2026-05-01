@@ -18,7 +18,7 @@
     // })
 
   
-  app.get("/", { preHandler: [app.authenticate] }, dataUpload);
+  app.get("/", { preHandler: [app.authenticate] }, dataUpload); 
   
   app.post("/importExcelFile", importExcelFile);
   app.post("/AI_chat", AI_chat);
@@ -29,8 +29,6 @@
   app.get("/previousSheetData",{ preHandler: [app.webauthenticate] }, previousSheetData);
   app.get("/getPreviousSheetResult", getPreviousSheetResult);
 
-  
- 
 
 }
 
