@@ -24,26 +24,31 @@
 
 
       <!-- Top Bar -->
-      <div class="top-bar">
-        <button class="hamburger-btn" onclick="toggleSidebar()">
-          <i class="bi bi-list"></i>
-        </button>
-        <a href="/webLogin">
-          <img src="/users/icons/image1.png" alt="logo" class="top-bar-logo" onerror="this.style.display='none'">
-        </a>
-        <span class="top-bar-title"></span>
-        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
-          <span class="icon-dark">🌙</span>
-          <span class="icon-light">☀️</span>
-        </button>
-        <span class="badge-status">
+     <div class="top-bar">
+  <button class="hamburger-btn" onclick="toggleSidebar()">
+    <i class="bi bi-list"></i>
+  </button>
+
+<a href="/webLogin">
+  <img
+    src="/users/icons/image1.png"
+    alt="logo"
+    class="theme-logo top-bar-logo"
+    onerror="this.style.display='none'"
+  >
+</a>
+
+  <span class="top-bar-title"></span>
+
+  <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
+    <span class="icon-dark">🌙</span>
+    <span class="icon-light">☀️</span>
+  </button>
+    <span class="badge-status">
           <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
           <span class="live-text"> Live Data</span>
         </span>
-
-        <!-- Theme Toggle — RIGHT SIDE, always visible -->
-
-      </div>
+</div>
 
       <!-- Filter Open Button + Active Pills -->
       <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">

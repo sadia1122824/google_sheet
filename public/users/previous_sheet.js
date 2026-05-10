@@ -797,38 +797,70 @@ function onCodePeriodChange() {
   }
 
   if (!col1 && !col2) {
-    let html = `<div style="font-size:11px;font-weight:700;color:#7c3aed;margin:8px 0 6px;display:flex;align-items:center;gap:5px;"><i class="bi bi-table"></i> ${code} — ${label}</div>
-      <table style="width:100%;border-collapse:collapse;font-size:12px;">
-        <thead><tr style="background:#f0ecff;">
-          <th style="padding:5px 8px;text-align:left;border-bottom:1px solid #ddd;">${typeLabel}</th>
-          <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;">Income</th>
-          <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;">Expense</th>
-          <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;">Net</th>
-          <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;">%</th>
-        </tr></thead><tbody>`;
-    let hasAny = false;
-    overviewPool.forEach((col) => {
-      const v = cellNum(row, col.colIndex);
-      if (v === 0) return;
+  const allPeriods = monthCols.length > 0 ? monthCols : yearCols;
+  
+  let html = `<div style="font-size:11px;font-weight:700;color:#7c3aed;margin:8px 0 6px;display:flex;align-items:center;gap:5px;">
+    <i class="bi bi-table"></i> ${code} — ${label}
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead>
+      <tr style="background:#f0ecff;">
+        <th style="padding:5px 8px;text-align:left;border-bottom:1px solid #ddd;">Month</th>
+        <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;color:#2e7d32;">💰 Income</th>
+        <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;color:#c62828;">💸 Expense</th>
+        <th style="padding:5px 8px;text-align:right;border-bottom:1px solid #ddd;color:#1565c0;">📊 P/L</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  let hasAny = false;
+
+  allPeriods.forEach((col) => {
+    const v = cellNum(row, col.colIndex);
+    const pctVal = getPctForCol(row, col.colIndex);
+    
+    let incomeVal = "", expenseVal = "", plVal = "", rowBg = "";
+    
+    if (v > 0) {
+      incomeVal = `<span style="color:#2e7d32;font-weight:600;">${fmt(v)}</span>`;
+      expenseVal = `<span style="color:#bbb;">—</span>`;
+      plVal = `<span style="color:#2e7d32;font-weight:600;">+${fmt(v)}</span>`;
+      rowBg = "#f9fff9";
       hasAny = true;
-      const s = calcCards(v);
-      const pctVal = getPctForCol(row, col.colIndex);
-      const netClr = s.net >= 0 ? "#2e7d32" : "#c62828";
-      html += `<tr>
-        <td style="padding:5px 8px;border-bottom:0.5px solid #eee;">${col.label}</td>
-        <td style="padding:5px 8px;text-align:right;border-bottom:0.5px solid #eee;color:#2e7d32;">${s.income > 0 ? fmt(s.income) : "—"}</td>
-        <td style="padding:5px 8px;text-align:right;border-bottom:0.5px solid #eee;color:#c62828;">${s.expense > 0 ? fmt(s.expense) : "—"}</td>
-        <td style="padding:5px 8px;text-align:right;border-bottom:0.5px solid #eee;color:${netClr};font-weight:500;">${s.net >= 0 ? "+" : "−"}${fmt(Math.abs(s.net))}</td>
-        <td style="padding:5px 8px;text-align:right;border-bottom:0.5px solid #eee;color:#666;">${pctVal !== null ? pctVal + "%" : "—"}</td>
-      </tr>`;
-    });
-    if (!hasAny)
-      html += `<tr><td colspan="5" style="padding:8px;color:#888;">Koi data nahi mila</td></tr>`;
-    html += `</tbody></table>`;
-    summaryDiv.innerHTML = html;
-    summaryDiv.style.display = "block";
-    return;
+    } else if (v < 0) {
+      incomeVal = `<span style="color:#bbb;">—</span>`;
+      expenseVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
+      plVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
+      rowBg = "#fff9f9";
+      hasAny = true;
+    } else {
+      incomeVal = `<span style="color:#ccc;">—</span>`;
+      expenseVal = `<span style="color:#ccc;">—</span>`;
+      plVal = `<span style="color:#ccc;">—</span>`;
+      rowBg = "";
+    }
+
+    const pctBadge = pctVal !== null
+      ? `<span style="color:#888;font-size:10px;margin-left:4px;">(${pctVal}%)</span>`
+      : "";
+
+    html += `<tr style="background:${rowBg};border-bottom:0.5px solid #eee;">
+      <td style="padding:5px 8px;font-weight:500;">${col.label}${pctBadge}</td>
+      <td style="padding:5px 8px;text-align:right;">${incomeVal}</td>
+      <td style="padding:5px 8px;text-align:right;">${expenseVal}</td>
+      <td style="padding:5px 8px;text-align:right;">${plVal}</td>
+    </tr>`;
+  });
+
+  if (!hasAny) {
+    html += `<tr><td colspan="4" style="padding:10px;color:#888;text-align:center;">Koi data nahi mila</td></tr>`;
   }
+
+  html += `</tbody></table>`;
+  summaryDiv.innerHTML = html;
+  summaryDiv.style.display = "block";
+  return;
+}
 
   if (col1 && !col2) {
     const val1 = cellNum(row, col1.colIndex);
@@ -1673,16 +1705,94 @@ function fmtBotText(t) {
 
 // dark mode toggle logic
 
-(function () {
-    var saved = localStorage.getItem('appTheme') || 'light';
-    document.documentElement.setAttribute('data-theme', saved);
-  })();
+function updateLogoByTheme() {
 
-  function toggleTheme() {
-    var current = document.documentElement.getAttribute('data-theme') || 'light';
-    var next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('appTheme', next);
+  const logo = document.getElementById("themeLogo");
+
+  const currentTheme =
+    document.documentElement.getAttribute("data-theme");
+
+  // DARK THEME
+  if (currentTheme === "dark") {
+
+    // dark theme par dark logo
+    logo.src = "/users/icons/image2.png";
+
+  } else {
+
+    // white theme par white logo
+    logo.src = "/users/icons/image1.png";
   }
+}
+
+(function () {
+  var saved = localStorage.getItem('appTheme') || 'light';
+
+  document.documentElement.setAttribute('data-theme', saved);
+
+  // page load par logo update
+  window.addEventListener("DOMContentLoaded", updateLogoByTheme);
+})();
+
+ function toggleTheme() {
+
+  var current =
+    document.documentElement.getAttribute('data-theme') || 'light';
+
+  var next = current === 'dark' ? 'light' : 'dark';
+
+  document.documentElement.setAttribute('data-theme', next);
+
+  localStorage.setItem('appTheme', next);
+
+  updateLogoByTheme();
+}
+
+
+
+function updateLogoByTheme() {
+
+  const logos =
+    document.querySelectorAll(".theme-logo");
+
+  const currentTheme =
+    document.documentElement.getAttribute("data-theme");
+
+  logos.forEach((logo) => {
+
+    logo.src =
+      currentTheme === "dark"
+        ? "/users/icons/image2.png"
+        : "/users/icons/image1.png";
+  });
+}
+
+
+// PAGE LOAD
+document.addEventListener("DOMContentLoaded", () => {
+  const saved =
+    localStorage.getItem("appTheme") || "light";
+
+  document.documentElement.setAttribute("data-theme", saved);
+
+  updateLogoByTheme();
+});
+
+
+// TOGGLE THEME
+function toggleTheme() {
+
+  const current =
+    document.documentElement.getAttribute("data-theme") || "light";
+
+  const next =
+    current === "dark" ? "light" : "dark";
+
+  document.documentElement.setAttribute("data-theme", next);
+
+  localStorage.setItem("appTheme", next);
+
+  updateLogoByTheme();
+}
 
 window.onload = loadSheetData;

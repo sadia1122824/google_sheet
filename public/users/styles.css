@@ -841,6 +841,15 @@ body {
   padding: 0 2px;
   min-height: 16px;
 }
+.card-box {
+  min-height: 600px;
+}
+
+#loader {
+  min-height: 520px;
+}
+
+
 
 
 /* ═══════════════════════════════════════════════
@@ -2197,8 +2206,8 @@ body {
   transition: background 0.15s, transform 0.2s cubic-bezier(.34,1.56,.64,1), color 0.15s;
 }
 
-.hamburger-btn:hover  { transform: scale(1.12) rotate(5deg); }
-.hamburger-btn:active { transform: scale(0.9); }
+/* .hamburger-btn:hover  { transform: scale(1.12) rotate(5deg); }
+.hamburger-btn:active { transform: scale(0.9); } */
 
 /* ── Floating chat ── */
 .floating-chat-btn {

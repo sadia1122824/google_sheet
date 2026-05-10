@@ -1,9 +1,14 @@
 const sidebarHTML = `
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <a href="/webLogin">
-        <img src="/users/icons/image1.png" alt="logo" class="top-bar-logo" onerror="this.style.display='none'">
-      </a>
+<a href="/webLogin">
+  <img
+    src="/users/icons/image1.png"
+    alt="logo"
+    class="theme-logo top-bar-logo"
+    onerror="this.style.display='none'"
+  >
+</a>
     </div>
 
     <div class="sidebar-body">
