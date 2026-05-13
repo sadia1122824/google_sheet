@@ -21,6 +21,8 @@ const cookiee = require('@fastify/cookie');
 const fastifyJwt = require('@fastify/jwt')
 const userRouts = require('./routs/User.routs')
 const googleSheet = require('./routs/Sheet.routs')
+const staffRouts = require('./routs/staff_routs')
+const clientRouts = require('./routs/client.routs') 
 
 
 
@@ -65,10 +67,19 @@ app.decorate("webauthenticate", async (req, reply) => {
 });
 
 
+app.decorate("staffauthenticate", async (req, reply) => {
+  try {
+    await req.jwtVerify(); 
+  } catch (err) {
+    return reply.redirect("/loginStaff"); 
+  }
+});
+
 
 app.register(userRouts)
 app.register(googleSheet)
-
+app.register(staffRouts)
+app.register(clientRouts)
 
 
 

@@ -948,22 +948,25 @@ function resetAllFilters() {
 
 async function loadSheetData() {
   try {
-    const token = localStorage.getItem("jwt");
-    const res = await fetch("/getPreviousSheetResult", {
+    const clientId = localStorage.getItem("clientId");
+
+    const res = await fetch("/getLatestSheetResult", {
       method: "GET",
+      credentials: "include",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        "x-client-id": clientId || "",
+        // ✅ Authorization header removed — token was never defined here
       },
     });
+
     const text = await res.text();
     if (!res.ok) throw new Error(`Server error: ${res.status} - ${text}`);
     const result = JSON.parse(text);
     const loader = document.getElementById("loader");
 
     if (!result.success) {
-      document.getElementById("tableBody").innerHTML =
-        `<tr><td>${result.error}</td></tr>`;
+      document.getElementById("tableBody").innerHTML = `<tr><td>${result.error}</td></tr>`;
       loader.style.display = "none";
       return;
     }
@@ -971,25 +974,22 @@ async function loadSheetData() {
     const rawData = result.data;
 
     if (!rawData || rawData.length === 0) {
-      document.getElementById("tableBody").innerHTML =
-        `<tr><td>No data</td></tr>`;
+      document.getElementById("tableBody").innerHTML = `<tr><td>No data</td></tr>`;
       loader.style.display = "none";
       return;
     }
 
-    // ✅ FIX: Convert each MongoDB object → plain array of values
-    // Filter out internal Mongo fields (_id, _syncedAt, _yearsInSheet)
     const data = rawData.map((row) => {
-      if (Array.isArray(row)) return row; // already array, skip
+      if (Array.isArray(row)) return row;
       return Object.entries(row)
-        .filter(([key]) => !key.startsWith("_")) // remove _id, _syncedAt, _yearsInSheet
-        .map(([, val]) => val); // keep only values
+        .filter(([key]) => !key.startsWith("_"))
+        .map(([, val]) => val);
     });
 
-    infoRows = data.slice(0, 3);
-    headers = data[3] || [];
+    infoRows    = data.slice(0, 3);
+    headers     = data[3] || [];
     allDataRows = data.slice(4);
-    colOffset = 0;
+    colOffset   = 0;
     currentPage = 1;
     parseColumnsFromHeaders();
     populateFilterDropdowns();
@@ -997,13 +997,11 @@ async function loadSheetData() {
     populateCodeDropdown();
     document.getElementById("loader").style.display = "none";
     renderTable();
-    document.getElementById("paginationBar").style.display = allDataRows.length
-      ? "flex"
-      : "none";
+    document.getElementById("paginationBar").style.display = allDataRows.length ? "flex" : "none";
+
   } catch (err) {
     console.error(err);
-    document.getElementById("tableBody").innerHTML =
-      `<tr><td>${err.message}</td></tr>`;
+    document.getElementById("tableBody").innerHTML = `<tr><td>${err.message}</td></tr>`;
     document.getElementById("loader").style.display = "none";
   }
 }

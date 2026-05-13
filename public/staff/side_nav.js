@@ -24,29 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
         
 
            <li>
-<a href="/">
+<a href="uploadExcell">
   <i data-feather="file-plus" class="menu-icon"></i>
   <span>Upload Excel Data</span>
-</a>
-
-<a href="/staffRecord">
-  <i data-feather="user-plus" class="menu-icon"></i>
-  <span>Add Staff</span>
-</a>
-
-<a href="/showStaffRecord">
-  <i data-feather="users" class="menu-icon"></i>
-  <span>Show Staff</span>
-</a>
-
-<a href="/AddClients">
-  <i data-feather="briefcase" class="menu-icon"></i>
-  <span>Add Client</span>
-</a>
-
-<a href="/showClients">
-  <i data-feather="users" class="menu-icon"></i>
-  <span>Show Clients</span>
 </a>
 </li>
 

@@ -33,7 +33,9 @@ class SheetService {
  // ================================
 // ✅ ADD ROWS — yearType ke hisaab se URL choose karo
 // ================================
-async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter add
+
+
+async addMultipleRows(rows, yearType = "latest", clientId = null, clientName = null) {  // ✅ NEW params
   try {
     await this.authorize();
 
@@ -41,15 +43,15 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
       return { success: false, error: "Invalid rows" };
     }
 
-    // ✅ CHANGE 1: yearType ke hisaab se URL select karo
     const webAppUrl = yearType === "latest"
       ? this.latestWebAppUrl
       : this.previousWebAppUrl;
 
     console.log(`📍 Using ${yearType} URL:`, webAppUrl ? "✅ Set" : "❌ MISSING");
+    console.log(`👤 Client: ${clientName || "N/A"} (ID: ${clientId || "N/A"})`);  // ✅ NEW
 
     console.log("📍 Getting next available row...");
-    const rowRes = await axios.post(webAppUrl, {  // ← latestWebAppUrl ki jagah webAppUrl
+    const rowRes = await axios.post(webAppUrl, {
       token: this.token,
       action: "getNextRow",
       sheetName: "Explotacion comparativa",
@@ -72,13 +74,15 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
     console.log(`✅ Prepared ${processedRows.length} rows`);
 
     console.log("📤 Sending rows to Google Sheets...");
-    const response = await axios.post(webAppUrl, {  // ← webAppUrl use karo
+    const response = await axios.post(webAppUrl, {
       token: this.token,
       action: "addRows",
       sheetName: "Explotacion comparativa",
       data: processedRows,
       startRow: startRow,
       monthColumns: [1, 2, 3],
+      clientId:   clientId,    // ✅ NEW — Apps Script ko jayega
+      clientName: clientName,  // ✅ NEW — file name mein lagega
     });
 
     console.log("✅ Insert response:", JSON.stringify(response.data, null, 2));
@@ -89,15 +93,17 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
     console.log("📄 New (Copy) Spreadsheet ID:", resData?.newSpreadsheet?.spreadsheetId);
     console.log("🔗 Original Sheet URL:", resData?.originalSheetUrl);
     console.log("🔗 New Spreadsheet URL:", resData?.newSpreadsheetUrl);
+    console.log("👤 Client Name in File:", resData?.newSpreadsheet?.clientName);  // ✅ NEW
     console.log("=================================");
 
-    // ✅ CHANGE 2: Sirf selected year ki collection mein save karo
     const credData = {
       originalSpreadsheetId: resData?.originalSheet?.spreadsheetId,
-      newSpreadsheetId: resData?.newSpreadsheet?.spreadsheetId,
-      originalSheetUrl: resData?.originalSheetUrl,
-      newSpreadsheetUrl: resData?.newSpreadsheetUrl,
-      newSpreadsheetName: resData?.newSpreadsheet?.fileName || null,
+      newSpreadsheetId:      resData?.newSpreadsheet?.spreadsheetId,
+      originalSheetUrl:      resData?.originalSheetUrl,
+      newSpreadsheetUrl:     resData?.newSpreadsheetUrl,
+      newSpreadsheetName:    resData?.newSpreadsheet?.fileName || null,
+      clientId:              clientId   || null,   // ✅ NEW
+      clientName:            clientName || null,   // ✅ NEW
     };
 
     if (yearType === "latest") {
@@ -109,15 +115,19 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
     }
 
     return {
-      success: true,
+      success:               true,
       originalSpreadsheetId: resData?.originalSheet?.spreadsheetId,
-      newSpreadsheetId: resData?.newSpreadsheet?.spreadsheetId,
-      originalSheetUrl: resData?.originalSheetUrl,
-      newSpreadsheetUrl: resData?.newSpreadsheetUrl,
-      newSpreadsheetName: resData?.newSpreadsheet?.fileName || null,
-      insertedRows: processedRows.length,
-      startRow: startRow,
+      newSpreadsheetId:      resData?.newSpreadsheet?.spreadsheetId,
+      originalSheetUrl:      resData?.originalSheetUrl,
+      newSpreadsheetUrl:     resData?.newSpreadsheetUrl,
+      newSpreadsheetName:    resData?.newSpreadsheet?.fileName || null,
+      insertedRows:          processedRows.length,
+      startRow:              startRow,
+      clientId:              clientId   || null,   // ✅ NEW
+      clientName:            clientName || null,   // ✅ NEW
+      sheetUrl:              resData?.newSpreadsheetUrl,  // ✅ frontend ke liye
     };
+
   } catch (error) {
     console.error("❌ Error sending to Google Sheets:", error.message);
     if (error.response) {
@@ -126,8 +136,8 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
     }
     return {
       success: false,
-      error: error.message,
-      stack: error.stack,
+      error:   error.message,
+      stack:   error.stack,
     };
   }
 }
@@ -135,67 +145,79 @@ async addMultipleRows(rows, yearType = "latest") {  // ← yearType parameter ad
   // ================================
   // ✅ SAVE LATEST CREDENTIALS
   // ================================
-  async saveLatestCredentials(data) {
-    try {
-      const cred = new Latest_ClientCredentials({
-        originalSpreadsheetId: data.originalSpreadsheetId,
-        newSpreadsheetId: data.newSpreadsheetId,
-        originalSheetUrl: data.originalSheetUrl,
-        newSpreadsheetUrl: data.newSpreadsheetUrl,
-        newSpreadsheetName: data.newSpreadsheetName,
-        webAppUrl: this.latestWebAppUrl,
-        createdAt: new Date(),
-      });
-      await cred.save();
-      console.log("✅ Latest credentials saved to DB:", data.newSpreadsheetId);
-    } catch (err) {
-      console.error("❌ Failed to save latest credentials:", err.message);
-    }
+async saveLatestCredentials(data) {
+  try {
+    const cred = new Latest_ClientCredentials({
+      originalSpreadsheetId: data.originalSpreadsheetId,
+      newSpreadsheetId:      data.newSpreadsheetId,
+      originalSheetUrl:      data.originalSheetUrl,
+      newSpreadsheetUrl:     data.newSpreadsheetUrl,
+      newSpreadsheetName:    data.newSpreadsheetName,
+      webAppUrl:             this.latestWebAppUrl,
+      clientId:              data.clientId   || null,  // ✅ ADD
+      clientName:            data.clientName || null,  // ✅ ADD
+      createdAt:             new Date(),
+    });
+    await cred.save();
+    console.log("✅ Latest credentials saved:", data.newSpreadsheetId);
+  } catch (err) {
+    console.error("❌ Failed to save latest credentials:", err.message);
   }
+}
 
-  // ================================
-  // ✅ SAVE PREVIOUS CREDENTIALS
-  // ================================
-  async savePreviousCredentials(data) {
-    try {
-      const cred = new Previous_ClientCredentials({
-        originalSpreadsheetId: data.originalSpreadsheetId,
-        newSpreadsheetId: data.newSpreadsheetId,
-        originalSheetUrl: data.originalSheetUrl,
-        newSpreadsheetUrl: data.newSpreadsheetUrl,
-        newSpreadsheetName: data.newSpreadsheetName,
-        webAppUrl: this.previousWebAppUrl,
-        createdAt: new Date(),
-      });
-      await cred.save();
-      console.log("✅ Previous credentials saved to DB:", data.newSpreadsheetId);
-    } catch (err) {
-      console.error("❌ Failed to save previous credentials:", err.message);
-    }
+async savePreviousCredentials(data) {
+  try {
+    const cred = new Previous_ClientCredentials({
+      originalSpreadsheetId: data.originalSpreadsheetId,
+      newSpreadsheetId:      data.newSpreadsheetId,
+      originalSheetUrl:      data.originalSheetUrl,
+      newSpreadsheetUrl:     data.newSpreadsheetUrl,
+      newSpreadsheetName:    data.newSpreadsheetName,
+      webAppUrl:             this.previousWebAppUrl,
+      clientId:              data.clientId   || null,  // ✅ ADD
+      clientName:            data.clientName || null,  // ✅ ADD
+      createdAt:             new Date(),
+    });
+    await cred.save();
+    console.log("✅ Previous credentials saved:", data.newSpreadsheetId);
+  } catch (err) {
+    console.error("❌ Failed to save previous credentials:", err.message);
   }
+}
 
  // ================================
 // ✅ FETCH LATEST SHEET DATA
 // ================================
-async fetchLatestSheetData() {
+async fetchLatestSheetData(clientId) {  // ✅ clientId parameter add
   try {
-    // ✅ Sirf latest record lo — createdAt desc
+    if (!clientId) {
+      return { success: false, error: "clientId is required" };
+    }
+
+    // ✅ Sirf is client ka latest record
     const record = await Latest_ClientCredentials
-      .findOne()
+       .findOne({
+        $or: [
+          { clientId: clientId },        // "1234" ✅
+          { clientId: clientId.toString() }
+        ]
+      })
       .sort({ createdAt: -1 });
 
     if (!record) {
-      return { success: false, error: "No latest spreadsheet found. Please upload a file first." };
+      return { 
+        success: false, 
+        error: `No sheet found for client ${clientId}. Please upload a file first.` 
+      };
     }
 
     const spreadsheetId = record.newSpreadsheetId;
-    console.log(`🔍 Fetching latest spreadsheetId: ${spreadsheetId}`);
+    console.log(`🔍 Client ${clientId} → spreadsheetId: ${spreadsheetId}`);
 
-    // ✅ Latest web URL se data fetch karo
     const response = await axios.get(this.latestWebAppUrl, {
       params: {
-        token: this.token,
-        action: "getSheetData",
+        token:         this.token,
+        action:        "getSheetData",
         spreadsheetId: spreadsheetId,
       },
     });
@@ -205,21 +227,13 @@ async fetchLatestSheetData() {
     }
 
     const sheetData = response.data.data;
-    console.log(`📊 Got ${sheetData.length} rows from latest sheet`);
+    console.log(`📊 Got ${sheetData.length} rows for client ${clientId}`);
 
-    // ✅ DB mein save karo
-    const result = await this.saveSheetDataToDB(sheetData, "explotacion_comparativa");
+    const result = await this.saveSheetDataToDB(sheetData, "explotacion_comparativa", clientId);  // ✅ clientId pass
 
-    if (!result.success) {
-      return { success: false, error: result.error };
-    }
+    if (!result.success) return { success: false, error: result.error };
 
-    console.log("✅ Latest data saved to collection:", result.collection);
-    return {
-      success: true,
-      data: sheetData,
-      collection: result.collection,
-    };
+    return { success: true, data: sheetData, collection: result.collection };
 
   } catch (err) {
     console.error("❌ fetchLatestSheetData error:", err.message);
@@ -227,55 +241,41 @@ async fetchLatestSheetData() {
   }
 }
 
-// ================================
-// ✅ FETCH PREVIOUS SHEET DATA
-// ================================
-async fetchPreviousSheetData() {
+// Same for fetchPreviousSheetData
+async fetchPreviousSheetData(clientId) {  // ✅
   try {
-    // ✅ Sirf latest previous record lo — createdAt desc
+    if (!clientId) return { success: false, error: "clientId is required" };
+
     const record = await Previous_ClientCredentials
-      .findOne()
+      .findOne({
+        $or: [
+          { clientId: clientId },
+          { clientId: clientId.toString() }
+        ]
+      })
       .sort({ createdAt: -1 });
 
     if (!record) {
-      return { success: false, error: "No previous spreadsheet found. Please upload a file with 'Previous Year' selected first." };
+      return { success: false, error: `No previous sheet found for client ${clientId}.` };
     }
 
     const spreadsheetId = record.newSpreadsheetId;
-    console.log(`🔍 Fetching previous spreadsheetId: ${spreadsheetId}`);
-
-    // ✅ Previous web URL se data fetch karo
     const response = await axios.get(this.previousWebAppUrl, {
-      params: {
-        token: this.token,
-        action: "getSheetData",
-        spreadsheetId: spreadsheetId,
-      },
+      params: { token: this.token, action: "getSheetData", spreadsheetId },
     });
 
     if (!response.data.success) {
-      return { success: false, error: response.data.error || "Failed to fetch sheet data" };
+      return { success: false, error: response.data.error };
     }
 
     const sheetData = response.data.data;
-    console.log(`📊 Got ${sheetData.length} rows from previous sheet`);
+    const result = await this.saveSheetDataToDB(sheetData, "explotacion_comparativa", clientId);
 
-    // ✅ DB mein save karo
-    const result = await this.saveSheetDataToDB(sheetData, "explotacion_comparativa");
+    if (!result.success) return { success: false, error: result.error };
 
-    if (!result.success) {
-      return { success: false, error: result.error };
-    }
-
-    console.log("✅ Previous data saved to collection:", result.collection);
-    return {
-      success: true,
-      data: sheetData,
-      collection: result.collection,
-    };
+    return { success: true, data: sheetData, collection: result.collection };
 
   } catch (err) {
-    console.error("❌ fetchPreviousSheetData error:", err.message);
     return { success: false, error: err.message };
   }
 }
@@ -283,81 +283,92 @@ async fetchPreviousSheetData() {
   // ================================
   // ✅ SAVE SHEET DATA TO DB (unchanged)
   // ================================
-  async saveSheetDataToDB(sheetData, baseCollectionName = "explotacion_comparativa") {
-    if (!sheetData || sheetData.length === 0) {
-      return { success: false, error: "No data to save" };
-    }
-
-    let yearsFound = [];
-    for (let i = 0; i < Math.min(sheetData.length, 5); i++) {
-      const rowValues = Object.values(sheetData[i]).map((val) => String(val).trim());
-      const years = rowValues.filter((val) => /^20\d{2}$/.test(val)).map(Number);
-      if (years.length > 0) {
-        yearsFound = years;
-        console.log(`📅 Years found in row ${i}:`, yearsFound);
-        break;
-      }
-    }
-
-    if (yearsFound.length === 0) {
-      console.warn("⚠️ No years found in sheet data");
-      return { success: false, error: "No years detected in sheet" };
-    }
-
-    const sheetMaxYear = Math.max(...yearsFound);
-    console.log("📅 Sheet max year:", sheetMaxYear);
-
-    const db = mongoose.connection.db;
-    const collections = await db.listCollections().toArray();
-    const names = collections.map((c) => c.name);
-
-    const pattern = /^explotacion_comparativa_(\d{4})_(\d{4})$/;
-    const matched = names.filter((n) => pattern.test(n));
-    console.log("📦 Existing matched collections:", matched);
-
-    let targetCollection = null;
-    for (const col of matched) {
-      const endYear = parseInt(col.match(pattern)[2]);
-      if (endYear === sheetMaxYear) {
-        targetCollection = col;
-        console.log(`✅ Matched existing collection: ${targetCollection}`);
-        break;
-      }
-    }
-
-    if (!targetCollection) {
-      const sorted = [...new Set(yearsFound)].sort((a, b) => a - b);
-      const suffix = sorted.length >= 2 ? sorted.join("_") : String(sorted[0]);
-      targetCollection = `${baseCollectionName}_${suffix}`;
-      console.log(`🆕 New collection will be created: ${targetCollection}`);
-    }
-
-    const collectionExists = names.includes(targetCollection);
-    if (collectionExists) {
-      await db.collection(targetCollection).deleteMany({});
-      console.log(`🗑️ Cleared old data from: ${targetCollection}`);
-    } else {
-      console.log(`🆕 New collection will be created: ${targetCollection}`);
-    }
-
-    const docsToInsert = sheetData.map((row) => ({
-      ...row,
-      _yearsInSheet: yearsFound,
-      _syncedAt: new Date(),
-    }));
-
-    const result = await db.collection(targetCollection).insertMany(docsToInsert);
-    console.log(`📥 Inserted ${result.insertedCount} rows into ${targetCollection}`);
-
-    return {
-      success: true,
-      inserted: result.insertedCount,
-      collection: targetCollection,
-      yearsFound,
-      sheetMaxYear,
-      isNewCollection: !collectionExists,
-    };
+async saveSheetDataToDB(sheetData, baseCollectionName = "explotacion_comparativa", clientId = null) {
+  if (!sheetData || sheetData.length === 0) {
+    return { success: false, error: "No data to save" };
   }
+
+  let yearsFound = [];
+  for (let i = 0; i < Math.min(sheetData.length, 5); i++) {
+    const rowValues = Object.values(sheetData[i]).map((val) => String(val).trim());
+    const years = rowValues.filter((val) => /^20\d{2}$/.test(val)).map(Number);
+    if (years.length > 0) {
+      yearsFound = years;
+      console.log(`📅 Years found in row ${i}:`, yearsFound);
+      break;
+    }
+  }
+
+  if (yearsFound.length === 0) {
+    console.warn("⚠️ No years found in sheet data");
+    return { success: false, error: "No years detected in sheet" };
+  }
+
+  const sheetMaxYear = Math.max(...yearsFound);
+  console.log("📅 Sheet max year:", sheetMaxYear);
+
+  const db = mongoose.connection.db;
+  const collections = await db.listCollections().toArray();
+  const names = collections.map((c) => c.name);
+
+  // ✅ clientId ke saath prefix banao
+  const collectionPrefix = clientId
+    ? `${baseCollectionName}_${clientId}`
+    : baseCollectionName;
+
+  // ✅ Pattern bhi clientId wala check kare
+  const pattern = clientId
+    ? new RegExp(`^explotacion_comparativa_${clientId}_(\\d{4})_(\\d{4})$`)
+    : /^explotacion_comparativa_(\d{4})_(\d{4})$/;
+
+  const matched = names.filter((n) => pattern.test(n));
+  console.log("📦 Existing matched collections:", matched);
+
+  let targetCollection = null;
+  for (const col of matched) {
+    const parts = col.match(pattern);
+    const endYear = parseInt(parts[parts.length - 1]); // last group = end year
+    if (endYear === sheetMaxYear) {
+      targetCollection = col;
+      console.log(`✅ Matched existing collection: ${targetCollection}`);
+      break;
+    }
+  }
+
+  if (!targetCollection) {
+    const sorted = [...new Set(yearsFound)].sort((a, b) => a - b);
+    const suffix = sorted.length >= 2 ? sorted.join("_") : String(sorted[0]);
+    targetCollection = `${collectionPrefix}_${suffix}`; // ✅ prefix use
+    console.log(`🆕 New collection will be created: ${targetCollection}`);
+  }
+
+  const collectionExists = names.includes(targetCollection);
+  if (collectionExists) {
+    await db.collection(targetCollection).deleteMany({});
+    console.log(`🗑️ Cleared old data from: ${targetCollection}`);
+  } else {
+    console.log(`🆕 New collection will be created: ${targetCollection}`);
+  }
+
+  const docsToInsert = sheetData.map((row) => ({
+    ...row,
+    _clientId: clientId,   // ✅ document mein bhi save
+    _yearsInSheet: yearsFound,
+    _syncedAt: new Date(),
+  }));
+
+  const result = await db.collection(targetCollection).insertMany(docsToInsert);
+  console.log(`📥 Inserted ${result.insertedCount} rows into ${targetCollection}`);
+
+  return {
+    success: true,
+    inserted: result.insertedCount,
+    collection: targetCollection,
+    yearsFound,
+    sheetMaxYear,
+    isNewCollection: !collectionExists,
+  };
+}
 
   // ================================
   // ✅ PREPARE ROWS (unchanged)

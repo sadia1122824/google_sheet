@@ -12,6 +12,10 @@ const dataUpload = async (request, reply) => {
   return reply.sendFile("admin/googleSheet.html");
 };
 
+const uploadExcell = async(req, reply) => {
+    return reply.sendFile('staff/uploadSheet.html');
+}
+
 function cleanNumber(value) {
   if (value === null || value === undefined || value === "") return "";
   if (typeof value === "number") return value;
@@ -32,34 +36,54 @@ function cleanNumber(value) {
   return "";
 }
 
+
 const importExcelFile = async (request, reply) => {
   try {
     const parts = request.parts();
-    let fileBuffer = null;
-    let fileName = null;
+    let fileBuffer  = null;
+    let fileName    = null;
     let selectedYear = "latest";
+    let clientId    = null;   // ✅ NEW
+    let clientName  = null;   // ✅ NEW
 
+    // ── Parse multipart fields ──────────────────────────────────────────
     for await (const part of parts) {
       if (part.type === "file") {
         const chunks = [];
-        for await (const chunk of part.file) {
-          chunks.push(chunk);
-        }
+        for await (const chunk of part.file) chunks.push(chunk);
         fileBuffer = Buffer.concat(chunks);
-        fileName = part.filename;
-        // ✅ break nahi — year bhi padhna hai
-      } else if (part.type === "field" && part.fieldname === "year") {
-        selectedYear = part.value;
-        console.log(`📅 Selected Year: ${selectedYear}`);
+        fileName   = part.filename;
+
+      } else if (part.type === "field") {
+        if (part.fieldname === "year")       selectedYear = part.value;
+        if (part.fieldname === "clientId")   clientId     = part.value;   // ✅ NEW
+        if (part.fieldname === "clientName") clientName   = part.value;   // ✅ NEW
       }
     }
 
+    // ── Validation ──────────────────────────────────────────────────────
     if (!fileBuffer) {
       return reply.code(400).send({ success: false, error: "Please upload an Excel file" });
     }
+     if (!clientId || !clientName) {
+      return reply.code(400).send({ success: false, error: "clientId and clientName are required" });
+    }
 
-    console.log(`📁 Processing file: ${fileName}`);
+    // ✅ Agar MongoDB _id aa raha hai to actual clientId lo
+    let actualClientId = clientId;
+    if (clientId.length === 24 && /^[a-f0-9]+$/i.test(clientId)) {
+      const clientRecord = await ClientRecord.findById(clientId).select("clientId");
+      if (clientRecord?.clientId) {
+        actualClientId = clientRecord.clientId; // "1234" ✅
+        console.log(`✅ Converted MongoDB _id → clientId: ${actualClientId}`);
+      }
+    }
 
+    console.log(`📁 File: ${fileName} | Client: ${clientName} (${actualClientId}) | Year: ${selectedYear}`);
+
+    
+
+    // ── Parse workbook ──────────────────────────────────────────────────
     const workbook = XLSX.read(fileBuffer, {
       type: "buffer", cellDates: true, cellNF: false, cellText: false,
     });
@@ -74,14 +98,15 @@ const importExcelFile = async (request, reply) => {
     }
 
     const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+    const jsonData  = XLSX.utils.sheet_to_json(worksheet, {
       header: 1, defval: null, raw: true, blankrows: false,
     });
 
     console.log(`📊 Sheet loaded: ${jsonData.length} total rows`);
 
+    // ── Find header row ──────────────────────────────────────────────────
     let headerRowIndex = -1;
-    let excelHeaders = [];
+    let excelHeaders   = [];
 
     for (let i = 0; i < Math.min(20, jsonData.length); i++) {
       const row = jsonData[i];
@@ -95,7 +120,7 @@ const importExcelFile = async (request, reply) => {
             cell.includes("DESCRIPCIÓN")
           )) {
             headerRowIndex = i;
-            excelHeaders = jsonData[i];
+            excelHeaders   = jsonData[i];
             break;
           }
         }
@@ -107,6 +132,7 @@ const importExcelFile = async (request, reply) => {
       return reply.code(400).send({ success: false, error: "Could not find header row" });
     }
 
+    // ── Map month columns ────────────────────────────────────────────────
     const monthNameMap = {
       ene: 0, jan: 0, feb: 1, mar: 2, abr: 3, apr: 3,
       may: 4, jun: 5, jul: 6, ago: 7, aug: 7,
@@ -114,7 +140,7 @@ const importExcelFile = async (request, reply) => {
     };
 
     const gsColByMonthIndex = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
-    const monthColIndices = new Array(12).fill(-1);
+    const monthColIndices   = new Array(12).fill(-1);
 
     excelHeaders.forEach((header, colIndex) => {
       if (!header) return;
@@ -124,6 +150,7 @@ const importExcelFile = async (request, reply) => {
       }
     });
 
+    // ── Find first data row ──────────────────────────────────────────────
     let startDataRow = headerRowIndex + 1;
     for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + 10, jsonData.length); i++) {
       const row = jsonData[i];
@@ -133,26 +160,26 @@ const importExcelFile = async (request, reply) => {
       }
     }
 
+    // ── Build rows for Google Sheets ─────────────────────────────────────
     const rowsForGoogleSheets = [];
 
     for (let i = startDataRow; i < jsonData.length; i++) {
       const excelRow = jsonData[i];
       if (!excelRow || excelRow.length === 0 ||
-        excelRow.every((cell) => cell === null || cell === "" || cell === undefined)) continue;
-
+          excelRow.every(cell => cell === null || cell === "" || cell === undefined)) continue;
       if (!excelRow[1] || excelRow[1].toString().trim() === "") continue;
 
       const processedRow = new Array(30).fill("");
-      processedRow[0] = "";
-      processedRow[1] = excelRow[1].toString().trim();
+      processedRow[0]    = "";
+      processedRow[1]    = excelRow[1].toString().trim();
 
       monthColIndices.forEach((excelCol, monthIndex) => {
         if (excelCol === -1) return;
         const gsCol = gsColByMonthIndex[monthIndex];
         if (excelCol < excelRow.length &&
-          excelRow[excelCol] !== null &&
-          excelRow[excelCol] !== undefined &&
-          excelRow[excelCol] !== "") {
+            excelRow[excelCol] !== null &&
+            excelRow[excelCol] !== undefined &&
+            excelRow[excelCol] !== "") {
           processedRow[gsCol] = cleanNumber(excelRow[excelCol]);
         }
       });
@@ -166,22 +193,29 @@ const importExcelFile = async (request, reply) => {
       return reply.send({ success: true, message: "⚠️ No data rows found", importedRows: 0 });
     }
 
-    // ✅ sheetService ko yearType pass karo — woh khud URL choose karega + DB mein save karega
-    const result = await sheetService.addMultipleRows(rowsForGoogleSheets, selectedYear);
+    // ✅ sheetService ko clientId, clientName, aur yearType pass karo
+    // Sheet copy ka naam hoga: "C.Resultado - ClientName"
+    const result = await sheetService.addMultipleRows(
+      rowsForGoogleSheets,
+      selectedYear,
+      actualClientId,    // ✅ NEW
+      clientName   // ✅ NEW  → sheetService copy ka naam yahan se set kare
+    );
 
     if (!result.success) throw new Error(result.error);
 
-    // ✅ Koi duplicate save nahi — sheetService ne already kiya
-
     return reply.send({
-      success: true,
-      message: `✅ Successfully imported ${rowsForGoogleSheets.length} rows to ${selectedYear} sheet`,
+      success:     true,
+      message:     `✅ Successfully imported ${rowsForGoogleSheets.length} rows`,
       importedRows: rowsForGoogleSheets.length,
-      yearType: selectedYear,
+      sheetName:   result.sheetName,   // ✅ frontend ko naam wapis milega
+      yearType:    selectedYear,
+      clientId:     actualClientId,
+      clientName,
       googleSheets: {
-        startRow: result.startRow,
+        startRow:    result.startRow,
         insertedRows: result.insertedRows,
-        sheetUrl: result.sheetUrl,
+        sheetUrl:    result.sheetUrl,
       },
     });
 
@@ -190,7 +224,6 @@ const importExcelFile = async (request, reply) => {
     return reply.code(500).send({ success: false, error: error.message });
   }
 };
-
 
 
 
@@ -263,54 +296,82 @@ const LiveSheetData = async (req, reply) => {
 };
 
 
+// const getLatestSheetResult = async (req, reply) => {
+//   try {
+//     console.log("📊 Fetching latest sheet data...");
+//     const result = await sheetService.fetchLatestSheetData();
+
+//     if (!result.success) {
+//       return reply.send({ success: false, error: result.error });
+//     }
+
+//     return reply.send({
+//       success: true,
+//       source: "latest_sheet",
+//       collection: result.collection,
+//       totalRows: result.data.length,
+//       data: result.data,
+//     });
+//   } catch (err) {
+//     console.error("❌ ERROR (latest):", err.message);
+//     return reply.status(500).send({ success: false, error: err.message });
+//   }
+// };
+
 const getLatestSheetResult = async (req, reply) => {
   try {
-    console.log("📊 Fetching latest sheet data...");
-    const result = await sheetService.fetchLatestSheetData();
+    // ✅ Sirf header se lo — ye kaam kar raha hai
+    const clientId = req.headers["x-client-id"];
+
+    console.log("Frontend se aaya clientId:", clientId); 
+
+    if (!clientId) {
+      return reply.status(401).send({ success: false, error: "clientId missing" });
+    }
+
+    const result = await sheetService.fetchLatestSheetData(clientId);
 
     if (!result.success) {
       return reply.send({ success: false, error: result.error });
     }
 
     return reply.send({
-      success: true,
-      source: "latest_sheet",
+      success:    true,
+      source:     "latest_sheet",
       collection: result.collection,
-      totalRows: result.data.length,
-      data: result.data,
+      totalRows:  result.data.length,
+      data:       result.data,
     });
   } catch (err) {
-    console.error("❌ ERROR (latest):", err.message);
     return reply.status(500).send({ success: false, error: err.message });
   }
 };
-
 
 const previousSheetData = async (req, reply) => {
   return reply.sendFile("users/previous_Sheet.html");
 }
 
-const getPreviousSheetResult = async (req, reply) => {
-  try {
-    console.log("📊 Fetching previous sheet data...");
-    const result = await sheetService.fetchPreviousSheetData();
+// const getPreviousSheetResult = async (req, reply) => {
+//   try {
+//     console.log("📊 Fetching previous sheet data...");
+//     const result = await sheetService.fetchPreviousSheetData();
 
-    if (!result.success) {
-      return reply.send({ success: false, error: result.error });
-    }
+//     if (!result.success) {
+//       return reply.send({ success: false, error: result.error });
+//     }
 
-    return reply.send({
-      success: true,
-      source: "previous_sheet",
-      collection: result.collection,
-      totalRows: result.data.length,
-      data: result.data,
-    });
-  } catch (err) {
-    console.error("❌ ERROR (previous):", err.message);
-    return reply.status(500).send({ success: false, error: err.message });
-  }
-};
+//     return reply.send({
+//       success: true,
+//       source: "previous_sheet",
+//       collection: result.collection,
+//       totalRows: result.data.length,
+//       data: result.data,
+//     });
+//   } catch (err) {
+//     console.error("❌ ERROR (previous):", err.message);
+//     return reply.status(500).send({ success: false, error: err.message });
+//   }
+// };
 
 
 
@@ -424,6 +485,41 @@ const getPreviousSheetResult = async (req, reply) => {
 //     return reply.send({ success: false, error: err.message });
 //   }
 // };
+
+
+const getPreviousSheetResult = async (req, reply) => {
+  try {
+    const clientId = req.headers["x-client-id"]; // ✅ same
+
+    if (!clientId) {
+      return reply.status(401).send({ success: false, error: "clientId missing" });
+    }
+
+    const result = await sheetService.fetchPreviousSheetData(clientId);
+
+    if (!result.success) {
+      return reply.send({ success: false, error: result.error });
+    }
+
+    return reply.send({
+      success:    true,
+      source:     "previous_sheet",
+      collection: result.collection,
+      totalRows:  result.data.length,
+      data:       result.data,
+    });
+  } catch (err) {
+    return reply.status(500).send({ success: false, error: err.message });
+  }
+};
+
+
+
+
+
+
+
+
 
 const AI_chat = async (req, reply) => {
   try {
@@ -653,4 +749,5 @@ module.exports = {
   previousSheetData,
   getPreviousSheetResult,
   AI_chat,
+  uploadExcell
 };

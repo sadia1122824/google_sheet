@@ -8,11 +8,16 @@ const previousCredentialsSchema = new mongoose.Schema(
     newSpreadsheetUrl: { type: String },
     newSpreadsheetName: { type: String },
     webAppUrl: { type: String },
+    clientId: String, // ✅ ADD
+    clientName: String,
     createdAt: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // ✅ Model export hona chahiye — NOT instance
-const Previous_ClientCredentials = mongoose.model("Previous_ClientCredentials", previousCredentialsSchema);
+const Previous_ClientCredentials = mongoose.model(
+  "Previous_ClientCredentials",
+  previousCredentialsSchema,
+);
 module.exports = Previous_ClientCredentials;
