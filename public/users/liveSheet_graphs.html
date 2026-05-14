@@ -12,7 +12,7 @@
   <!-- Your existing styles.css — handles sidebar, topbar, theme, etc. -->
   <link rel="stylesheet" href="/users/styles.css">
 
- 
+
 </head>
 
 <body>
@@ -32,10 +32,12 @@
           <i class="bi bi-list"></i>
         </button>
         <a href="/webLogin">
-          <img src="/users/icons/image1.png" alt="logo" class="theme-logo top-bar-logo" onerror="this.style.display='none'">
+          <img src="/users/icons/image1.png" alt="logo" class="theme-logo top-bar-logo"
+            onerror="this.style.display='none'">
         </a>
         <span class="top-bar-title"></span>
-        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
+        <!-- onclick hata do, sirf id add karo -->
+        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle theme">
           <span class="icon-dark">🌙</span>
           <span class="icon-light">☀️</span>
         </button>
@@ -47,23 +49,25 @@
 
       <!-- Filter bar + period toggle (replaces table page's filter-open button row) -->
       <div class="dash-filter-bar">
-        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;">Period</span>
+        <span
+          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;">Period</span>
         <div class="period-tabs">
           <button class="period-tab active" onclick="setPeriod('monthly',this)">Monthly</button>
           <button class="period-tab" onclick="setPeriod('yearly',this)">Yearly</button>
         </div>
 
-        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-left:4px;">Code</span>
+        <span
+          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-left:4px;">Code</span>
         <select class="dash-select" id="selDashCode" onchange="buildDashboard()">
           <option value="all">All Codes</option>
         </select>
 
         <div style="margin-left:auto;display:flex;gap:6px;">
           <button class="chart-dl-btn" onclick="refreshData()" title="Refresh">
-            <i class="bi bi-arrow-clockwise"></i> 
+            <i class="bi bi-arrow-clockwise"></i>
           </button>
           <button class="chart-dl-btn" onclick="exportCSV()" title="Export CSV">
-            <i class="bi bi-download"></i> 
+            <i class="bi bi-download"></i>
           </button>
         </div>
       </div>
@@ -119,7 +123,8 @@
                     <button class="chart-type-btn active" onclick="toggleIEType('bar',this)">Bar</button>
                     <button class="chart-type-btn" onclick="toggleIEType('line',this)">Line</button>
                   </div>
-                  <button class="chart-dl-btn" onclick="dlChart('chartIE','income-vs-expense')"><i class="bi bi-download"></i></button>
+                  <button class="chart-dl-btn" onclick="dlChart('chartIE','income-vs-expense')"><i
+                      class="bi bi-download"></i></button>
                 </div>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartIE" height="240"></canvas></div>
@@ -137,7 +142,8 @@
                   </div>
                   <div class="chart-card-desc">Positive = profit · Negative = loss</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartPL','profit-loss')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartPL','profit-loss')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartPL" height="240"></canvas></div>
               <div class="legend-row">
@@ -157,7 +163,8 @@
                   </div>
                   <div class="chart-card-desc">Running income over time</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartTrend','revenue-trend')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartTrend','revenue-trend')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartTrend" height="220"></canvas></div>
             </div>
@@ -170,7 +177,8 @@
                   </div>
                   <div class="chart-card-desc">Pure expense codes 4–13 by period</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartDonut','expense-breakdown')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartDonut','expense-breakdown')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap" style="max-height:240px;">
                 <canvas id="chartDonut" height="240"></canvas>
@@ -188,7 +196,8 @@
                   </div>
                   <div class="chart-card-desc">Net profit ÷ income per period</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartMargin','profit-margin')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartMargin','profit-margin')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartMargin" height="220"></canvas></div>
             </div>
@@ -201,7 +210,8 @@
                   </div>
                   <div class="chart-card-desc">Running total profit / loss</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartCumul','cumulative-pl')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartCumul','cumulative-pl')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartCumul" height="220"></canvas></div>
             </div>
@@ -217,7 +227,8 @@
                   </div>
                   <div class="chart-card-desc">Annual comparison</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartYearIE','yearly-ie')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartYearIE','yearly-ie')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartYearIE" height="240"></canvas></div>
               <div class="legend-row">
@@ -233,7 +244,8 @@
                   </div>
                   <div class="chart-card-desc">Annual profit or loss</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartYearPL','yearly-pl')"><i class="bi bi-download"></i></button>
+                <button class="chart-dl-btn" onclick="dlChart('chartYearPL','yearly-pl')"><i
+                    class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartYearPL" height="240"></canvas></div>
             </div>
@@ -252,7 +264,9 @@
         <div id="fsHeaderTitle">
           <i class="bi bi-fullscreen" style="font-size:16px;"></i>
           All Columns View
-          <span style="background:rgba(255,255,255,0.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-left:4px;" id="fsColCount"></span>
+          <span
+            style="background:rgba(255,255,255,0.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-left:4px;"
+            id="fsColCount"></span>
         </div>
         <button id="fsCloseBtn" onclick="closeFullscreenTable()" title="Close (Esc)">&#x2715;</button>
       </div>
@@ -285,4 +299,5 @@
 
 
 </body>
+
 </html>
