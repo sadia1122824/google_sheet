@@ -950,7 +950,7 @@ async function loadSheetData() {
   try {
     const clientId = localStorage.getItem("clientId");
 
-    const res = await fetch("/getLatestSheetResult", {
+    const res = await fetch("/getPreviousSheetResult", {
       method: "GET",
       credentials: "include",
       headers: {

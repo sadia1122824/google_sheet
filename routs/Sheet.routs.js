@@ -8,6 +8,8 @@
     getPreviousSheetResult,
     AI_chat,
     uploadExcell,
+    liveSheetGraphs,
+    previousSheetGraphs
     
     
     
@@ -40,7 +42,8 @@ AssignedClients
   app.get('/uploadExcell',{ preHandler: [app.staffauthenticate] }, uploadExcell);
    app.get('/AssignedClients/:staffId',{ preHandler: [app.staffauthenticate] }, AssignedClients);
 
-
+  app.get('/liveSheetGraphs',{ preHandler: [app.webauthenticate] }, liveSheetGraphs);
+  app.get('/previousSheetGraphs',{ preHandler: [app.webauthenticate] }, previousSheetGraphs);
 }
 
 module.exports = googleSheet

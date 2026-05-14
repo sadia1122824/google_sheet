@@ -296,27 +296,6 @@ const LiveSheetData = async (req, reply) => {
 };
 
 
-// const getLatestSheetResult = async (req, reply) => {
-//   try {
-//     console.log("📊 Fetching latest sheet data...");
-//     const result = await sheetService.fetchLatestSheetData();
-
-//     if (!result.success) {
-//       return reply.send({ success: false, error: result.error });
-//     }
-
-//     return reply.send({
-//       success: true,
-//       source: "latest_sheet",
-//       collection: result.collection,
-//       totalRows: result.data.length,
-//       data: result.data,
-//     });
-//   } catch (err) {
-//     console.error("❌ ERROR (latest):", err.message);
-//     return reply.status(500).send({ success: false, error: err.message });
-//   }
-// };
 
 const getLatestSheetResult = async (req, reply) => {
   try {
@@ -350,35 +329,6 @@ const getLatestSheetResult = async (req, reply) => {
 const previousSheetData = async (req, reply) => {
   return reply.sendFile("users/previous_Sheet.html");
 }
-
-// const getPreviousSheetResult = async (req, reply) => {
-//   try {
-//     console.log("📊 Fetching previous sheet data...");
-//     const result = await sheetService.fetchPreviousSheetData();
-
-//     if (!result.success) {
-//       return reply.send({ success: false, error: result.error });
-//     }
-
-//     return reply.send({
-//       success: true,
-//       source: "previous_sheet",
-//       collection: result.collection,
-//       totalRows: result.data.length,
-//       data: result.data,
-//     });
-//   } catch (err) {
-//     console.error("❌ ERROR (previous):", err.message);
-//     return reply.status(500).send({ success: false, error: err.message });
-//   }
-// };
-
-
-
-
-
-
-
 
 
 // **************************** AI Controller Logic ****************************
@@ -741,6 +691,15 @@ function buildAnswerFromJs(jsResult, question, metric = null) {
   return "Please ask about a specific period or metric.";
 }
 
+
+const liveSheetGraphs = async (req, reply) => {
+  return reply.sendFile("users/liveSheet_graphs.html");
+}
+
+const previousSheetGraphs = async (req, reply) => {
+  return reply.sendFile("users/previousSheet_graphs.html");
+};
+
 module.exports = {
   dataUpload,
   importExcelFile,
@@ -749,5 +708,7 @@ module.exports = {
   previousSheetData,
   getPreviousSheetResult,
   AI_chat,
-  uploadExcell
+  uploadExcell,
+  liveSheetGraphs,
+  previousSheetGraphs
 };

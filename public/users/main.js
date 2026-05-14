@@ -85,7 +85,7 @@ window.addEventListener("DOMContentLoaded", () => {
           timer: 2000,
           timerProgressBar: true,
         }).then(() => {
-          window.location.href = "/LiveSheetData";
+          window.location.href = "/liveSheetGraphs";
         });
       } else {
         Swal.fire({

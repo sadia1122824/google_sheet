@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Your existing styles.css — handles sidebar, topbar, theme, etc. -->
+  <link rel="stylesheet" href="/users/styles.css">
+
+ 
+</head>
+
+<body>
+  <div class="app-shell">
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Dynamic sidebar — same as your table page -->
+    <div id="app"></div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+
+      <!-- Top Bar — identical to your table page -->
+      <div class="top-bar">
+        <button class="hamburger-btn" onclick="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+        <a href="/webLogin">
+          <img src="/users/icons/image1.png" alt="logo" class="theme-logo top-bar-logo" onerror="this.style.display='none'">
+        </a>
+        <span class="top-bar-title"></span>
+        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
+          <span class="icon-dark">🌙</span>
+          <span class="icon-light">☀️</span>
+        </button>
+        <span class="badge-status">
+          <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
+          <span class="live-text"> Live Data</span>
+        </span>
+      </div>
+
+      <!-- Filter bar + period toggle (replaces table page's filter-open button row) -->
+      <div class="dash-filter-bar">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;">Period</span>
+        <div class="period-tabs">
+          <button class="period-tab active" onclick="setPeriod('monthly',this)">Monthly</button>
+          <button class="period-tab" onclick="setPeriod('yearly',this)">Yearly</button>
+        </div>
+
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-left:4px;">Code</span>
+        <select class="dash-select" id="selDashCode" onchange="buildDashboard()">
+          <option value="all">All Codes</option>
+        </select>
+
+        <div style="margin-left:auto;display:flex;gap:6px;">
+          <button class="chart-dl-btn" onclick="refreshData()" title="Refresh">
+            <i class="bi bi-arrow-clockwise"></i> 
+          </button>
+          <button class="chart-dl-btn" onclick="exportCSV()" title="Export CSV">
+            <i class="bi bi-download"></i> 
+          </button>
+        </div>
+      </div>
+
+      <!-- card-box — same wrapper class as your table page -->
+      <div class="card-box">
+
+        <!-- Loader (same skeleton style as table page) -->
+        <div id="dashLoader" class="dash-loader">
+          <div class="spin"></div>
+          <span>Loading financial data…</span>
+        </div>
+
+        <!-- Dashboard content (hidden until data ready) -->
+        <div id="dashContent" style="display:none;">
+
+          <!-- KPI Strip -->
+          <div class="kpi-strip">
+            <div class="kpi-card" style="--kpi-accent:#00c97a">
+              <div class="kpi-label">Total Income</div>
+              <div class="kpi-value" id="kpiIncome">—</div>
+              <div class="kpi-trend" id="kpiIncomeTrend"></div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#ff4d6d">
+              <div class="kpi-label">Total Expense</div>
+              <div class="kpi-value" id="kpiExpense">—</div>
+              <div class="kpi-trend" id="kpiExpenseTrend"></div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#5b9cf6">
+              <div class="kpi-label">Net Profit / Loss</div>
+              <div class="kpi-value" id="kpiProfit">—</div>
+              <div class="kpi-trend" id="kpiProfitTrend"></div>
+            </div>
+            <div class="kpi-card" style="--kpi-accent:#ffc75f">
+              <div class="kpi-label">Profit Margin</div>
+              <div class="kpi-value" id="kpiMargin">—</div>
+              <div class="kpi-trend" id="kpiMarginSub" style="font-size:10px;"></div>
+            </div>
+          </div>
+
+          <!-- Row 1: Income vs Expense  +  Net P&L -->
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#00c97a">
+                    <div class="stripe"></div> Income vs Expense
+                  </div>
+                  <div class="chart-card-desc">Side-by-side per period</div>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <div class="chart-type-btns">
+                    <button class="chart-type-btn active" onclick="toggleIEType('bar',this)">Bar</button>
+                    <button class="chart-type-btn" onclick="toggleIEType('line',this)">Line</button>
+                  </div>
+                  <button class="chart-dl-btn" onclick="dlChart('chartIE','income-vs-expense')"><i class="bi bi-download"></i></button>
+                </div>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartIE" height="240"></canvas></div>
+              <div class="legend-row">
+                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span>Income</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Expense</span>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
+                    <div class="stripe"></div> Net Profit / Loss
+                  </div>
+                  <div class="chart-card-desc">Positive = profit · Negative = loss</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartPL','profit-loss')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartPL" height="240"></canvas></div>
+              <div class="legend-row">
+                <span class="legend-item"><span class="legend-dot" style="background:#5b9cf6"></span>Profit</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Loss</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Revenue Trend  +  Expense Breakdown -->
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#00c97a">
+                    <div class="stripe"></div> Revenue Trend
+                  </div>
+                  <div class="chart-card-desc">Running income over time</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartTrend','revenue-trend')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartTrend" height="220"></canvas></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#ff4d6d">
+                    <div class="stripe"></div> Expense Breakdown
+                  </div>
+                  <div class="chart-card-desc">Pure expense codes 4–13 by period</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartDonut','expense-breakdown')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap" style="max-height:240px;">
+                <canvas id="chartDonut" height="240"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Profit Margin %  +  Cumulative P&L -->
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#ffc75f">
+                    <div class="stripe"></div> Profit Margin %
+                  </div>
+                  <div class="chart-card-desc">Net profit ÷ income per period</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartMargin','profit-margin')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartMargin" height="220"></canvas></div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
+                    <div class="stripe"></div> Cumulative P&amp;L
+                  </div>
+                  <div class="chart-card-desc">Running total profit / loss</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartCumul','cumulative-pl')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartCumul" height="220"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Yearly row — auto shows when yearCols exist -->
+          <div class="chart-grid-2" id="yearlyRow" style="display:none;">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#00c97a">
+                    <div class="stripe"></div> Yearly Income vs Expense
+                  </div>
+                  <div class="chart-card-desc">Annual comparison</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartYearIE','yearly-ie')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartYearIE" height="240"></canvas></div>
+              <div class="legend-row">
+                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span>Income</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Expense</span>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
+                    <div class="stripe"></div> Yearly Net Profit / Loss
+                  </div>
+                  <div class="chart-card-desc">Annual profit or loss</div>
+                </div>
+                <button class="chart-dl-btn" onclick="dlChart('chartYearPL','yearly-pl')"><i class="bi bi-download"></i></button>
+              </div>
+              <div class="chart-canvas-wrap"><canvas id="chartYearPL" height="240"></canvas></div>
+            </div>
+          </div>
+
+        </div><!-- end #dashContent -->
+      </div><!-- end .card-box -->
+
+    </div><!-- end .main-content -->
+  </div><!-- end .app-shell -->
+
+  <!-- Fullscreen overlay — kept identical to table page -->
+  <div id="fullscreenOverlay">
+    <div id="fsContainer">
+      <div id="fsHeader">
+        <div id="fsHeaderTitle">
+          <i class="bi bi-fullscreen" style="font-size:16px;"></i>
+          All Columns View
+          <span style="background:rgba(255,255,255,0.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-left:4px;" id="fsColCount"></span>
+        </div>
+        <button id="fsCloseBtn" onclick="closeFullscreenTable()" title="Close (Esc)">&#x2715;</button>
+      </div>
+      <div id="fsTableWrapper">
+        <table id="fullscreenTable">
+          <thead id="fsTableHead"></thead>
+          <tbody id="fsTableBody"></tbody>
+        </table>
+      </div>
+      <div id="fsFooter">
+        <span id="fsRowCount"></span>&nbsp;|&nbsp;Press <strong>Esc</strong> to close
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toastWrap"></div>
+
+  <!-- ════════════════════════════════════════════
+       CLIENT DETAILS + SIDEBAR (same as table page)
+  ════════════════════════════════════════════ -->
+  <script src="/users/Livegraphs.js"></script>
+  <script src="/users/sidebar.js"></script>
+
+  <!-- ════════════════════════════════════════════
+       DASHBOARD JS
+       Uses same calcSummary() / column logic
+       as your existing main.js
+  ════════════════════════════════════════════ -->
+
+
+</body>
+</html>
