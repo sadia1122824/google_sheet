@@ -796,7 +796,76 @@
     <!-- end page-wrapper -->
 
 
+    <!-- update model -->
+    <!-- Update Staff Modal -->
+    <div id="updateModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+        <div class="modal-dialog" style="margin: 8% auto; max-width: 500px;">
+            <div class="modal-content"
+                style="border-radius: 8px; border: none; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.2);">
 
+                <div class="modal-header"
+                    style="background:#f8f9fa; border-bottom:1px solid #dee2e6; padding:1rem 1.5rem; border-radius:8px 8px 0 0;">
+                    <h5 style="margin:0; font-weight:600;">Update Staff Member</h5>
+                    <button onclick="closeUpdateModal()"
+                        style="background:none; border:none; font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
+                </div>
+
+                <div class="modal-body" style="padding:1.5rem;">
+                    <input type="hidden" id="updateStaffId" />
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="updateFullName" class="form-control" placeholder="Full Name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="updateEmail" class="form-control" placeholder="Email" />
+                    </div>
+                    <div class="form-group">
+                        <label>New Password <small class="text-muted">(leave empty to keep current)</small></label>
+                        <div style="position:relative;">
+                            <input type="password" id="updatePassword" class="form-control"
+                                placeholder="Enter new password (optional)" />
+                            <span onclick="togglePasswordVisibility()"
+                                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#6c757d;">
+                                <i id="passwordEyeIcon" class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="updatePhone" class="form-control" placeholder="Phone" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Staff ID</label>
+                        <input type="text" id="updateStaffIdField" class="form-control" placeholder="Staff ID" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="updateRole" class="form-control">
+                            <option value="manager">Manager</option>
+                            <option value="staff_member">Staff Member</option>
+                            <option value="staff">Staff</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer"
+                    style="padding:1rem 1.5rem; border-top:1px solid #dee2e6; display:flex; justify-content:flex-end; gap:10px;">
+                    <button onclick="closeUpdateModal()" class="btn btn-secondary">Cancel</button>
+                    <button onclick="submitUpdate()" class="btn btn-primary" id="updateBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <!-- jQuery  -->
     <script src="../admin/side_navbar.js"></script>
@@ -815,25 +884,25 @@
     <!-- <script src="side_navbar.js"></script> -->
 
 
-   <script>
+    <script>
 
-    // Load Staff Records
-    async function loadStaff() {
+        // Load Staff Records
+        async function loadStaff() {
 
-        try {
+            try {
 
-            const response = await fetch("/getStaff");
+                const response = await fetch("/getStaff");
 
-            const result = await response.json();
+                const result = await response.json();
 
-            const tableBody = document.getElementById("staffTableBody");
+                const tableBody = document.getElementById("staffTableBody");
 
-            tableBody.innerHTML = "";
+                tableBody.innerHTML = "";
 
-            // No Data
-            if (!result.data || result.data.length === 0) {
+                // No Data
+                if (!result.data || result.data.length === 0) {
 
-                tableBody.innerHTML = `
+                    tableBody.innerHTML = `
                     <tr>
                         <td colspan="8" class="text-center text-danger">
                             No Staff Found
@@ -841,13 +910,13 @@
                     </tr>
                 `;
 
-                return;
-            }
+                    return;
+                }
 
-            // Loop Data
-            result.data.forEach((staff, index) => {
+                // Loop Data
+                result.data.forEach((staff, index) => {
 
-                tableBody.innerHTML += `
+                    tableBody.innerHTML += `
 
                     <tr>
 
@@ -876,56 +945,144 @@
                         </td>
 
                         <td>
+                              <button 
+        class="btn btn-warning btn-sm mr-1"
+        onclick="openUpdateModal('${staff._id}', '${staff.fullName}', '${staff.email}', '${staff.phone}', '${staff.staffId}', '${staff.role}')"
+    >
+        <i class="fas fa-edit"></i> 
+    </button>
                             <button 
                                 class="btn btn-danger btn-sm"
                                 onclick="deleteStaff('${staff._id}')"
                             >
                                 <i class="fas fa-trash"></i>
-                                Delete
+                                
                             </button>
                         </td>
 
                     </tr>
                 `;
-            });
+                });
 
-        } catch (error) {
+            } catch (error) {
 
-            console.log(error);
+                console.log(error);
+            }
         }
+
+        // Delete Staff
+        async function deleteStaff(id) {
+
+            const confirmDelete = confirm("Are you sure you want to delete this staff member?");
+
+            if (!confirmDelete) return;
+
+            try {
+
+                const response = await fetch(`/deleteStaff/${id}`, {
+                    method: "DELETE"
+                });
+
+                const result = await response.json();
+
+                alert(result.message);
+
+                loadStaff();
+
+            } catch (error) {
+
+                console.log(error);
+
+                alert("Delete failed");
+            }
+        }
+
+        // Modal Open — fields fill karo
+        function openUpdateModal(id, fullName, email, phone, staffId, role) {
+            document.getElementById('updateStaffId').value = id;
+            document.getElementById('updateFullName').value = fullName;
+            document.getElementById('updateEmail').value = email;
+            document.getElementById('updatePhone').value = phone;
+            document.getElementById('updateStaffIdField').value = staffId;
+            document.getElementById('updateRole').value = role;
+            document.getElementById('updateModal').style.display = 'block';
+        }
+
+        // Modal Close
+        function closeUpdateModal() {
+    document.getElementById('updateModal').style.display = 'none';
+    document.getElementById('updatePassword').value = ''; // clear karo
+    document.getElementById('updatePassword').type  = 'password'; // reset type
+    document.getElementById('passwordEyeIcon').classList.replace('fa-eye-slash', 'fa-eye');
+}
+
+        // Modal background click se close
+        document.getElementById('updateModal').addEventListener('click', function (e) {
+            if (e.target === this) closeUpdateModal();
+        });
+
+        // Update API Call
+       async function submitUpdate() {
+    const id       = document.getElementById('updateStaffId').value;
+    const fullName = document.getElementById('updateFullName').value.trim();
+    const email    = document.getElementById('updateEmail').value.trim();
+    const phone    = document.getElementById('updatePhone').value.trim();
+    const staffId  = document.getElementById('updateStaffIdField').value.trim();
+    const role     = document.getElementById('updateRole').value;
+    const password = document.getElementById('updatePassword').value.trim();
+
+    if (!fullName || !email || !phone || !staffId) {
+        alert("Please fill all required fields");
+        return;
     }
 
-    // Delete Staff
-    async function deleteStaff(id) {
+    const btn = document.getElementById('updateBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading"></span> Saving...';
 
-        const confirmDelete = confirm("Are you sure you want to delete this staff member?");
-
-        if (!confirmDelete) return;
-
-        try {
-
-            const response = await fetch(`/deleteStaff/${id}`, {
-                method: "DELETE"
-            });
-
-            const result = await response.json();
-
-            alert(result.message);
-
-            loadStaff();
-
-        } catch (error) {
-
-            console.log(error);
-
-            alert("Delete failed");
-        }
+    // Password sirf tab bhejo jab user ne fill kiya ho
+    const payload = { fullName, email, phone, staffId, role };
+    if (password !== "") {
+        payload.password = password;
     }
 
-    // Auto Load
-    loadStaff();
+    try {
+        const response = await fetch(`/updateStaff/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
 
-</script>
+        const result = await response.json();
+        alert(result.message || "Updated successfully");
+        closeUpdateModal();
+        loadStaff();
+
+    } catch (error) {
+        console.log(error);
+        alert("Update failed");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+    }
+}
+
+function togglePasswordVisibility() {
+    const input = document.getElementById('updatePassword');
+    const icon  = document.getElementById('passwordEyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+
+        // Auto Load
+        loadStaff();
+
+    </script>
 
 
 

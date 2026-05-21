@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Google Sheet Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+    <link href="../plugins/dropify/css/dropify.min.css" rel="stylesheet">
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
+    <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+    <style>
+        @media (max-width: 767px) {
+            .left-sidenav {
+                position: fixed !important; z-index: 1051 !important;
+                transform: translateX(-100%) !important; transition: transform 0.3s ease !important;
+                top: 0 !important; left: 0 !important; height: 100vh !important; width: 260px !important;
+            }
+            body.mobile-menu-open .left-sidenav { transform: translateX(0) !important; }
+            .page-content  { padding: 12px !important; }
+            .card          { margin-bottom: 15px; }
+            .card-header   { padding: 12px; }
+            .card-body     { padding: 12px !important; }
+            .card-title    { font-size: 1rem; }
+            .nav-user span { display: none !important; }
+        }
+
+        .card-body { padding: 1.5rem !important; }
+
+        .alert { border-radius: 0.25rem; padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .alert-danger  { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+        .alert-warning { color: #856404; background-color: #fff3cd; border-color: #ffc107; }
+        .alert-info    { color: #0c5460; background-color: #d1ecf1; border-color: #bee5eb; }
+
+        #sheetTableSection { padding: 1rem 1rem 1.25rem; }
+        #sheetTableSection .sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+        #sheetTableSection .sheet-header-left { display: flex; align-items: center; gap: 10px; }
+        #sheetTableSection .sheet-title { font-weight: 600; font-size: 15px; }
+        #sheetTableSection .sheet-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        #sheetScrollOuter { display: block; width: 100%; box-sizing: border-box; }
+
+        #sheetDataTable, #fullscreenTable {
+            border-collapse: collapse; font-size: 13px;
+            width: max-content;
+            min-width: 100%;
+            white-space: nowrap;
+            table-layout: auto;
+        }
+        #sheetDataTable thead, #fullscreenTable thead { position: sticky; top: 0; z-index: 10; }
+
+        #sheetDataTable thead tr th, #fullscreenTable thead tr th {
+            padding: 10px 18px; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            color: #fff; background: #2563eb;
+            border-right: 1px solid #3b82f6; border-bottom: 2px solid #1d4ed8;
+            white-space: nowrap; min-width: 130px;
+        }
+        #sheetDataTable thead tr th:last-child, #fullscreenTable thead tr th:last-child { border-right: none; }
+
+        #sheetDataTable tbody tr.info-row td, #fullscreenTable tbody tr.info-row td {
+            background: #fffbeb; color: #92400e; font-size: 12px; font-weight: 500;
+            padding: 5px 18px; border-bottom: 1px solid #fde68a; white-space: nowrap;
+        }
+        #sheetDataTable tbody tr td, #fullscreenTable tbody tr td {
+            padding: 7px 18px; font-size: 13px; color: #2d3748;
+            border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;
+            white-space: nowrap; min-width: 130px;
+        }
+        #sheetDataTable tbody tr td:last-child, #fullscreenTable tbody tr td:last-child { border-right: none; }
+        #sheetDataTable tbody tr:last-child td, #fullscreenTable tbody tr:last-child td { border-bottom: none; }
+        #sheetDataTable tbody tr:nth-child(even) td, #fullscreenTable tbody tr:nth-child(even) td { background: #f7fafc; }
+        #sheetDataTable tbody tr:hover td, #fullscreenTable tbody tr:hover td { background: #ebf8ff; }
+        #sheetDataTable tbody tr.info-row:hover td, #fullscreenTable tbody tr.info-row:hover td { background: #fef3c7; }
+
+        #sheetTableWrap::-webkit-scrollbar { height: 12px; width: 12px; }
+        #sheetTableWrap::-webkit-scrollbar-track { background: #dbeafe; }
+        #sheetTableWrap::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; border: 3px solid #dbeafe; }
+        #sheetTableWrap::-webkit-scrollbar-thumb:hover { background: #1d4ed8; }
+        #sheetTableWrap::-webkit-scrollbar-corner { background: #dbeafe; }
+
+        /* Fullscreen overlay */
+        #fullscreenOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 99999; align-items: center; justify-content: center; }
+        #fullscreenOverlay.open { display: flex; }
+        #fsContainer { background: #fff; border-radius: 10px; width: 96vw; height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        #fsHeader { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background: linear-gradient(135deg, #1a3c5e, #2563eb); color: #fff; flex-shrink: 0; }
+        #fsHeaderTitle { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+        #fsColCount { background: rgba(255,255,255,0.2); font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 20px; margin-left: 4px; }
+        #fsCloseBtn { background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 18px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        #fsCloseBtn:hover { background: rgba(255,255,255,0.3); }
+        #fsTableWrapper { flex: 1; overflow-x: scroll !important; overflow-y: scroll !important; -webkit-overflow-scrolling: touch; scrollbar-width: auto; scrollbar-color: #3b82f6 #dbeafe; overscroll-behavior: contain; }
+        #fsTableWrapper::-webkit-scrollbar { height: 14px; width: 14px; }
+        #fsTableWrapper::-webkit-scrollbar-track { background: #dbeafe; }
+        #fsTableWrapper::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 6px; border: 3px solid #dbeafe; }
+        #fsTableWrapper::-webkit-scrollbar-thumb:hover { background: #1d4ed8; }
+        #fsTableWrapper::-webkit-scrollbar-corner { background: #dbeafe; }
+        #fsFooter { padding: 8px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; flex-shrink: 0; text-align: center; }
+
+        /* ── Delete Confirmation Modal ── */
+        #deleteModalOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 999999;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInBg 0.2s ease;
+        }
+        #deleteModalOverlay.open { display: flex; }
+
+        @keyframes fadeInBg {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes slideInModal {
+            from { transform: translateY(-24px) scale(0.97); opacity: 0; }
+            to   { transform: translateY(0) scale(1);        opacity: 1; }
+        }
+
+        #deleteModalBox {
+            background: #fff;
+            border-radius: 12px;
+            width: 420px;
+            max-width: 92vw;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: slideInModal 0.22s ease;
+        }
+        #deleteModalHeader {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            padding: 18px 22px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+        }
+        #deleteModalHeader .dm-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+        #deleteModalHeader .dm-title {
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        #deleteModalHeader .dm-subtitle {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        #deleteModalBody {
+            padding: 22px 22px 10px;
+        }
+        #deleteModalBody .dm-warning-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        #deleteModalBody .dm-warning-box i {
+            color: #dc2626;
+            font-size: 15px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        #deleteModalBody .dm-warning-text {
+            font-size: 13px;
+            color: #7f1d1d;
+            line-height: 1.5;
+        }
+        #deleteModalBody .dm-warning-text strong {
+            color: #dc2626;
+        }
+        #deleteModalBody .dm-meta {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+        }
+        #deleteModalBody .dm-meta span {
+            font-weight: 600;
+            color: #374151;
+        }
+        #deleteModalFooter {
+            padding: 14px 22px 18px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        #btnCancelDelete {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            padding: 8px 20px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        #btnCancelDelete:hover { background: #e5e7eb; }
+        #btnConfirmDelete {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border: none;
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.15s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(220,38,38,0.35);
+        }
+        #btnConfirmDelete:hover  { opacity: 0.9; }
+        #btnConfirmDelete:active { transform: scale(0.97); }
+        #btnConfirmDelete:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Delete button in header */
+        #btnDeleteSheet {
+            display: none;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="side-navbar"></div>
+
+    <div class="page-wrapper">
+        <div class="topbar">
+            <nav class="navbar-custom">
+                <ul class="list-unstyled topbar-nav float-right mb-0">
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center"
+                            data-toggle="dropdown" href="#" role="button">
+                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">Nick</span>
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
+                                class="rounded-circle thumb-sm border" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
+                                <i data-feather="power" class="icon-xs mr-2"></i><span>Logout</span>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
+                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Settings</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-unstyled topbar-nav mb-0">
+                    <li>
+                        <button class="nav-link button-menu-mobile">
+                            <i data-feather="menu" class="align-self-center topbar-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="page-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Import Data to Google Sheets</h4>
+                                <p class="text-muted mb-0">Upload Excel file to import data directly</p>
+                            </div>
+                            <div class="card">
+                                <div id="sheetTableSection">
+
+                                    <div class="sheet-header">
+                                        <div class="sheet-header-left">
+                                            <i class="fas fa-table text-success"></i>
+                                            <span class="sheet-title">Sheet Data</span>
+                                            <span id="sourceBadge" class="badge badge-info" style="display:none;">—</span>
+                                        </div>
+                                        <div class="sheet-header-right">
+                                            <small id="rowCount" class="text-muted"></small>
+                                            <button id="btnFullscreen" class="btn btn-sm btn-primary"
+                                                onclick="openFullscreenTable()" title="View in fullscreen"
+                                                style="display:none; align-items:center; gap:4px;">
+                                                <i class="fas fa-expand mr-1"></i> Full View
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success" onclick="loadSheetData()">
+                                                <i class="fas fa-sync-alt mr-1"></i> Refresh
+                                            </button>
+                                            <!-- DELETE BUTTON -->
+                                            <button id="btnDeleteSheet" class="btn btn-sm btn-danger"
+                                                onclick="openDeleteModal()" title="Delete all sheet data for this client">
+                                                <i class="fas fa-trash-alt mr-1"></i> Delete Data
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="sheetStateBox" class="text-center text-muted py-5">
+                                        <i class="fas fa-spinner fa-spin fa-2x mb-2 d-block"></i>
+                                        Loading sheet data...
+                                    </div>
+
+                                    <div id="sheetScrollOuter">
+                                        <div id="sheetTableWrap" style="display:none;">
+                                            <table id="sheetDataTable">
+                                                <thead id="sheetTableHead"></thead>
+                                                <tbody id="sheetTableBody"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <small id="uploadedAt" class="text-muted d-block text-right mt-2"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen overlay -->
+    <div id="fullscreenOverlay">
+        <div id="fsContainer">
+            <div id="fsHeader">
+                <div id="fsHeaderTitle">
+                    <i class="fas fa-table" style="font-size:16px;"></i>
+                    All Columns View
+                    <span id="fsColCount"></span>
+                </div>
+                <button id="fsCloseBtn" onclick="closeFullscreenTable()" title="Close (Esc)">&#x2715;</button>
+            </div>
+            <div id="fsTableWrapper">
+                <table id="fullscreenTable">
+                    <thead id="fsTableHead"></thead>
+                    <tbody id="fsTableBody"></tbody>
+                </table>
+            </div>
+            <div id="fsFooter">
+                <span id="fsRowCount"></span>
+                &nbsp;|&nbsp; Scroll horizontally &amp; vertically &nbsp;|&nbsp;
+                Press <strong>Esc</strong> to close
+            </div>
+        </div>
+    </div>
+
+    <!-- ── DELETE CONFIRMATION MODAL ── -->
+    <div id="deleteModalOverlay">
+        <div id="deleteModalBox">
+            <div id="deleteModalHeader">
+                <div class="dm-icon">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <div>
+                    <div class="dm-title">Delete Sheet Data</div>
+                    <div class="dm-subtitle">This action cannot be undone</div>
+                </div>
+            </div>
+            <div id="deleteModalBody">
+                <div class="dm-warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="dm-warning-text">
+                        Are you sure you want to <strong>permanently delete</strong> all sheet data for this client?
+                        The entire collection will be removed from the database and the table will be cleared.
+                    </div>
+                </div>
+                <div class="dm-meta">
+                    Client ID: <span id="dmClientId">—</span>
+                </div>
+            </div>
+            <div id="deleteModalFooter">
+                <button id="btnCancelDelete" onclick="closeDeleteModal()">Cancel</button>
+                <button id="btnConfirmDelete" onclick="confirmDeleteSheetData()">
+                    <i class="fas fa-trash-alt"></i>
+                    <span id="btnConfirmDeleteText">Yes, Delete</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../staff/side_nav.js"></script>
+    <script src="../admin/assets/js/jquery.min.js"></script>
+    <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../admin/assets/js/metismenu.min.js"></script>
+    <script src="../admin/assets/js/waves.js"></script>
+    <script src="../admin/assets/js/feather.min.js"></script>
+    <script src="../admin/assets/js/simplebar.min.js"></script>
+    <script src="../admin/assets/js/moment.js"></script>
+    <script src="../plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="../plugins/dropify/js/dropify.min.js"></script>
+    <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
+
+    <script>
+        var sheetHeaders  = [];
+        var sheetInfoRows = [];
+        var sheetDataRows = [];
+        var colStart      = 0;
+
+        function applyWrapperStyles(visible) {
+            var wrap  = document.getElementById('sheetTableWrap');
+            var outer = document.getElementById('sheetScrollOuter');
+            if (!wrap) return;
+
+            function P(prop, val) {
+                wrap.style.setProperty(prop, val, 'important');
+            }
+
+            if (!visible) {
+                P('display', 'none');
+                return;
+            }
+
+            var el = wrap.parentElement;
+            while (el && el !== document.body) {
+                var cs = window.getComputedStyle(el);
+                ['overflow', 'overflow-x'].forEach(function(prop) {
+                    var v = cs.getPropertyValue(prop);
+                    if (v === 'hidden' || v === 'clip') {
+                        el.style.setProperty(prop, 'visible', 'important');
+                    }
+                });
+                el = el.parentElement;
+            }
+
+            var cardW = outer
+                ? Math.floor(outer.getBoundingClientRect().width)
+                : 800;
+            var availH = Math.max(320, window.innerHeight - 260);
+
+            P('display',                    'block');
+            P('overflow-x',                 'auto');
+            P('overflow-y',                 'auto');
+            P('width',                      cardW + 'px');
+            P('max-width',                  cardW + 'px');
+            P('height',                     availH + 'px');
+            P('max-height',                 availH + 'px');
+            P('box-sizing',                 'border-box');
+            P('border',                     '1px solid #dee2e6');
+            P('border-radius',              '6px');
+            P('-webkit-overflow-scrolling', 'touch');
+            P('scrollbar-width',            'auto');
+            P('scrollbar-color',            '#3b82f6 #dbeafe');
+            P('box-shadow',                 '0 2px 8px rgba(0,0,0,0.07)');
+            P('overscroll-behavior',        'contain');
+            P('position',                   'relative');
+        }
+
+        window.addEventListener('resize', function() {
+            var wrap = document.getElementById('sheetTableWrap');
+            if (wrap && wrap.style.display !== 'none') applyWrapperStyles(true);
+        });
+
+        async function loadSheetData() {
+            var clientId = localStorage.getItem('clientId');
+            var stateBox = document.getElementById('sheetStateBox');
+
+            if (!clientId) {
+                stateBox.style.display = 'block';
+                stateBox.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>No client selected.</div>';
+                applyWrapperStyles(false);
+                return;
+            }
+
+            stateBox.style.display = 'block';
+            stateBox.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x mb-2 d-block"></i><br>Loading sheet data...';
+            applyWrapperStyles(false);
+            document.getElementById('btnFullscreen').style.display = 'none';
+            document.getElementById('btnDeleteSheet').style.display = 'none';
+
+            try {
+                var res    = await fetch('/getMostRecentSheet/' + clientId, { credentials: 'include' });
+                var result = await res.json();
+
+                if (!result.success) {
+                    stateBox.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' + result.error + '</div>';
+                    return;
+                }
+
+                if (!result.data || result.data.length === 0) {
+                    stateBox.innerHTML = '<div class="alert alert-warning"><i class="fas fa-info-circle mr-2"></i>No data found.</div>';
+                    return;
+                }
+
+                var badge = document.getElementById('sourceBadge');
+                badge.textContent   = result.sourceType === 'latest' ? 'Latest' : 'Previous';
+                badge.style.display = 'inline-block';
+                document.getElementById('uploadedAt').textContent =
+                    'Last uploaded: ' + new Date(result.uploadedAt).toLocaleString();
+
+                var ignoredKeys = ['_id', '_clientId', '_yearsInSheet', '_syncedAt'];
+                var rawData = result.data.map(function(row) {
+                    if (Array.isArray(row)) return row;
+                    return Object.entries(row)
+                        .filter(function(e) { return !ignoredKeys.includes(e[0]); })
+                        .map(function(e) { return (e[1] === null || e[1] === undefined) ? '' : e[1]; });
+                });
+
+                sheetInfoRows = rawData.slice(0, 3);
+                sheetHeaders  = rawData[3] || [];
+                sheetDataRows = rawData.slice(4);
+                colStart = (sheetHeaders.length > 0 && sheetHeaders[0] === '') ? 1 : 0;
+
+                var visHeaders = sheetHeaders.slice(colStart);
+                document.getElementById('rowCount').textContent =
+                    sheetDataRows.length + ' rows · ' + visHeaders.length + ' columns';
+
+                renderTable();
+                stateBox.style.display = 'none';
+                applyWrapperStyles(true);
+
+                document.getElementById('btnFullscreen').style.display = 'inline-flex';
+                // Show delete button now that data is loaded
+                document.getElementById('btnDeleteSheet').style.display = 'inline-flex';
+
+            } catch (err) {
+                console.error('loadSheetData error:', err);
+                stateBox.style.display = 'block';
+                stateBox.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error: ' + err.message + '</div>';
+            }
+        }
+
+        function renderTable() {
+            var thead      = document.getElementById('sheetTableHead');
+            var tbody      = document.getElementById('sheetTableBody');
+            var visHeaders = sheetHeaders.slice(colStart);
+
+            thead.innerHTML = '<tr>' +
+                visHeaders.map(function(h) {
+                    return '<th title="' + h + '">' + (h !== '' ? h : '&nbsp;') + '</th>';
+                }).join('') + '</tr>';
+
+            var html = '';
+
+            sheetInfoRows.forEach(function(row) {
+                var text = row.filter(function(c) { return c !== '' && c != null; }).join('  ');
+                if (!text) return;
+                html += '<tr class="info-row"><td colspan="' + (visHeaders.length || 1) + '">' + text + '</td></tr>';
+            });
+
+            if (sheetDataRows.length === 0) {
+                html += '<tr><td colspan="' + (visHeaders.length || 1) + '" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>';
+            } else {
+                sheetDataRows.forEach(function(row) {
+                    if (!row) return;
+                    html += '<tr>' +
+                        visHeaders.map(function(_, i) {
+                            var val = row[colStart + i] != null ? row[colStart + i] : '';
+                            return '<td title="' + val + '">' + (val !== '' ? val : '&nbsp;') + '</td>';
+                        }).join('') + '</tr>';
+                });
+            }
+            tbody.innerHTML = html;
+        }
+
+        // ── DELETE MODAL ──────────────────────────────────────────────
+
+        function openDeleteModal() {
+            var clientId = localStorage.getItem('clientId');
+            if (!clientId) return;
+            document.getElementById('dmClientId').textContent = clientId;
+            document.getElementById('deleteModalOverlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModalOverlay').classList.remove('open');
+            document.body.style.overflow = '';
+            // Reset button state
+            var btn = document.getElementById('btnConfirmDelete');
+            btn.disabled = false;
+            document.getElementById('btnConfirmDeleteText').textContent = 'Yes, Delete';
+            btn.querySelector('i').className = 'fas fa-trash-alt';
+        }
+
+        async function confirmDeleteSheetData() {
+            var clientId = localStorage.getItem('clientId');
+            if (!clientId) return;
+
+            var btn     = document.getElementById('btnConfirmDelete');
+            var btnText = document.getElementById('btnConfirmDeleteText');
+            var btnIcon = btn.querySelector('i');
+
+            // Loading state
+            btn.disabled        = true;
+            btnText.textContent = 'Deleting...';
+            btnIcon.className   = 'fas fa-spinner fa-spin';
+
+            try {
+                var res    = await fetch('/deleteSheetData/' + clientId, {
+                    method: 'DELETE',
+                    credentials: 'include'
+                });
+                var result = await res.json();
+
+                if (!result.success) {
+                    // Error — close modal, show error in table area
+                    closeDeleteModal();
+                    var stateBox = document.getElementById('sheetStateBox');
+                    stateBox.style.display = 'block';
+                    stateBox.innerHTML =
+                        '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>' +
+                        (result.error || 'Failed to delete data.') + '</div>';
+                    return;
+                }
+
+                // Success — clear all state, close modal, show success message
+                sheetHeaders  = [];
+                sheetInfoRows = [];
+                sheetDataRows = [];
+                colStart      = 0;
+
+                closeDeleteModal();
+                applyWrapperStyles(false);
+
+                document.getElementById('btnFullscreen').style.display   = 'none';
+                document.getElementById('btnDeleteSheet').style.display  = 'none';
+                document.getElementById('sourceBadge').style.display     = 'none';
+                document.getElementById('rowCount').textContent          = '';
+                document.getElementById('uploadedAt').textContent        = '';
+
+                var stateBox = document.getElementById('sheetStateBox');
+                stateBox.style.display = 'block';
+                stateBox.innerHTML =
+                    '<div class="alert alert-success">' +
+                    '<i class="fas fa-check-circle mr-2"></i>' +
+                    'Sheet data deleted successfully. The collection has been removed from the database.' +
+                    '</div>';
+
+            } catch (err) {
+                console.error('deleteSheetData error:', err);
+                closeDeleteModal();
+                var stateBox = document.getElementById('sheetStateBox');
+                stateBox.style.display = 'block';
+                stateBox.innerHTML =
+                    '<div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>Error: ' +
+                    err.message + '</div>';
+            }
+        }
+
+        // Close delete modal on backdrop click
+        document.getElementById('deleteModalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+
+        // ── FULLSCREEN ────────────────────────────────────────────────
+
+        function openFullscreenTable() {
+            var overlay    = document.getElementById('fullscreenOverlay');
+            var fsHead     = document.getElementById('fsTableHead');
+            var fsBody     = document.getElementById('fsTableBody');
+            var visHeaders = sheetHeaders.slice(colStart);
+            if (!overlay || !fsHead || !fsBody) return;
+
+            fsHead.innerHTML = '<tr>' +
+                visHeaders.map(function(h) {
+                    return '<th title="' + h + '">' + (h !== '' ? h : '&nbsp;') + '</th>';
+                }).join('') + '</tr>';
+
+            var bodyHtml = '';
+            sheetInfoRows.forEach(function(row) {
+                var text = row.filter(function(c) { return c !== '' && c != null; }).join('  ');
+                if (!text) return;
+                bodyHtml += '<tr class="info-row"><td colspan="' + (visHeaders.length || 1) + '">' + text + '</td></tr>';
+            });
+
+            var dataRowCount = 0;
+            sheetDataRows.forEach(function(row) {
+                if (!row) return;
+                bodyHtml += '<tr>' +
+                    visHeaders.map(function(_, i) {
+                        var val = row[colStart + i] != null ? row[colStart + i] : '';
+                        return '<td title="' + val + '">' + (val !== '' ? val : '&nbsp;') + '</td>';
+                    }).join('') + '</tr>';
+                dataRowCount++;
+            });
+
+            fsBody.innerHTML = bodyHtml;
+            document.getElementById('fsColCount').textContent = visHeaders.length + ' columns';
+            document.getElementById('fsRowCount').textContent = dataRowCount + ' rows · ' + visHeaders.length + ' columns';
+
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            var wrapper = document.getElementById('fsTableWrapper');
+            if (wrapper) { wrapper.scrollTop = 0; wrapper.scrollLeft = 0; }
+        }
+
+        function closeFullscreenTable() {
+            var overlay = document.getElementById('fullscreenOverlay');
+            if (overlay) overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreenTable();
+                closeDeleteModal();
+            }
+        });
+        document.getElementById('fullscreenOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeFullscreenTable();
+        });
+
+        loadSheetData();
+    </script>
+</body>
+</html>

@@ -137,6 +137,47 @@ const deleteClient = async (request, reply) => {
 }
 
 
+
+const updateClient = async (request, reply) => {
+    try {
+        const { id } = request.params;
+        const { fullName, email, phone, clientId, assignStaff, password } = request.body;
+
+        const updateData = { fullName, email, phone, clientId, assignStaff };
+
+        if (password && password.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateData.password = hashedPassword;
+        }
+
+        const updated = await ClientRecord.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        if (!updated) {
+            return reply.status(404).send({ 
+                success: false, 
+                message: "Client not found" 
+            });
+        }
+
+        return reply.send({ 
+            success: true, 
+            message: "Client updated successfully", 
+            data: updated 
+        });
+
+    } catch (error) {
+        console.log(error);
+        return reply.status(500).send({ 
+            success: false, 
+            message: "Server Error" 
+        });
+    }
+};
+
 const webLogin = async(req,reply)=>{
   return reply.sendFile("users/index.html");
 }
@@ -240,15 +281,46 @@ const clientLogin = async (request, reply) => {
     }
 };
 
+// Get Dashboard Stats
+const getDashboardStats = async (request, reply) => {
+    try {
+        const totalStaff = await StaffRecord.countDocuments();
+        const totalClients = await ClientRecord.countDocuments();
 
+        const recentStaff = await StaffRecord.find()
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select('fullName email staffId role createdAt');
+
+        const recentClients = await ClientRecord.find()
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select('fullName email clientId assignStaff createdAt');
+
+        return reply.send({
+            success: true,
+            data: {
+                totalStaff,
+                totalClients,
+                recentStaff,
+                recentClients
+            }
+        });
+
+    } catch (error) {
+        return reply.status(500).send({ success: false, message: "Server Error" });
+    }
+};
 
 
 module.exports = {
     client,
     addClient,
+    getDashboardStats,
     getClients,
     showClients,
     deleteClient,
+    updateClient,
     webLogin,
     clientLogin
 }

@@ -224,6 +224,41 @@ const deleteStaff = async (request, reply) => {
     }
 }
 
+// update api
+
+
+
+const updateStaff = async (request, reply) => {
+    try {
+        const { id } = request.params;
+        const { fullName, email, phone, staffId, role, password } = request.body;
+
+        const updateData = { fullName, email, phone, staffId, role };
+
+        // Password sirf tab update karo jab bheja gaya ho
+        if (password && password.trim() !== "") {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            updateData.password = hashedPassword;
+        }
+
+        const updated = await StaffRecord.findByIdAndUpdate(
+            id,
+            updateData,
+            { new: true }
+        );
+
+        if (!updated) {
+            return reply.status(404).send({ success: false, message: "Staff not found" });
+        }
+
+        return reply.send({ success: true, message: "Staff updated successfully", data: updated });
+
+    } catch (error) {
+        console.log(error);
+        return reply.status(500).send({ success: false, message: "Server Error" });
+    }
+};
+
 
 
 // login for staff side 
@@ -368,6 +403,7 @@ module.exports = {
     getStaff,
     showStaff,
     deleteStaff,
+    updateStaff,
     loginStaff,
     loginCredentials,
     AssignedClients

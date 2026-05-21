@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
            <li>
 <a href="/">
   <i data-feather="file-plus" class="menu-icon"></i>
-  <span>Upload Excel Data</span>
+  <span>dashboard</span>
 </a>
 
 <a href="/staffRecord">

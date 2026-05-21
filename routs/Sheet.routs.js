@@ -1,11 +1,14 @@
  const { 
     
-    dataUpload, 
+    showDashboard, 
     importExcelFile,
     getLatestSheetResult,
     LiveSheetData,
     previousSheetData,
     getPreviousSheetResult,
+    getMostRecentSheet,
+    showTable,
+    deleteSheetData,
     AI_chat,
     uploadExcell,
     liveSheetGraphs,
@@ -27,7 +30,7 @@ AssignedClients
     // })
 
   // admin prehandler
-  app.get("/", { preHandler: [app.authenticate] }, dataUpload); 
+  app.get("/", { preHandler: [app.authenticate] }, showDashboard); 
   
   app.post("/importExcelFile", importExcelFile);
   app.post("/AI_chat", AI_chat);
@@ -41,6 +44,9 @@ AssignedClients
   // staff prehandler
   app.get('/uploadExcell',{ preHandler: [app.staffauthenticate] }, uploadExcell);
    app.get('/AssignedClients/:staffId',{ preHandler: [app.staffauthenticate] }, AssignedClients);
+   app.get('/getMostRecentSheet/:clientId',getMostRecentSheet);
+    app.get('/showTable',{ preHandler: [app.staffauthenticate] }, showTable);
+    app.delete('/deleteSheetData/:clientId', deleteSheetData);
 
   app.get('/liveSheetGraphs',{ preHandler: [app.webauthenticate] }, liveSheetGraphs);
   app.get('/previousSheetGraphs',{ preHandler: [app.webauthenticate] }, previousSheetGraphs);

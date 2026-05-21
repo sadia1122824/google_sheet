@@ -370,6 +370,154 @@ async saveSheetDataToDB(sheetData, baseCollectionName = "explotacion_comparativa
   };
 }
 
+
+
+// ================================
+// ✅ GET MOST RECENT SHEET DATA (Auto-detect Latest vs Previous)
+// ================================
+async getMostRecentSheetData(clientId) {
+  try {
+    if (!clientId) {
+      return { success: false, error: "clientId is required" };
+    }
+
+    const clientIdStr = clientId.toString();
+
+    // Step 1: Dono collections mein se latest record dhundo
+    const [latestRecord, previousRecord] = await Promise.all([
+      Latest_ClientCredentials.findOne({
+        $or: [{ clientId: clientId }, { clientId: clientIdStr }]
+      }).sort({ createdAt: -1 }),
+
+      Previous_ClientCredentials.findOne({
+        $or: [{ clientId: clientId }, { clientId: clientIdStr }]
+      }).sort({ createdAt: -1 }),
+    ]);
+
+    console.log("📄 Latest record createdAt:", latestRecord?.createdAt || "None");
+    console.log("📄 Previous record createdAt:", previousRecord?.createdAt || "None");
+
+    // Step 2: Dono null hain to error
+    if (!latestRecord && !previousRecord) {
+      return {
+        success: false,
+        error: `No sheet found for client ${clientId}. Please upload a file first.`,
+      };
+    }
+
+    // Step 3: Compare createdAt — jo newest ho wo pick karo
+    let winnerType;
+    let winnerRecord;
+
+    if (!latestRecord) {
+      winnerType   = "previous";
+      winnerRecord = previousRecord;
+    } else if (!previousRecord) {
+      winnerType   = "latest";
+      winnerRecord = latestRecord;
+    } else {
+      // Dono exist karte hain — createdAt compare karo
+      winnerType   = latestRecord.createdAt >= previousRecord.createdAt ? "latest" : "previous";
+      winnerRecord = winnerType === "latest" ? latestRecord : previousRecord;
+    }
+
+    console.log(`🏆 Winner: ${winnerType} | createdAt: ${winnerRecord.createdAt}`);
+    console.log(`📊 SpreadsheetId: ${winnerRecord.newSpreadsheetId}`);
+
+    // Step 4: Winner ke URL se data fetch karo
+    const webAppUrl = winnerType === "latest"
+      ? this.latestWebAppUrl
+      : this.previousWebAppUrl;
+
+    const response = await axios.get(webAppUrl, {
+      params: {
+        token:         this.token,
+        action:        "getSheetData",
+        spreadsheetId: winnerRecord.newSpreadsheetId,
+      },
+    });
+
+    if (!response.data.success) {
+      return {
+        success: false,
+        error: response.data.error || "Failed to fetch sheet data",
+      };
+    }
+
+    const sheetData = response.data.data;
+    console.log(`📊 Got ${sheetData.length} rows for client ${clientId} from [${winnerType}]`);
+
+    // Step 5: DB mein save karo
+    const result = await this.saveSheetDataToDB(sheetData, "explotacion_comparativa", clientId);
+
+    if (!result.success) {
+      return { success: false, error: result.error };
+    }
+
+    return {
+      success:      true,
+      sourceType:   winnerType,              // "latest" ya "previous" — frontend ko pata chale
+      uploadedAt:   winnerRecord.createdAt,  // Kab upload hua tha
+      data:         sheetData,
+      collection:   result.collection,
+      insertedRows: result.inserted,
+      yearsFound:   result.yearsFound,
+      sheetUrl:     winnerRecord.newSpreadsheetUrl,
+    };
+
+  } catch (err) {
+    console.error("❌ getMostRecentSheetData error:", err.message);
+    return { success: false, error: err.message };
+  }
+}
+
+deleteSheetDataByClientId = async (clientId) => {
+  try {
+    const db = mongoose.connection.db;
+    
+    // Step 1: Drop all matched collections
+    const collections = await db.listCollections().toArray();
+    const names = collections.map((c) => c.name);
+    
+    const pattern = new RegExp(`^explotacion_comparativa_${clientId}_`);
+    const matched = names.filter((n) => pattern.test(n));
+
+    let totalDeleted = 0;
+    for (const colName of matched) {
+      await db.collection(colName).drop();
+      console.log(`🗑️ Dropped collection: ${colName}`);
+      totalDeleted++;
+    }
+
+    // Step 2: Delete credentials from both Latest and Previous collections
+    const [latestDel, previousDel] = await Promise.all([
+      Latest_ClientCredentials.deleteMany({
+        $or: [{ clientId: clientId }, { clientId: clientId.toString() }]
+      }),
+      Previous_ClientCredentials.deleteMany({
+        $or: [{ clientId: clientId }, { clientId: clientId.toString() }]
+      }),
+    ]);
+
+    console.log(`🗑️ Deleted ${latestDel.deletedCount} latest credentials for client ${clientId}`);
+    console.log(`🗑️ Deleted ${previousDel.deletedCount} previous credentials for client ${clientId}`);
+
+    return {
+      success: true,
+      message: `${totalDeleted} collection(s) and credentials deleted for client ${clientId}`,
+      deletedCollections: matched,
+      deletedLatestCredentials: latestDel.deletedCount,
+      deletedPreviousCredentials: previousDel.deletedCount,
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
+
   // ================================
   // ✅ PREPARE ROWS (unchanged)
   // ================================

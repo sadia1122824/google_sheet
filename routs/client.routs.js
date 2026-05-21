@@ -1,5 +1,5 @@
 
- const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient} = require('../controllers/add_client');
+ const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient,updateClient ,getDashboardStats} = require('../controllers/add_client');
 
 
 const clientRouts = async(app,options)=>{
@@ -14,9 +14,11 @@ const clientRouts = async(app,options)=>{
   app.get('/showClients',{ preHandler: [app.authenticate] },showClients);
   app.get('/getClients',getClients);
   app.delete('/deleteClient/:id',deleteClient);
+  app.put('/updateClient/:id',updateClient);
 
   app.get('/webLogin',webLogin);
   app.post('/webLogin',clientLogin);
+  app.get('/dashboard',getDashboardStats);
 
 }
 

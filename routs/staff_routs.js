@@ -1,5 +1,5 @@
 
- const { staff ,addStaff ,getStaff,showStaff ,deleteStaff ,loginStaff,loginCredentials} = require('../controllers/Add_Staff');
+ const { staff ,addStaff ,getStaff,showStaff ,deleteStaff ,updateStaff,loginStaff,loginCredentials} = require('../controllers/Add_Staff');
 
 
 const staffRouts = async(app,options)=>{
@@ -12,6 +12,7 @@ const staffRouts = async(app,options)=>{
   app.get('/getStaff',getStaff);
   app.get('/showStaffRecord',{ preHandler: [app.authenticate] },showStaff);
   app.delete('/deleteStaff/:id',deleteStaff);
+  app.put('/updateStaff/:id',updateStaff);
   app.get('/loginStaff', loginStaff);
    app.post('/loginStaff', loginCredentials);
   

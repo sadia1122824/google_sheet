@@ -291,16 +291,28 @@ function cellNum(row, ci) {
 }
 
 function getPctForCol(row, colIndex) {
+  // Method 1: pctColIndices mein registered hai (Jan-May wale)
   if (pctColIndices.has(colIndex + 1)) {
-    const raw =
-      row[colIndex + 1] !== null && row[colIndex + 1] !== undefined
-        ? row[colIndex + 1].toString().trim()
-        : "";
+    const raw = row[colIndex + 1] !== null && row[colIndex + 1] !== undefined
+      ? row[colIndex + 1].toString().trim() : "";
     if (raw) {
       const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
-      return isNaN(v) ? null : v;
+      if (!isNaN(v)) return v;
     }
   }
+
+  // Method 2: header blank hai aur data mein % jaisi value hai (Jun-Dec wale)
+  const nextHeader = (headers[colIndex + 1] || "").toString().trim();
+  if (nextHeader === "") {
+    const raw = row[colIndex + 1] !== null && row[colIndex + 1] !== undefined
+      ? row[colIndex + 1].toString().trim() : "";
+    if (raw) {
+      const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+      // % values -100 se 100 ke beech hoti hain
+      if (!isNaN(v) && v >= -100 && v <= 100) return v;
+    }
+  }
+
   return null;
 }
 
@@ -317,18 +329,58 @@ function parseColumnsFromHeaders() {
   monthCols = [];
   yearCols = [];
   pctColIndices = new Set();
+
   headers.forEach((h, i) => {
     const s = (h || "").toString().trim();
-    if (!s) return;
-    if (s === "%") {
+
+    // Exact % header
+    if (s === "%" || s.startsWith("%") || s.toLowerCase().startsWith("percent")) {
       pctColIndices.add(i);
       return;
     }
+
     if (isYear(s)) yearCols.push({ label: s, colIndex: i });
     else if (isMonth(s)) monthCols.push({ label: s, colIndex: i });
   });
-}
 
+  // ─── NAYA FIX ───────────────────────────────────────────────
+  // Empty/blank header columns jo month/year ke baad aate hain
+  // unhe automatically % column maano
+  headers.forEach((h, i) => {
+    const s = (h || "").toString().trim();
+    if (s !== "") return; // sirf blank headers
+    if (pctColIndices.has(i)) return; // already added
+
+    // Dekho kya previous column month ya year tha
+    const prevHeader = (headers[i - 1] || "").toString().trim();
+    const isPrevMonth = isMonth(prevHeader);
+    const isPrevYear = isYear(prevHeader);
+    const isPrevPct = pctColIndices.has(i - 1);
+
+    // Agar previous column month/year tha, ya ek column pehle % tha
+    // toh yeh blank column bhi % hai
+    if (isPrevMonth || isPrevYear || isPrevPct) {
+      // Data rows mein check karo — kya is column mein % jaisi values hain?
+      let looksLikePct = false;
+      for (let r = 0; r < Math.min(allDataRows.length, 20); r++) {
+        const row = allDataRows[r];
+        if (!row) continue;
+        const val = (row[i] || "").toString().trim();
+        if (!val) continue;
+        const num = parseFloat(val.replace(/[^0-9.\-]/g, ""));
+        // % values usually -100 to 100 ke beech hoti hain
+        if (!isNaN(num) && num >= -100 && num <= 100) {
+          looksLikePct = true;
+          break;
+        }
+      }
+      if (looksLikePct) {
+        pctColIndices.add(i);
+      }
+    }
+  });
+  // ─────────────────────────────────────────────────────────────
+}
 function populateFilterDropdowns() {
   ["selMonth1", "selMonth2"].forEach((id, idx) => {
     const el = document.getElementById(id);

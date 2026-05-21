@@ -720,59 +720,59 @@
                                 <!-- Staff Management Card -->
                                 <!-- Staff Table Card -->
                                 <!-- Clients Table Card -->
-<div class="card mt-4">
+                                <div class="card mt-4">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
 
-        <h4 class="mb-0">
-            Clients List
-        </h4>
+                                        <h4 class="mb-0">
+                                            Clients List
+                                        </h4>
 
-        <button class="btn btn-primary btn-sm" onclick="loadClients()">
-            <i class="fas fa-sync-alt"></i>
-            Refresh
-        </button>
+                                        <button class="btn btn-primary btn-sm" onclick="loadClients()">
+                                            <i class="fas fa-sync-alt"></i>
+                                            Refresh
+                                        </button>
 
-    </div>
+                                    </div>
 
-    <div class="card-body">
+                                    <div class="card-body">
 
-        <div class="table-responsive">
+                                        <div class="table-responsive">
 
-            <table class="table table-bordered table-hover">
+                                            <table class="table table-bordered table-hover">
 
-                <thead class="thead-dark">
+                                                <thead class="thead-dark">
 
-                    <tr>
-                        <th>#</th>
-                        <th>Client Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Client ID</th>
-                        <th>Assigned Staff</th>
-                        <th>Created At</th>
-                        <th>Action</th>
-                    </tr>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Client Name</th>
+                                                        <th>Email</th>
+                                                        <th>Phone</th>
+                                                        <th>Client ID</th>
+                                                        <th>Assigned Staff</th>
+                                                        <th>Created At</th>
+                                                        <th>Action</th>
+                                                    </tr>
 
-                </thead>
+                                                </thead>
 
-                <tbody id="clientTableBody">
+                                                <tbody id="clientTableBody">
 
-                    <tr>
-                        <td colspan="8" class="text-center">
-                            Loading...
-                        </td>
-                    </tr>
+                                                    <tr>
+                                                        <td colspan="8" class="text-center">
+                                                            Loading...
+                                                        </td>
+                                                    </tr>
 
-                </tbody>
+                                                </tbody>
 
-            </table>
+                                            </table>
 
-        </div>
+                                        </div>
 
-    </div>
+                                    </div>
 
-</div>
+                                </div>
 
                             </div><!--end card-->
 
@@ -796,7 +796,71 @@
     </div>
     <!-- end page-wrapper -->
 
+    <div id="updateClientModal" class="modal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
+        <div class="modal-dialog" style="margin: 8% auto; max-width: 500px;">
+            <div class="modal-content"
+                style="border-radius: 8px; border: none; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.2);">
 
+                <div class="modal-header"
+                    style="background:#f8f9fa; border-bottom:1px solid #dee2e6; padding:1rem 1.5rem; border-radius:8px 8px 0 0;">
+                    <h5 style="margin:0; font-weight:600;">Update Client</h5>
+                    <button onclick="closeUpdateClientModal()"
+                        style="background:none; border:none; font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
+                </div>
+
+                <div class="modal-body" style="padding:1.5rem;">
+                    <input type="hidden" id="updateClientId" />
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="updateClientFullName" class="form-control" placeholder="Full Name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="updateClientEmail" class="form-control" placeholder="Email" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Password <small class="text-muted">(leave empty to keep current)</small></label>
+                        <div style="position:relative;">
+                            <input type="password" id="updateClientPassword" class="form-control"
+                                placeholder="Enter new password (optional)" />
+                            <span onclick="toggleClientPasswordVisibility()"
+                                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#6c757d;">
+                                <i id="clientPasswordEyeIcon" class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" id="updateClientPhone" class="form-control" placeholder="Phone" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Client ID</label>
+                        <input type="text" id="updateClientIdField" class="form-control" placeholder="Client ID" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Assign Staff</label>
+                        <input type="text" id="updateAssignStaff" class="form-control" placeholder="Staff ID" />
+                    </div>
+                </div>
+
+                <div class="modal-footer"
+                    style="padding:1rem 1.5rem; border-top:1px solid #dee2e6; display:flex; justify-content:flex-end; gap:10px;">
+                    <button onclick="closeUpdateClientModal()" class="btn btn-secondary">Cancel</button>
+                    <button onclick="submitClientUpdate()" class="btn btn-primary" id="updateClientBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
 
     <!-- jQuery  -->
@@ -816,27 +880,27 @@
     <!-- <script src="side_navbar.js"></script> -->
 
 
-  <script>
+    <script>
 
-    // =========================
-    // LOAD CLIENTS
-    // =========================
-    async function loadClients() {
+        // =========================
+        // LOAD CLIENTS
+        // =========================
+        async function loadClients() {
 
-        try {
+            try {
 
-            const response = await fetch("/getClients");
+                const response = await fetch("/getClients");
 
-            const result = await response.json();
+                const result = await response.json();
 
-            const tableBody = document.getElementById("clientTableBody");
+                const tableBody = document.getElementById("clientTableBody");
 
-            tableBody.innerHTML = "";
+                tableBody.innerHTML = "";
 
-            // No Data
-            if (!result.data || result.data.length === 0) {
+                // No Data
+                if (!result.data || result.data.length === 0) {
 
-                tableBody.innerHTML = `
+                    tableBody.innerHTML = `
                     <tr>
                         <td colspan="8" class="text-center text-danger">
                             No Clients Found
@@ -844,13 +908,13 @@
                     </tr>
                 `;
 
-                return;
-            }
+                    return;
+                }
 
-            // Loop Clients
-            result.data.forEach((client, index) => {
+                // Loop Clients
+                result.data.forEach((client, index) => {
 
-                tableBody.innerHTML += `
+                    tableBody.innerHTML += `
 
                     <tr>
 
@@ -877,62 +941,152 @@
                         <td>
 
                             <button 
+                              class="btn btn-warning btn-sm mr-1"
+                               onclick="openUpdateClientModal('${client._id}', '${client.fullName}', '${client.email}', '${client.phone}', '${client.clientId}', '${client.assignStaff}')"
+                          >
+                               <i class="fas fa-edit"></i> 
+                            </button>
+
+                            <button 
                                 class="btn btn-danger btn-sm"
                                 onclick="deleteClient('${client._id}')"
                             >
                                 <i class="fas fa-trash"></i>
-                                Delete
+                                
                             </button>
 
                         </td>
 
                     </tr>
                 `;
-            });
+                });
 
-        } catch (error) {
+            } catch (error) {
 
-            console.log(error);
+                console.log(error);
+            }
         }
-    }
 
-    // =========================
-    // DELETE CLIENT
-    // =========================
-    async function deleteClient(id) {
+        // =========================
+        // DELETE CLIENT
+        // =========================
+        async function deleteClient(id) {
 
-        const confirmDelete = confirm(
-            "Are you sure you want to delete this client?"
-        );
+            const confirmDelete = confirm(
+                "Are you sure you want to delete this client?"
+            );
 
-        if (!confirmDelete) return;
+            if (!confirmDelete) return;
 
-        try {
+            try {
 
-            const response = await fetch(`/deleteClient/${id}`, {
-                method: "DELETE"
-            });
+                const response = await fetch(`/deleteClient/${id}`, {
+                    method: "DELETE"
+                });
 
-            const result = await response.json();
+                const result = await response.json();
 
-            alert(result.message);
+                alert(result.message);
 
-            loadClients();
+                loadClients();
 
-        } catch (error) {
+            } catch (error) {
 
-            console.log(error);
+                console.log(error);
 
-            alert("Delete failed");
+                alert("Delete failed");
+            }
         }
-    }
 
-    // =========================
-    // AUTO LOAD
-    // =========================
-    loadClients();
 
-</script>
+        // Modal Open
+        function openUpdateClientModal(id, fullName, email, phone, clientId, assignStaff) {
+            document.getElementById('updateClientId').value = id;
+            document.getElementById('updateClientFullName').value = fullName;
+            document.getElementById('updateClientEmail').value = email;
+            document.getElementById('updateClientPhone').value = phone;
+            document.getElementById('updateClientIdField').value = clientId;
+            document.getElementById('updateAssignStaff').value = assignStaff;
+            document.getElementById('updateClientModal').style.display = 'block';
+        }
+
+        // Modal Close
+        function closeUpdateClientModal() {
+            document.getElementById('updateClientModal').style.display = 'none';
+            document.getElementById('updateClientPassword').value = '';
+            document.getElementById('updateClientPassword').type = 'password';
+            document.getElementById('clientPasswordEyeIcon').classList.replace('fa-eye-slash', 'fa-eye');
+        }
+
+        // Background click se close
+        document.getElementById('updateClientModal').addEventListener('click', function (e) {
+            if (e.target === this) closeUpdateClientModal();
+        });
+
+        // Password Toggle
+        function toggleClientPasswordVisibility() {
+            const input = document.getElementById('updateClientPassword');
+            const icon = document.getElementById('clientPasswordEyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        // Submit Update
+        async function submitClientUpdate() {
+            const id = document.getElementById('updateClientId').value;
+            const fullName = document.getElementById('updateClientFullName').value.trim();
+            const email = document.getElementById('updateClientEmail').value.trim();
+            const phone = document.getElementById('updateClientPhone').value.trim();
+            const clientId = document.getElementById('updateClientIdField').value.trim();
+            const assignStaff = document.getElementById('updateAssignStaff').value.trim();
+            const password = document.getElementById('updateClientPassword').value.trim();
+
+            if (!fullName || !email || !phone || !clientId) {
+                alert("Please fill all required fields");
+                return;
+            }
+
+            const btn = document.getElementById('updateClientBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Saving...';
+
+            const payload = { fullName, email, phone, clientId, assignStaff };
+            if (password !== "") {
+                payload.password = password;
+            }
+
+            try {
+                const response = await fetch(`/updateClient/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                alert(result.message || "Updated successfully");
+                closeUpdateClientModal();
+                loadClients(); // apni clients load function ka naam yahan
+
+            } catch (error) {
+                console.log(error);
+                alert("Update failed");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        }
+
+        // =========================
+        // AUTO LOAD
+        // =========================
+        loadClients();
+
+    </script>
 
 
 

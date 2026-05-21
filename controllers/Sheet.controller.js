@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 
 
 
-const dataUpload = async (request, reply) => {
+const showDashboard = async (request, reply) => {
   return reply.sendFile("admin/googleSheet.html");
 };
 
@@ -330,6 +330,59 @@ const previousSheetData = async (req, reply) => {
   return reply.sendFile("users/previous_Sheet.html");
 }
 
+const getPreviousSheetResult = async (req, reply) => {
+  try {
+    const clientId = req.headers["x-client-id"]; // ✅ same
+
+    if (!clientId) {
+      return reply.status(401).send({ success: false, error: "clientId missing" });
+    }
+
+    const result = await sheetService.fetchPreviousSheetData(clientId);
+
+    if (!result.success) {
+      return reply.send({ success: false, error: result.error });
+    }
+
+    return reply.send({
+      success:    true,
+      source:     "previous_sheet",
+      collection: result.collection,
+      totalRows:  result.data.length,
+      data:       result.data,
+    });
+  } catch (err) {
+    return reply.status(500).send({ success: false, error: err.message });
+  }
+};
+
+
+
+const showTable = async (req, reply) => {
+  return reply.sendFile("staff/show_sheet.html");
+}
+const getMostRecentSheet = async (req, reply) => {
+  const { clientId } = req.params;
+  const result = await sheetService.getMostRecentSheetData(clientId);
+
+  if (!result.success) {
+    return reply.status(400).send(result);
+  }
+
+  return reply.status(200).send(result);
+};
+
+const deleteSheetData = async (req, reply) => {
+  const { clientId } = req.params;
+  const result = await sheetService.deleteSheetDataByClientId(clientId);
+
+  if (!result.success) {
+    return reply.status(400).send(result);
+  }
+
+  return reply.status(200).send(result);
+};
+
 
 // **************************** AI Controller Logic ****************************
 
@@ -435,38 +488,6 @@ const previousSheetData = async (req, reply) => {
 //     return reply.send({ success: false, error: err.message });
 //   }
 // };
-
-
-const getPreviousSheetResult = async (req, reply) => {
-  try {
-    const clientId = req.headers["x-client-id"]; // ✅ same
-
-    if (!clientId) {
-      return reply.status(401).send({ success: false, error: "clientId missing" });
-    }
-
-    const result = await sheetService.fetchPreviousSheetData(clientId);
-
-    if (!result.success) {
-      return reply.send({ success: false, error: result.error });
-    }
-
-    return reply.send({
-      success:    true,
-      source:     "previous_sheet",
-      collection: result.collection,
-      totalRows:  result.data.length,
-      data:       result.data,
-    });
-  } catch (err) {
-    return reply.status(500).send({ success: false, error: err.message });
-  }
-};
-
-
-
-
-
 
 
 
@@ -701,12 +722,15 @@ const previousSheetGraphs = async (req, reply) => {
 };
 
 module.exports = {
-  dataUpload,
+  showDashboard,
   importExcelFile,
   getLatestSheetResult,
   LiveSheetData,
   previousSheetData,
   getPreviousSheetResult,
+  getMostRecentSheet,
+  showTable,
+  deleteSheetData,
   AI_chat,
   uploadExcell,
   liveSheetGraphs,

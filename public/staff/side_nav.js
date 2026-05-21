@@ -29,6 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
   <span>Upload Excel Data</span>
 </a>
 </li>
+           <li>
+<a href="showTable">
+  <i data-feather="file-plus" class="menu-icon"></i>
+  <span>Show Excell </span>
+</a>
+</li>
 
   
 
