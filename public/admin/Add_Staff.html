@@ -869,12 +869,48 @@
     <!-- App js -->
     <!-- <script src="side_navbar.js"></script> -->
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-    <script>
+    // =========================
+    // 1. HAMBURGER MENU TOGGLE
+    // =========================
+    const hamburgerBtn = document.querySelector('.button-menu-mobile');
+
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', function () {
+            const isMobile = window.innerWidth <= 767;
+
+            if (isMobile) {
+                document.body.classList.toggle('mobile-menu-open');
+            } else {
+                document.body.classList.toggle('enlarge-menu');
+            }
+        });
+    }
+
+    // Mobile par bahar click se sidebar band
+    document.addEventListener('click', function (e) {
+        if (window.innerWidth > 767) return;
+
+        const sidebar = document.querySelector('.left-sidenav');
+        const hamburger = document.querySelector('.button-menu-mobile');
+
+        if (sidebar && hamburger &&
+            !sidebar.contains(e.target) &&
+            !hamburger.contains(e.target)
+        ) {
+            document.body.classList.remove('mobile-menu-open');
+        }
+    });
+
+
+    // =========================
+    // 2. STAFF FORM SUBMIT
+    // =========================
     document.getElementById("staffForm").addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        // Form Data
         const staffData = {
             fullName: document.getElementById("staffName").value,
             email: document.getElementById("staffEmail").value,
@@ -885,42 +921,32 @@
         };
 
         try {
-
-            // API Call
             const response = await fetch("/staffRecord", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(staffData)
             });
 
             const result = await response.json();
-
             const alertBox = document.getElementById("staffAlert");
 
-            if (response.ok) {
+            alertBox.style.display = "block";
 
-                alertBox.style.display = "block";
+            if (response.ok) {
                 alertBox.className = "alert alert-success";
                 alertBox.innerText = result.message;
-
-                // Reset Form
                 document.getElementById("staffForm").reset();
-
             } else {
-
-                alertBox.style.display = "block";
                 alertBox.className = "alert alert-danger";
                 alertBox.innerText = result.message;
             }
 
         } catch (error) {
-
             console.log(error);
-
         }
     });
+
+});
 </script>
 
 

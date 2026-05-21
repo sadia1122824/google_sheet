@@ -297,13 +297,64 @@ const getDashboardStats = async (request, reply) => {
             .limit(5)
             .select('fullName email clientId assignStaff createdAt');
 
+        // ── Monthly chart data (last 12 months) ──────────────
+        const twelveMonthsAgo = new Date();
+        twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+        twelveMonthsAgo.setDate(1);
+        twelveMonthsAgo.setHours(0, 0, 0, 0);
+
+        const monthlyPipeline = (Model) => Model.aggregate([
+            { $match: { createdAt: { $gte: twelveMonthsAgo } } },
+            {
+                $group: {
+                    _id: {
+                        year:  { $year:  "$createdAt" },
+                        month: { $month: "$createdAt" }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]);
+
+        const [staffMonthly, clientMonthly] = await Promise.all([
+            monthlyPipeline(StaffRecord),
+            monthlyPipeline(ClientRecord)
+        ]);
+
+        // ── Labels banao last 12 months ke ──────────────────
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const labels = [];
+        const staffData  = [];
+        const clientData = [];
+
+        for (let i = 11; i >= 0; i--) {
+            const d = new Date();
+            d.setMonth(d.getMonth() - i);
+            const y = d.getFullYear();
+            const m = d.getMonth() + 1; // 1-12
+
+            labels.push(monthNames[m - 1]);
+
+            const sf = staffMonthly.find(x => x._id.year === y && x._id.month === m);
+            const cl = clientMonthly.find(x => x._id.year === y && x._id.month === m);
+
+            staffData.push(sf ? sf.count : 0);
+            clientData.push(cl ? cl.count : 0);
+        }
+
         return reply.send({
             success: true,
             data: {
                 totalStaff,
                 totalClients,
                 recentStaff,
-                recentClients
+                recentClients,
+                monthlyChart: {        // <-- yeh naya add hua
+                    labels,            // ['Jun','Jul',...,'May']
+                    staff:  staffData, // [0, 0, 1, ...]
+                    clients: clientData
+                }
             }
         });
 

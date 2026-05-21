@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Google Sheet Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+    <link href="../plugins/dropify/css/dropify.min.css" rel="stylesheet">
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
+    <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #0ea5e9;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --surface: #ffffff;
+            --surface-2: #f8faff;
+            --surface-3: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --shadow-sm: 0 1px 3px rgba(99,102,241,0.08), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(99,102,241,0.12), 0 2px 8px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 40px rgba(99,102,241,0.15), 0 4px 16px rgba(0,0,0,0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--surface-2);
+            color: var(--text-primary);
+        }
+
+        /* ==================== DASHBOARD SECTION ==================== */
+        .staff-dashboard {
+            padding: 0;
+        }
+
+        /* Section Title */
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-heading .icon-wrap {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+        }
+
+        .section-heading h5 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .section-heading p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* ==================== STAT CARDS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr; } }
+
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: cardSlideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            border-radius: 0 var(--radius) 0 80px;
+            opacity: 0.08;
+        }
+
+        .stat-card.indigo::before { background: var(--primary); }
+        .stat-card.sky::before { background: var(--secondary); }
+        .stat-card.emerald::before { background: var(--success); }
+        .stat-card.amber::before { background: var(--accent); }
+
+        @keyframes cardSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.05s; }
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.15s; }
+        .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+        .stat-icon {
+            width: 46px; height: 46px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            margin-bottom: 14px;
+            position: relative; z-index: 1;
+        }
+
+        .stat-card.indigo .stat-icon { background: rgba(99,102,241,0.12); color: var(--primary); }
+        .stat-card.sky .stat-icon { background: rgba(14,165,233,0.12); color: var(--secondary); }
+        .stat-card.emerald .stat-icon { background: rgba(16,185,129,0.12); color: var(--success); }
+        .stat-card.amber .stat-icon { background: rgba(245,158,11,0.12); color: var(--accent); }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+            margin-bottom: 4px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .stat-card.indigo .stat-value { color: var(--primary); }
+        .stat-card.sky .stat-value { color: var(--secondary); }
+        .stat-card.emerald .stat-value { color: var(--success); }
+        .stat-card.amber .stat-value { color: var(--accent); }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+
+        .trend-up { background: rgba(16,185,129,0.12); color: var(--success); }
+        .trend-neutral { background: rgba(100,116,139,0.1); color: var(--text-muted); }
+
+        /* ==================== CHARTS SECTION ==================== */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 992px) { .charts-grid { grid-template-columns: 1fr; } }
+
+        .chart-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            animation: cardSlideIn 0.5s ease 0.25s forwards;
+            opacity: 0;
+        }
+
+        .chart-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .chart-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 3px 0;
+        }
+
+        .chart-card-subtitle {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .chart-badge {
+            background: var(--surface-3);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        .donut-container {
+            position: relative;
+            height: 180px;
+        }
+
+        /* ==================== RECENT UPLOADS TABLE ==================== */
+        .table-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            animation: cardSlideIn 0.5s ease 0.35s forwards;
+            opacity: 0;
+            margin-bottom: 24px;
+        }
+
+        .table-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .table-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .view-all-btn {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            background: rgba(99,102,241,0.08);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .view-all-btn:hover { background: rgba(99,102,241,0.15); color: var(--primary); text-decoration: none; }
+
+        .dash-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .dash-table thead tr {
+            background: var(--surface-3);
+        }
+
+        .dash-table th {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--text-muted);
+            padding: 10px 22px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .dash-table td {
+            padding: 13px 22px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .dash-table tbody tr:last-child td { border-bottom: none; }
+
+        .dash-table tbody tr {
+            transition: background 0.15s;
+        }
+
+        .dash-table tbody tr:hover { background: var(--surface-2); }
+
+        .client-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.84rem;
+        }
+
+        .client-avatar {
+            width: 32px; height: 32px;
+            border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.75rem;
+            color: white;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+        }
+
+        .status-success { background: rgba(16,185,129,0.1); color: #059669; }
+        .status-success::before { background: #059669; }
+        .status-pending { background: rgba(245,158,11,0.1); color: #d97706; }
+        .status-pending::before { background: #d97706; }
+        .status-error { background: rgba(239,68,68,0.1); color: #dc2626; }
+        .status-error::before { background: #dc2626; }
+
+        /* ==================== CLIENT PROGRESS LIST ==================== */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 992px) { .two-col-grid { grid-template-columns: 1fr; } }
+
+        .progress-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            animation: cardSlideIn 0.5s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .client-progress-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .client-progress-item:last-child { margin-bottom: 0; }
+
+        .cp-avatar {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.7rem;
+            color: white;
+            flex-shrink: 0;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .cp-info { flex: 1; min-width: 0; }
+
+        .cp-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cp-progress-bar {
+            height: 6px;
+            background: var(--surface-3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 3px;
+        }
+
+        .cp-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        .cp-count {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .cp-value {
+            font-size: 0.85rem;
+            font-weight: 800;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-primary);
+        }
+
+        /* ==================== ACTIVITY TIMELINE ==================== */
+        .timeline {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 14px;
+            padding-bottom: 18px;
+            position: relative;
+        }
+
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 17px;
+            top: 34px;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item:last-child::before { display: none; }
+
+        .timeline-dot {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 14px;
+            position: relative; z-index: 1;
+        }
+
+        .tl-upload { background: rgba(99,102,241,0.12); color: var(--primary); }
+        .tl-client { background: rgba(14,165,233,0.12); color: var(--secondary); }
+        .tl-success { background: rgba(16,185,129,0.12); color: var(--success); }
+
+        .timeline-content { flex: 1; padding-top: 4px; }
+
+        .tl-title {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .tl-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* ==================== UPLOAD FORM ==================== */
+
+        @media (max-width: 767px) {
+            .left-sidenav {
+                position: fixed !important;
+                z-index: 1051 !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s ease !important;
+                top: 0 !important; left: 0 !important;
+                height: 100vh !important; width: 260px !important;
+            }
+
+            body.mobile-menu-open .left-sidenav { transform: translateX(0) !important; }
+            .page-content { padding: 12px !important; }
+            .card { margin-bottom: 15px; }
+            .card-header { padding: 12px; }
+            .card-body { padding: 12px !important; }
+            .input-group { flex-direction: column; }
+            .input-group .custom-file,
+            .input-group-append { width: 100%; }
+            .input-group-append { margin-top: 10px; }
+            .input-group-append button { width: 100%; }
+            .nav-user span { display: none !important; }
+            body { overflow-x: hidden; }
+        }
+
+        .form-group label { font-weight: 600; color: #495057; margin-bottom: 0.5rem; display: block; font-size: 0.875rem; }
+        .form-group input { width: 100%; padding: 0.6rem 0.75rem; font-size: 0.875rem; color: #495057; background-color: #fff; border: 1px solid #ced4da; border-radius: 0.25rem; }
+        .form-group input:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25); }
+
+        .submit-btn { background-color: #007bff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.25rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .submit-btn:hover:not(:disabled) { background-color: #0069d9; }
+        .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        .loading { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* divider */
+        .dash-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        /* Donut center text */
+        .donut-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .donut-center .dc-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            font-family: 'Space Mono', monospace;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .donut-center .dc-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* color palette for avatars */
+        .av-1 { background: linear-gradient(135deg, #6366f1, #818cf8); }
+        .av-2 { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+        .av-3 { background: linear-gradient(135deg, #10b981, #34d399); }
+        .av-4 { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .av-5 { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .av-6 { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+    </style>
+</head>
+
+<body>
+    <div id="side-navbar"></div>
+
+    <div class="page-wrapper">
+        <!-- Top Bar -->
+        <div class="topbar">
+            <nav class="navbar-custom">
+                <ul class="list-unstyled topbar-nav float-right mb-0">
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown" href="#" role="button">
+                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">Nick</span>
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user" class="rounded-circle thumb-sm border" />
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
+                                <i data-feather="power" class="icon-xs mr-2"></i><span>Logout</span>
+                            </a>
+                            <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
+                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Settings</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="list-unstyled topbar-nav mb-0">
+                    <li>
+                        <button class="nav-link button-menu-mobile">
+                            <i data-feather="menu" class="align-self-center topbar-icon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!-- End Top Bar -->
+
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <!-- ====================== STAFF DASHBOARD ====================== -->
+                <div class="staff-dashboard">
+
+                    <!-- Section Heading -->
+                    <div class="section-heading">
+                        <div class="icon-wrap">📊</div>
+                        <div>
+                            <h5>Staff Activity Dashboard</h5>
+                            <p>Nick's upload activity &amp; client overview — Real-time</p>
+                        </div>
+                    </div>
+
+                    <!-- Stat Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card indigo">
+                            <div class="stat-icon">📁</div>
+                            <div class="stat-value" id="totalUploads">0</div>
+                            <div class="stat-label">Total Files Uploaded</div>
+                            <span class="stat-trend trend-up">↑ 12% this week</span>
+                        </div>
+                        <div class="stat-card sky">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-value" id="totalClients">0</div>
+                            <div class="stat-label">My Clients</div>
+                            <span class="stat-trend trend-up">↑ 2 new</span>
+                        </div>
+                        <div class="stat-card emerald">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-value" id="successUploads">0</div>
+                            <div class="stat-label">Successful Imports</div>
+                            <span class="stat-trend trend-up">↑ 95% rate</span>
+                        </div>
+                        <div class="stat-card amber">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-value" id="todayUploads">0</div>
+                            <div class="stat-label">Uploads Today</div>
+                            <span class="stat-trend trend-neutral">→ On track</span>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="charts-grid">
+                        <!-- Bar Chart -->
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <div>
+                                    <p class="chart-card-title">📈 Weekly Upload Activity</p>
+                                    <p class="chart-card-subtitle">Files uploaded per day this week</p>
+                                </div>
+                                <span class="chart-badge">Last 7 Days</span>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="weeklyChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Donut Chart -->
+                        <div class="chart-card">
+                            <div class="chart-card-header">
+                                <div>
+                                    <p class="chart-card-title">🍩 Uploads by Client</p>
+                                    <p class="chart-card-subtitle">Distribution across clients</p>
+                                </div>
+                            </div>
+                            <div class="donut-container" style="position:relative;">
+                                <canvas id="clientDonut"></canvas>
+                                <div class="donut-center">
+                                    <div class="dc-value">47</div>
+                                    <div class="dc-label">Total</div>
+                                </div>
+                            </div>
+                            <!-- Legend -->
+                            <div id="donutLegend" style="margin-top:12px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Two Col: Client Progress + Activity Timeline -->
+                    <div class="two-col-grid">
+                        <!-- Client Progress -->
+                        <div class="progress-card">
+                            <div class="chart-card-header" style="margin-bottom:18px;">
+                                <div>
+                                    <p class="chart-card-title">📋 Uploads Per Client</p>
+                                    <p class="chart-card-subtitle">Files uploaded for each client</p>
+                                </div>
+                            </div>
+                            <div id="clientProgressList"></div>
+                        </div>
+
+                        <!-- Activity Timeline -->
+                        <div class="progress-card">
+                            <div class="chart-card-header" style="margin-bottom:18px;">
+                                <div>
+                                    <p class="chart-card-title">🕐 Recent Activity</p>
+                                    <p class="chart-card-subtitle">Latest actions by Nick</p>
+                                </div>
+                            </div>
+                            <ul class="timeline" id="activityTimeline"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Recent Uploads Table -->
+                    <div class="table-card">
+                        <div class="table-card-header">
+                            <p class="table-card-title">📤 Recent Upload History</p>
+                            <button class="view-all-btn">View All →</button>
+                        </div>
+                        <div style="overflow-x:auto;">
+                            <table class="dash-table">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>File Name</th>
+                                        <th>Rows Imported</th>
+                                        <th>Year</th>
+                                        <th>Uploaded At</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="uploadsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- ====================== END DASHBOARD ====================== -->
+
+                <div class="dash-divider"></div>
+
+                <!-- ====================== UPLOAD FORM ====================== -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Import Data to Google Sheets</h4>
+                                <p class="text-muted mb-0">Upload Excel file to import data directly</p>
+
+                            </div>
+                         
+                        </div>
+                    </div>
+                </div>
+                <!-- ====================== END UPLOAD FORM ====================== -->
+
+            </div><!-- container -->
+        </div>
+        <!-- end page content -->
+    </div>
+    <!-- end page-wrapper -->
+
+    <script src="../staff/side_nav.js"></script>
+    <script src="../admin/assets/js/jquery.min.js"></script>
+    <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../admin/assets/js/metismenu.min.js"></script>
+    <script src="../admin/assets/js/waves.js"></script>
+    <script src="../admin/assets/js/feather.min.js"></script>
+    <script src="../admin/assets/js/simplebar.min.js"></script>
+    <script src="../admin/assets/js/moment.js"></script>
+    <script src="../plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="../plugins/dropify/js/dropify.min.js"></script>
+    <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
+
+    <script>
+        // ===================== MOCK DATA =====================
+        // Replace this with real API calls to your backend
+        const STAFF_DATA = {
+            staffName: "Nick",
+            totalUploads: 47,
+            totalClients: 8,
+            successUploads: 44,
+            todayUploads: 5,
+            weeklyActivity: [4, 7, 3, 9, 6, 12, 6], // Mon-Sun
+            clients: [
+                { name: "Al-Noor Traders",   initials: "AN", uploads: 12, colorClass: "av-1", progressColor: "#6366f1" },
+                { name: "Bright Solutions",  initials: "BS", uploads: 9,  colorClass: "av-2", progressColor: "#0ea5e9" },
+                { name: "Crown Enterprises", initials: "CE", uploads: 8,  colorClass: "av-3", progressColor: "#10b981" },
+                { name: "Delta Corp",        initials: "DC", uploads: 7,  colorClass: "av-4", progressColor: "#f59e0b" },
+                { name: "Eagle Finance",     initials: "EF", uploads: 5,  colorClass: "av-5", progressColor: "#ec4899" },
+                { name: "Falcon Group",      initials: "FG", uploads: 4,  colorClass: "av-6", progressColor: "#8b5cf6" },
+                { name: "Gold Star Ltd",     initials: "GS", uploads: 2,  colorClass: "av-1", progressColor: "#6366f1" },
+                { name: "Horizon Tech",      initials: "HT", uploads: 0,  colorClass: "av-2", progressColor: "#0ea5e9" },
+            ],
+            recentUploads: [
+                { client: "Al-Noor Traders",   file: "Sales_Q1_2024.xlsx",      rows: 342, year: "Latest", time: "Today, 11:42 AM", status: "success", colorClass: "av-1" },
+                { client: "Bright Solutions",  file: "Revenue_Mar2024.xlsx",    rows: 218, year: "Latest", time: "Today, 10:15 AM", status: "success", colorClass: "av-2" },
+                { client: "Crown Enterprises", file: "Expenses_Feb.xlsx",       rows: 95,  year: "Previous", time: "Today, 09:30 AM", status: "pending", colorClass: "av-3" },
+                { client: "Delta Corp",        file: "Monthly_Report.xlsx",     rows: 512, year: "Latest", time: "Yesterday, 4:20 PM", status: "success", colorClass: "av-4" },
+                { client: "Eagle Finance",     file: "Transactions_Q4.xlsx",    rows: 0,   year: "Latest", time: "Yesterday, 2:00 PM", status: "error",   colorClass: "av-5" },
+                { client: "Al-Noor Traders",   file: "Jan_Data_Final.xlsx",     rows: 180, year: "Previous", time: "22 May, 3:45 PM", status: "success", colorClass: "av-1" },
+            ],
+            timeline: [
+                { icon: "📁", cls: "tl-upload",  title: "Uploaded Sales_Q1_2024.xlsx for Al-Noor Traders",   time: "11:42 AM" },
+                { icon: "✅", cls: "tl-success", title: "342 rows successfully imported to Google Sheets",    time: "11:43 AM" },
+                { icon: "📁", cls: "tl-upload",  title: "Uploaded Revenue_Mar2024.xlsx for Bright Solutions", time: "10:15 AM" },
+                { icon: "👤", cls: "tl-client",  title: "New client Horizon Tech added to your portfolio",    time: "Yesterday" },
+                { icon: "📁", cls: "tl-upload",  title: "Uploaded Expenses_Feb.xlsx for Crown Enterprises",   time: "Yesterday" },
+                { icon: "✅", cls: "tl-success", title: "512 rows imported for Delta Corp",                   time: "2 days ago" },
+            ]
+        };
+
+        // ===================== RENDER FUNCTIONS =====================
+
+        function animateCount(el, target, duration = 1000) {
+            let start = 0;
+            const step = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += step;
+                if (start >= target) { el.textContent = target; clearInterval(timer); return; }
+                el.textContent = Math.floor(start);
+            }, 16);
+        }
+
+        function renderStatCards() {
+            setTimeout(() => animateCount(document.getElementById('totalUploads'), STAFF_DATA.totalUploads), 200);
+            setTimeout(() => animateCount(document.getElementById('totalClients'), STAFF_DATA.totalClients), 350);
+            setTimeout(() => animateCount(document.getElementById('successUploads'), STAFF_DATA.successUploads), 500);
+            setTimeout(() => animateCount(document.getElementById('todayUploads'), STAFF_DATA.todayUploads), 650);
+        }
+
+        function renderWeeklyChart() {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Files Uploaded',
+                        data: STAFF_DATA.weeklyActivity,
+                        backgroundColor: labels.map((_, i) => i === 5 ? 'rgba(99,102,241,0.9)' : 'rgba(99,102,241,0.2)'),
+                        borderColor: 'rgba(99,102,241,1)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8 } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', size: 11 }, color: '#94a3b8' } },
+                        y: { grid: { color: 'rgba(226,232,240,0.6)', drawBorder: false }, ticks: { font: { family: 'Space Mono', size: 10 }, color: '#94a3b8', stepSize: 3 }, beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderDonutChart() {
+            const ctx = document.getElementById('clientDonut').getContext('2d');
+            const colors = ['#6366f1','#0ea5e9','#10b981','#f59e0b','#ec4899','#8b5cf6'];
+            const labels = STAFF_DATA.clients.map(c => c.name);
+            const data = STAFF_DATA.clients.map(c => c.uploads);
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{ data, backgroundColor: colors, borderWidth: 3, borderColor: '#ffffff', hoverOffset: 8 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8 }
+                    }
+                }
+            });
+
+            // Custom legend
+            const legend = document.getElementById('donutLegend');
+            legend.innerHTML = STAFF_DATA.clients.filter(c => c.uploads > 0).map((c, i) =>
+                `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                    <span style="width:10px;height:10px;border-radius:3px;background:${colors[i]};flex-shrink:0;"></span>
+                    <span style="font-size:0.72rem;color:#64748b;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.name}</span>
+                    <span style="font-size:0.72rem;font-weight:700;color:#0f172a;font-family:'Space Mono',monospace;">${c.uploads}</span>
+                </div>`
+            ).join('');
+        }
+
+        function renderClientProgress() {
+            const max = Math.max(...STAFF_DATA.clients.map(c => c.uploads));
+            const container = document.getElementById('clientProgressList');
+            container.innerHTML = STAFF_DATA.clients.map(c => `
+                <div class="client-progress-item">
+                    <div class="cp-avatar ${c.colorClass}">${c.initials}</div>
+                    <div class="cp-info">
+                        <div class="cp-name">${c.name}</div>
+                        <div class="cp-progress-bar">
+                            <div class="cp-progress-fill" style="width:0%;background:${c.progressColor};" data-target="${max > 0 ? (c.uploads/max*100).toFixed(0) : 0}"></div>
+                        </div>
+                        <div class="cp-count">${c.uploads} files uploaded</div>
+                    </div>
+                    <div class="cp-value" style="color:${c.progressColor};">${c.uploads}</div>
+                </div>
+            `).join('');
+
+            // Animate progress bars
+            setTimeout(() => {
+                document.querySelectorAll('.cp-progress-fill').forEach(bar => {
+                    bar.style.width = bar.dataset.target + '%';
+                });
+            }, 400);
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('activityTimeline');
+            container.innerHTML = STAFF_DATA.timeline.map(item => `
+                <li class="timeline-item">
+                    <div class="timeline-dot ${item.cls}">${item.icon}</div>
+                    <div class="timeline-content">
+                        <div class="tl-title">${item.title}</div>
+                        <div class="tl-time">${item.time}</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function renderUploadsTable() {
+            const tbody = document.getElementById('uploadsTableBody');
+            tbody.innerHTML = STAFF_DATA.recentUploads.map(row => {
+                const statusMap = {
+                    success: ['status-success', '✓ Imported'],
+                    pending: ['status-pending', '⏳ Processing'],
+                    error:   ['status-error',   '✕ Failed']
+                };
+                const [statusCls, statusLabel] = statusMap[row.status];
+                return `
+                <tr>
+                    <td>
+                        <div style="display:flex;align-items:center;">
+                            <div class="client-avatar ${row.colorClass}" style="display:inline-flex;">${row.file.slice(0,2).toUpperCase()}</div>
+                            <span class="client-name">${row.client}</span>
+                        </div>
+                    </td>
+                    <td style="font-family:'Space Mono',monospace;font-size:0.75rem;color:#475569;">${row.file}</td>
+                    <td style="font-family:'Space Mono',monospace;font-weight:700;color:#0f172a;">${row.rows > 0 ? row.rows.toLocaleString() : '—'}</td>
+                    <td><span style="font-size:0.72rem;font-weight:600;background:#f1f5f9;padding:3px 8px;border-radius:20px;color:#64748b;">${row.year}</span></td>
+                    <td style="white-space:nowrap;">${row.time}</td>
+                    <td><span class="status-badge ${statusCls}">${statusLabel}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        // Populate client dropdown
+        function populateClientDropdown() {
+            const sel = document.getElementById('clientSelect');
+            STAFF_DATA.clients.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.name;
+                opt.textContent = c.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        // ===================== INIT =====================
+        document.addEventListener('DOMContentLoaded', () => {
+            renderStatCards();
+            renderWeeklyChart();
+            renderDonutChart();
+            renderClientProgress();
+            renderTimeline();
+            renderUploadsTable();
+            populateClientDropdown();
+
+            // Feather icons
+            if (typeof feather !== 'undefined') feather.replace();
+        });
+    </script>
+</body>
+</html>

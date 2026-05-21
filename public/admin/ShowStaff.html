@@ -883,7 +883,7 @@
     <!-- App js -->
     <!-- <script src="side_navbar.js"></script> -->
 
-
+<!-- 
     <script>
 
         // Load Staff Records
@@ -1082,9 +1082,321 @@ function togglePasswordVisibility() {
         // Auto Load
         loadStaff();
 
-    </script>
+    </script> -->
+
+<script>
+
+    // =========================
+    // LOAD STAFF RECORDS
+    // =========================
+    async function loadStaff() {
+
+        try {
+
+            const response = await fetch("/getStaff");
+
+            const result = await response.json();
+
+            const tableBody = document.getElementById("staffTableBody");
+
+            tableBody.innerHTML = "";
+
+            // No Data
+            if (!result.data || result.data.length === 0) {
+
+                tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-danger">
+                        No Staff Found
+                    </td>
+                </tr>
+            `;
+
+                console.log("No Staff Found");
+
+                return;
+            }
+
+            // Loop Data
+            result.data.forEach((staff, index) => {
+
+                tableBody.innerHTML += `
+
+                <tr>
+
+                    <td>${index + 1}</td>
+
+                    <td>${staff.fullName}</td>
+
+                    <td>${staff.email}</td>
+
+                    <td>${staff.phone}</td>
+
+                    <td>${staff.staffId}</td>
+
+                    <td>
+
+                        <span class="badge badge-${staff.role === 'manager' ? 'success' : 'primary'}">
+
+                            ${staff.role}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+                        ${new Date(staff.createdAt).toLocaleDateString()}
+                    </td>
+
+                    <td>
+
+                        <button 
+                            class="btn btn-warning btn-sm mr-1"
+                            onclick="openUpdateModal('${staff._id}', '${staff.fullName}', '${staff.email}', '${staff.phone}', '${staff.staffId}', '${staff.role}')"
+                        >
+                            <i class="fas fa-edit"></i> 
+                        </button>
+
+                        <button 
+                            class="btn btn-danger btn-sm"
+                            onclick="deleteStaff('${staff._id}')"
+                        >
+                            <i class="fas fa-trash"></i>
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+            });
+
+            console.log("Staff Loaded Successfully");
+
+        } catch (error) {
+
+            console.log("Load Staff Error:", error);
+        }
+    }
+
+    // =========================
+    // DELETE STAFF
+    // =========================
+    async function deleteStaff(id) {
+
+      
+
+        try {
+
+            const response = await fetch(`/deleteStaff/${id}`, {
+                method: "DELETE"
+            });
+
+            const result = await response.json();
+
+            console.log(result.message);
+
+            loadStaff();
+
+        } catch (error) {
+
+            console.log("Delete Failed:", error);
+        }
+    }
+
+    // =========================
+    // OPEN UPDATE MODAL
+    // =========================
+    function openUpdateModal(id, fullName, email, phone, staffId, role) {
+
+        document.getElementById('updateStaffId').value = id;
+
+        document.getElementById('updateFullName').value = fullName;
+
+        document.getElementById('updateEmail').value = email;
+
+        document.getElementById('updatePhone').value = phone;
+
+        document.getElementById('updateStaffIdField').value = staffId;
+
+        document.getElementById('updateRole').value = role;
+
+        document.getElementById('updateModal').style.display = 'block';
+
+        console.log("Update Modal Opened");
+    }
+
+    // =========================
+    // CLOSE UPDATE MODAL
+    // =========================
+    function closeUpdateModal() {
+
+        document.getElementById('updateModal').style.display = 'none';
+
+        document.getElementById('updatePassword').value = '';
+
+        document.getElementById('updatePassword').type = 'password';
+
+        document.getElementById('passwordEyeIcon')
+            .classList.replace('fa-eye-slash', 'fa-eye');
+
+        console.log("Update Modal Closed");
+    }
+
+    // =========================
+    // BACKGROUND CLICK CLOSE
+    // =========================
+    document.getElementById('updateModal')
+        .addEventListener('click', function (e) {
+
+            if (e.target === this) {
+
+                closeUpdateModal();
+            }
+        });
+
+    // =========================
+    // UPDATE API CALL
+    // =========================
+    async function submitUpdate() {
+
+        const id = document.getElementById('updateStaffId').value;
+
+        const fullName = document.getElementById('updateFullName').value.trim();
+
+        const email = document.getElementById('updateEmail').value.trim();
+
+        const phone = document.getElementById('updatePhone').value.trim();
+
+        const staffId = document.getElementById('updateStaffIdField').value.trim();
+
+        const role = document.getElementById('updateRole').value;
+
+        const password = document.getElementById('updatePassword').value.trim();
+
+        if (!fullName || !email || !phone || !staffId) {
+
+            console.log("Please fill all required fields");
+
+            return;
+        }
+
+        const btn = document.getElementById('updateBtn');
+
+        btn.disabled = true;
+
+        btn.innerHTML = '<span class="loading"></span> Saving...';
+
+        // Payload
+        const payload = {
+            fullName,
+            email,
+            phone,
+            staffId,
+            role
+        };
+
+        // Password only if entered
+        if (password !== "") {
+
+            payload.password = password;
+        }
+
+        try {
+
+            const response = await fetch(`/updateStaff/${id}`, {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            console.log(result.message || "Updated Successfully");
+
+            closeUpdateModal();
+
+            loadStaff();
+
+        } catch (error) {
+
+            console.log("Update Failed:", error);
+
+        } finally {
+
+            btn.disabled = false;
+
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        }
+    }
+
+    // =========================
+    // PASSWORD TOGGLE
+    // =========================
+    function togglePasswordVisibility() {
+
+        const input = document.getElementById('updatePassword');
+
+        const icon = document.getElementById('passwordEyeIcon');
+
+        if (input.type === 'password') {
+
+            input.type = 'text';
+
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+
+            console.log("Password Visible");
+
+        } else {
+
+            input.type = 'password';
+
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+
+            console.log("Password Hidden");
+        }
+    }
+
+    // =========================
+    // AUTO LOAD
+    // =========================
+    loadStaff();
+       const hamburgerBtn = document.querySelector('.button-menu-mobile');
+
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', function () {
+            const isMobile = window.innerWidth <= 767;
+
+            if (isMobile) {
+                document.body.classList.toggle('mobile-menu-open');
+            } else {
+                document.body.classList.toggle('enlarge-menu');
+            }
+        });
+    }
+
+    // Mobile par bahar click se sidebar band
+    document.addEventListener('click', function (e) {
+        if (window.innerWidth > 767) return;
+
+        const sidebar = document.querySelector('.left-sidenav');
+        const hamburger = document.querySelector('.button-menu-mobile');
+
+        if (sidebar && hamburger &&
+            !sidebar.contains(e.target) &&
+            !hamburger.contains(e.target)
+        ) {
+            document.body.classList.remove('mobile-menu-open');
+        }
+    });
 
 
+
+</script>
 
 </body>
 

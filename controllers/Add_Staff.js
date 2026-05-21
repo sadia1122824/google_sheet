@@ -393,7 +393,9 @@ const AssignedClients = async (request, reply) => {
     }
 };
 
-
+const dashboard = async (req, reply) => {
+    return reply.sendFile('staff/staff_dashboard.html');
+}
 
 
 
@@ -406,6 +408,7 @@ module.exports = {
     updateStaff,
     loginStaff,
     loginCredentials,
-    AssignedClients
+    AssignedClients,
+    dashboard
     
 }

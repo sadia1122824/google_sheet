@@ -864,6 +864,37 @@
   <script>
 document.addEventListener("DOMContentLoaded", async function () {
 
+       const hamburgerBtn = document.querySelector('.button-menu-mobile');
+
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', function () {
+            const isMobile = window.innerWidth <= 767;
+
+            if (isMobile) {
+                document.body.classList.toggle('mobile-menu-open');
+            } else {
+                document.body.classList.toggle('enlarge-menu');
+            }
+        });
+    }
+
+    // Mobile par bahar click se sidebar band
+    document.addEventListener('click', function (e) {
+        if (window.innerWidth > 767) return;
+
+        const sidebar = document.querySelector('.left-sidenav');
+        const hamburger = document.querySelector('.button-menu-mobile');
+
+        if (sidebar && hamburger &&
+            !sidebar.contains(e.target) &&
+            !hamburger.contains(e.target)
+        ) {
+            document.body.classList.remove('mobile-menu-open');
+        }
+    });
+
+
+
     // =========================
     // 1. LOAD STAFF DROPDOWN
     // =========================
@@ -944,6 +975,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 
+
+    
 });
 </script>
 

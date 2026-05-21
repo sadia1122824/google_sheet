@@ -21,7 +21,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
           <li class="menu-label mt-0">Main</li>
 
-        
+                 <li>
+<a href="/staffDashboard">
+  <i data-feather="file-plus" class="menu-icon"></i>
+  <span>Dashboard</span>
+</a>
+</li>
 
            <li>
 <a href="uploadExcell">
