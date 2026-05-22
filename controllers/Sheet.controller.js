@@ -1,20 +1,18 @@
 const sheetService = require("../services/sheet.service");
 const Latest_ClientCredentials = require("../models/latest_googlesheet_credentials");
 const Previous_ClientCredentials = require("../models/previous_googlesheet_credentials");
+const UploadRecord = require("../models/UploadRecord");
 const axios = require("axios");
 const XLSX = require("xlsx");
 const mongoose = require("mongoose");
-
-
-
 
 const showDashboard = async (request, reply) => {
   return reply.sendFile("admin/googleSheet.html");
 };
 
-const uploadExcell = async(req, reply) => {
-    return reply.sendFile('staff/uploadSheet.html');
-}
+const uploadExcell = async (req, reply) => {
+  return reply.sendFile("staff/uploadSheet.html");
+};
 
 function cleanNumber(value) {
   if (value === null || value === undefined || value === "") return "";
@@ -36,15 +34,15 @@ function cleanNumber(value) {
   return "";
 }
 
-
 const importExcelFile = async (request, reply) => {
   try {
     const parts = request.parts();
-    let fileBuffer  = null;
-    let fileName    = null;
+    let fileBuffer = null;
+    let fileName = null;
     let selectedYear = "latest";
-    let clientId    = null;   // ✅ NEW
-    let clientName  = null;   // ✅ NEW
+    let clientId = null; // ✅ NEW
+    let clientName = null; // ✅ NEW
+    let staffId = null;
 
     // ── Parse multipart fields ──────────────────────────────────────────
     for await (const part of parts) {
@@ -52,40 +50,49 @@ const importExcelFile = async (request, reply) => {
         const chunks = [];
         for await (const chunk of part.file) chunks.push(chunk);
         fileBuffer = Buffer.concat(chunks);
-        fileName   = part.filename;
-
+        fileName = part.filename;
       } else if (part.type === "field") {
-        if (part.fieldname === "year")       selectedYear = part.value;
-        if (part.fieldname === "clientId")   clientId     = part.value;   // ✅ NEW
-        if (part.fieldname === "clientName") clientName   = part.value;   // ✅ NEW
+        if (part.fieldname === "year") selectedYear = part.value;
+        if (part.fieldname === "clientId") clientId = part.value; // ✅ NEW
+        if (part.fieldname === "clientName") clientName = part.value; // ✅ NEW
+        if (part.fieldname === "staffId") staffId = part.value;
       }
     }
 
     // ── Validation ──────────────────────────────────────────────────────
     if (!fileBuffer) {
-      return reply.code(400).send({ success: false, error: "Please upload an Excel file" });
+      return reply
+        .code(400)
+        .send({ success: false, error: "Please upload an Excel file" });
     }
-     if (!clientId || !clientName) {
-      return reply.code(400).send({ success: false, error: "clientId and clientName are required" });
+    if (!clientId || !clientName) {
+      return reply.code(400).send({
+        success: false,
+        error: "clientId and clientName are required",
+      });
     }
 
     // ✅ Agar MongoDB _id aa raha hai to actual clientId lo
     let actualClientId = clientId;
     if (clientId.length === 24 && /^[a-f0-9]+$/i.test(clientId)) {
-      const clientRecord = await ClientRecord.findById(clientId).select("clientId");
+      const clientRecord =
+        await ClientRecord.findById(clientId).select("clientId");
       if (clientRecord?.clientId) {
         actualClientId = clientRecord.clientId; // "1234" ✅
         console.log(`✅ Converted MongoDB _id → clientId: ${actualClientId}`);
       }
     }
 
-    console.log(`📁 File: ${fileName} | Client: ${clientName} (${actualClientId}) | Year: ${selectedYear}`);
-
-    
+    console.log(
+      `📁 File: ${fileName} | Client: ${clientName} (${actualClientId}) | Year: ${selectedYear}`,
+    );
 
     // ── Parse workbook ──────────────────────────────────────────────────
     const workbook = XLSX.read(fileBuffer, {
-      type: "buffer", cellDates: true, cellNF: false, cellText: false,
+      type: "buffer",
+      cellDates: true,
+      cellNF: false,
+      cellText: false,
     });
 
     const sheetName = "C.Resultado";
@@ -98,29 +105,34 @@ const importExcelFile = async (request, reply) => {
     }
 
     const worksheet = workbook.Sheets[sheetName];
-    const jsonData  = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1, defval: null, raw: true, blankrows: false,
+    const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+      defval: null,
+      raw: true,
+      blankrows: false,
     });
 
     console.log(`📊 Sheet loaded: ${jsonData.length} total rows`);
 
     // ── Find header row ──────────────────────────────────────────────────
     let headerRowIndex = -1;
-    let excelHeaders   = [];
+    let excelHeaders = [];
 
     for (let i = 0; i < Math.min(20, jsonData.length); i++) {
       const row = jsonData[i];
       if (row && row.length > 0) {
         for (let j = 0; j < row.length; j++) {
           const cell = row[j];
-          if (cell && typeof cell === "string" && (
-            cell.includes("PERDIDAS Y GANANCIAS") ||
-            cell.includes("CUENTA") ||
-            cell.includes("DESCRIPCION") ||
-            cell.includes("DESCRIPCIÓN")
-          )) {
+          if (
+            cell &&
+            typeof cell === "string" &&
+            (cell.includes("PERDIDAS Y GANANCIAS") ||
+              cell.includes("CUENTA") ||
+              cell.includes("DESCRIPCION") ||
+              cell.includes("DESCRIPCIÓN"))
+          ) {
             headerRowIndex = i;
-            excelHeaders   = jsonData[i];
+            excelHeaders = jsonData[i];
             break;
           }
         }
@@ -129,18 +141,34 @@ const importExcelFile = async (request, reply) => {
     }
 
     if (headerRowIndex === -1) {
-      return reply.code(400).send({ success: false, error: "Could not find header row" });
+      return reply
+        .code(400)
+        .send({ success: false, error: "Could not find header row" });
     }
 
     // ── Map month columns ────────────────────────────────────────────────
     const monthNameMap = {
-      ene: 0, jan: 0, feb: 1, mar: 2, abr: 3, apr: 3,
-      may: 4, jun: 5, jul: 6, ago: 7, aug: 7,
-      sep: 8, set: 8, oct: 9, nov: 10, dic: 11, dec: 11,
+      ene: 0,
+      jan: 0,
+      feb: 1,
+      mar: 2,
+      abr: 3,
+      apr: 3,
+      may: 4,
+      jun: 5,
+      jul: 6,
+      ago: 7,
+      aug: 7,
+      sep: 8,
+      set: 8,
+      oct: 9,
+      nov: 10,
+      dic: 11,
+      dec: 11,
     };
 
     const gsColByMonthIndex = [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28];
-    const monthColIndices   = new Array(12).fill(-1);
+    const monthColIndices = new Array(12).fill(-1);
 
     excelHeaders.forEach((header, colIndex) => {
       if (!header) return;
@@ -152,7 +180,11 @@ const importExcelFile = async (request, reply) => {
 
     // ── Find first data row ──────────────────────────────────────────────
     let startDataRow = headerRowIndex + 1;
-    for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + 10, jsonData.length); i++) {
+    for (
+      let i = headerRowIndex + 1;
+      i < Math.min(headerRowIndex + 10, jsonData.length);
+      i++
+    ) {
       const row = jsonData[i];
       if (row && row.length > 1 && row[1] && row[1].toString().trim() !== "") {
         startDataRow = i;
@@ -165,21 +197,29 @@ const importExcelFile = async (request, reply) => {
 
     for (let i = startDataRow; i < jsonData.length; i++) {
       const excelRow = jsonData[i];
-      if (!excelRow || excelRow.length === 0 ||
-          excelRow.every(cell => cell === null || cell === "" || cell === undefined)) continue;
+      if (
+        !excelRow ||
+        excelRow.length === 0 ||
+        excelRow.every(
+          (cell) => cell === null || cell === "" || cell === undefined,
+        )
+      )
+        continue;
       if (!excelRow[1] || excelRow[1].toString().trim() === "") continue;
 
       const processedRow = new Array(30).fill("");
-      processedRow[0]    = "";
-      processedRow[1]    = excelRow[1].toString().trim();
+      processedRow[0] = "";
+      processedRow[1] = excelRow[1].toString().trim();
 
       monthColIndices.forEach((excelCol, monthIndex) => {
         if (excelCol === -1) return;
         const gsCol = gsColByMonthIndex[monthIndex];
-        if (excelCol < excelRow.length &&
-            excelRow[excelCol] !== null &&
-            excelRow[excelCol] !== undefined &&
-            excelRow[excelCol] !== "") {
+        if (
+          excelCol < excelRow.length &&
+          excelRow[excelCol] !== null &&
+          excelRow[excelCol] !== undefined &&
+          excelRow[excelCol] !== ""
+        ) {
           processedRow[gsCol] = cleanNumber(excelRow[excelCol]);
         }
       });
@@ -190,7 +230,11 @@ const importExcelFile = async (request, reply) => {
     console.log(`✅ Total rows prepared: ${rowsForGoogleSheets.length}`);
 
     if (rowsForGoogleSheets.length === 0) {
-      return reply.send({ success: true, message: "⚠️ No data rows found", importedRows: 0 });
+      return reply.send({
+        success: true,
+        message: "⚠️ No data rows found",
+        importedRows: 0,
+      });
     }
 
     // ✅ sheetService ko clientId, clientName, aur yearType pass karo
@@ -198,38 +242,48 @@ const importExcelFile = async (request, reply) => {
     const result = await sheetService.addMultipleRows(
       rowsForGoogleSheets,
       selectedYear,
-      actualClientId,    // ✅ NEW
-      clientName   // ✅ NEW  → sheetService copy ka naam yahan se set kare
+      actualClientId, // ✅ NEW
+      clientName, // ✅ NEW  → sheetService copy ka naam yahan se set kare
     );
 
     if (!result.success) throw new Error(result.error);
+    if (!staffId || staffId === "null" || staffId === "undefined") {
+      console.warn("⚠️ staffId missing in formData");
+    }
 
-    return reply.send({
-      success:     true,
-      message:     `✅ Successfully imported ${rowsForGoogleSheets.length} rows`,
+    await UploadRecord.create({
+      staffId: staffId && staffId !== "null" ? String(staffId) : "unknown",
+      clientId: String(actualClientId),
+      clientName: clientName,
+      fileName: fileName,
       importedRows: rowsForGoogleSheets.length,
-      sheetName:   result.sheetName,   // ✅ frontend ko naam wapis milega
-      yearType:    selectedYear,
-      clientId:     actualClientId,
-      clientName,
-      googleSheets: {
-        startRow:    result.startRow,
-        insertedRows: result.insertedRows,
-        sheetUrl:    result.sheetUrl,
-      },
+      failedRows: 0,
+      year: selectedYear,
+      status: "success",
+      sheetUrl: result.sheetUrl || "",
     });
 
+    return reply.send({
+      success: true,
+      message: `✅ Successfully imported ${rowsForGoogleSheets.length} rows`,
+      importedRows: rowsForGoogleSheets.length,
+      sheetName: result.sheetName, // ✅ frontend ko naam wapis milega
+      yearType: selectedYear,
+      clientId: actualClientId,
+      clientName,
+      googleSheets: {
+        startRow: result.startRow,
+        insertedRows: result.insertedRows,
+        sheetUrl: result.sheetUrl,
+      },
+    });
   } catch (error) {
     console.error("❌ Import error:", error);
     return reply.code(500).send({ success: false, error: error.message });
   }
 };
 
-
-
 //  ******************************** Live data in google sheet and show data in table  **************************************
-
-
 
 // const getLatestSheetResult = async (req, reply) => {
 //   try {
@@ -273,39 +327,27 @@ const importExcelFile = async (request, reply) => {
 //   }
 // };
 
-
-
-
-
-
 // *********************************previous sheet data show in table  ***********************************
-
-
-
 
 // ==============================
 // ✅ Helper: Get all explotacion collections from DB
 // ==============================
 
-
-
-
 const LiveSheetData = async (req, reply) => {
   return reply.sendFile("users/Live_Sheet.html");
- 
 };
-
-
 
 const getLatestSheetResult = async (req, reply) => {
   try {
     // ✅ Sirf header se lo — ye kaam kar raha hai
     const clientId = req.headers["x-client-id"];
 
-    console.log("Frontend se aaya clientId:", clientId); 
+    console.log("Frontend se aaya clientId:", clientId);
 
     if (!clientId) {
-      return reply.status(401).send({ success: false, error: "clientId missing" });
+      return reply
+        .status(401)
+        .send({ success: false, error: "clientId missing" });
     }
 
     const result = await sheetService.fetchLatestSheetData(clientId);
@@ -315,11 +357,11 @@ const getLatestSheetResult = async (req, reply) => {
     }
 
     return reply.send({
-      success:    true,
-      source:     "latest_sheet",
+      success: true,
+      source: "latest_sheet",
       collection: result.collection,
-      totalRows:  result.data.length,
-      data:       result.data,
+      totalRows: result.data.length,
+      data: result.data,
     });
   } catch (err) {
     return reply.status(500).send({ success: false, error: err.message });
@@ -328,14 +370,16 @@ const getLatestSheetResult = async (req, reply) => {
 
 const previousSheetData = async (req, reply) => {
   return reply.sendFile("users/previous_Sheet.html");
-}
+};
 
 const getPreviousSheetResult = async (req, reply) => {
   try {
     const clientId = req.headers["x-client-id"]; // ✅ same
 
     if (!clientId) {
-      return reply.status(401).send({ success: false, error: "clientId missing" });
+      return reply
+        .status(401)
+        .send({ success: false, error: "clientId missing" });
     }
 
     const result = await sheetService.fetchPreviousSheetData(clientId);
@@ -345,22 +389,20 @@ const getPreviousSheetResult = async (req, reply) => {
     }
 
     return reply.send({
-      success:    true,
-      source:     "previous_sheet",
+      success: true,
+      source: "previous_sheet",
       collection: result.collection,
-      totalRows:  result.data.length,
-      data:       result.data,
+      totalRows: result.data.length,
+      data: result.data,
     });
   } catch (err) {
     return reply.status(500).send({ success: false, error: err.message });
   }
 };
 
-
-
 const showTable = async (req, reply) => {
   return reply.sendFile("staff/show_sheet.html");
-}
+};
 const getMostRecentSheet = async (req, reply) => {
   const { clientId } = req.params;
   const result = await sheetService.getMostRecentSheetData(clientId);
@@ -382,7 +424,6 @@ const deleteSheetData = async (req, reply) => {
 
   return reply.status(200).send(result);
 };
-
 
 // **************************** AI Controller Logic ****************************
 
@@ -489,9 +530,6 @@ const deleteSheetData = async (req, reply) => {
 //   }
 // };
 
-
-
-
 const AI_chat = async (req, reply) => {
   try {
     const {
@@ -557,10 +595,10 @@ Rules:
         const answer = data?.choices?.[0]?.message?.content;
         return reply.send({
           success: true,
-          answer: answer || "I couldn't generate an answer. Please try rephrasing.",
+          answer:
+            answer || "I couldn't generate an answer. Please try rephrasing.",
           intent: { type: "general" },
         });
-
       } catch (err) {
         console.error("OpenAI error:", err.message);
         return reply.send({
@@ -572,12 +610,15 @@ Rules:
     }
 
     if (jsResult.error) {
-      return reply.send({ success: true, answer: `⚠️ ${jsResult.error}`, intent: {} });
+      return reply.send({
+        success: true,
+        answer: `⚠️ ${jsResult.error}`,
+        intent: {},
+      });
     }
 
     const jsAnswer = buildAnswerFromJs(jsResult, question, metric);
     return reply.send({ success: true, answer: jsAnswer, intent: {} });
-
   } catch (err) {
     console.error("AI_chat error:", err);
     return reply.send({ success: false, error: err.message });
@@ -712,10 +753,9 @@ function buildAnswerFromJs(jsResult, question, metric = null) {
   return "Please ask about a specific period or metric.";
 }
 
-
 const liveSheetGraphs = async (req, reply) => {
   return reply.sendFile("users/liveSheet_graphs.html");
-}
+};
 
 const previousSheetGraphs = async (req, reply) => {
   return reply.sendFile("users/previousSheet_graphs.html");
@@ -734,5 +774,5 @@ module.exports = {
   AI_chat,
   uploadExcell,
   liveSheetGraphs,
-  previousSheetGraphs
+  previousSheetGraphs,
 };

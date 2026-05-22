@@ -1,5 +1,5 @@
 
- const { staff ,addStaff ,getStaff,showStaff ,deleteStaff ,updateStaff,loginStaff,loginCredentials ,dashboard} = require('../controllers/Add_Staff');
+ const { staff ,addStaff ,getStaff,showStaff ,deleteStaff ,updateStaff,loginStaff,loginCredentials ,dashboard,getStaffDashboard} = require('../controllers/Add_Staff');
 
 
 const staffRouts = async(app,options)=>{
@@ -16,6 +16,7 @@ const staffRouts = async(app,options)=>{
   app.get('/loginStaff', loginStaff);
    app.post('/loginStaff', loginCredentials);
    app.get('/staffDashboard',{ preHandler: [app.staffauthenticate] }, dashboard);
+   app.get('/getStaffDashboard/:staffId', getStaffDashboard);
 
 }
 
