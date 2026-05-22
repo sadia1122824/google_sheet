@@ -715,23 +715,22 @@
                                         <option value="latest">Latest Year</option>
                                         <option value="previous">Previous Year</option>
                                     </select>
-                                </div>
-
-                                  <div class="mt-2">
-                                    <label for="clientSelect" class="font-weight-bold">Select Client:</label>
+                                       <label for="clientSelect" class="font-weight-bold">Select Client:</label>
                                     <select id="clientSelect" class="form-control"
                                         style="max-width: 200px; display: inline-block; margin-left: 10px;">
                                         <option value=""></option>
-                                        
+
                                     </select>
                                 </div>
+
+                              
                             </div>
 
                             <div class="card">
 
 
                                 <div class="card">
-                                 
+
 
                                     <div class="card-body">
                                         <!-- Simple Notification -->
@@ -843,29 +842,29 @@
     <!-- App js -->
     <!-- <script src="side_navbar.js"></script> -->
 
-   
 
-<script>
-    // DOM elements
-    const fileUpload = document.getElementById('fileUpload');
-    const fileLabel = document.getElementById('fileLabel');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const notificationAlert = document.getElementById('notificationAlert');
-    const progressSection = document.getElementById('progressSection');
-    const progressBar = document.getElementById('progressBar');
-    const progressStatus = document.getElementById('progressStatus');
-    const progressPercent = document.getElementById('progressPercent');
-    const resultsSection = document.getElementById('resultsSection');
-    const resultsDetails = document.getElementById('resultsDetails');
-    const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
 
-    let isUploading = false;
-    let abortController = null;
+    <script>
+        // DOM elements
+        const fileUpload = document.getElementById('fileUpload');
+        const fileLabel = document.getElementById('fileLabel');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const notificationAlert = document.getElementById('notificationAlert');
+        const progressSection = document.getElementById('progressSection');
+        const progressBar = document.getElementById('progressBar');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressPercent = document.getElementById('progressPercent');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsDetails = document.getElementById('resultsDetails');
+        const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
 
-    // Show notification
-    function showNotification(message, type = 'success') {
-        notificationAlert.innerHTML = `
+        let isUploading = false;
+        let abortController = null;
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            notificationAlert.innerHTML = `
             <div class="d-flex align-items-center">
                 <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
                 <span>${message}</span>
@@ -874,131 +873,131 @@
                 </button>
             </div>
         `;
-        notificationAlert.className = `alert alert-${type} alert-dismissible`;
-        notificationAlert.style.display = 'block';
+            notificationAlert.className = `alert alert-${type} alert-dismissible`;
+            notificationAlert.style.display = 'block';
 
-        if (type === 'success') {
-            setTimeout(() => {
-                notificationAlert.style.display = 'none';
-            }, 5000);
-        }
-    }
-
-    // Update progress
-    function updateProgress(percent, status) {
-        progressBar.style.width = `${percent}%`;
-        progressPercent.textContent = `${percent}%`;
-        progressStatus.textContent = status;
-    }
-
-    // Reset form
-    function resetForm() {
-        fileUpload.value = '';
-        fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
-        uploadBtn.disabled = true;
-        progressSection.style.display = 'none';
-        resultsSection.style.display = 'none';
-        isUploading = false;
-    }
-
-    // ✅ UPDATED: Upload file with clientId + clientName
-    async function uploadFile() {
-        const file = fileUpload.files[0];
-        if (!file || isUploading) return;
-
-        // ✅ Get client info from dropdown
-        const dropdown   = document.getElementById('clientSelect');
-        const clientId   = dropdown.value;
-        const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || "";
-        const selectedYear = document.getElementById('yearSelect').value;
-
-        // ✅ Client validation
-        if (!clientId) {
-            showNotification('❌ Please select a client first.', 'danger');
-            return;
-        }
-
-        isUploading = true;
-        abortController = new AbortController();
-
-        // Show progress
-        progressSection.style.display = 'block';
-        resultsSection.style.display = 'none';
-        uploadBtn.disabled = true;
-        cancelBtn.style.display = 'inline-block';
-
-        try {
-            updateProgress(10, 'Validating file...');
-
-            // Check file size (max 10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                throw new Error('File size must be less than 10MB');
-            }
-
-            // Check file type
-            const validExtensions = ['.csv', '.xlsx', '.xls'];
-            const fileName = file.name.toLowerCase();
-            if (!validExtensions.some(ext => fileName.endsWith(ext))) {
-                throw new Error('Please upload CSV or Excel files only');
-            }
-
-            updateProgress(30, 'Uploading to server...');
-
-            // ✅ FormData with clientId + clientName
-            const formData = new FormData();
-            formData.append('file',       file);
-            formData.append('year',       selectedYear);
-            formData.append('clientId',   clientId);    // ✅ NEW
-            formData.append('clientName', clientName);  // ✅ NEW
-
-            const response = await fetch('/importExcelFile', {
-                method: 'POST',
-                body: formData,
-                signal: abortController.signal
-            });
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
-            }
-
-            updateProgress(70, 'Processing data...');
-
-            const result = await response.json();
-
-            if (result.success) {
-                updateProgress(100, 'Import complete!');
-
+            if (type === 'success') {
                 setTimeout(() => {
-                    showResults(result);
-                    showNotification(
-                        `✅ Data imported successfully for <strong>${clientName}</strong>!`,
-                        'success'
-                    );
-                }, 500);
-
-            } else {
-                throw new Error(result.error || 'Import failed');
+                    notificationAlert.style.display = 'none';
+                }, 5000);
             }
-
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                showNotification('Upload cancelled', 'info');
-            } else {
-                showNotification(`❌ Error: ${error.message}`, 'danger');
-                console.error('Upload error:', error);
-            }
-            resetForm();
         }
-    }
 
-    // ✅ UPDATED: Show results with client name + sheet name
-    function showResults(result) {
-        const imported   = result.importedRows || 0;
-        const failed     = result.failedRows   || 0;
-        const sheetName  = result.sheetName    || '';
-        const clientName = result.clientName   || '';
+        // Update progress
+        function updateProgress(percent, status) {
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+            progressStatus.textContent = status;
+        }
 
-        resultsDetails.innerHTML = `
+        // Reset form
+        function resetForm() {
+            fileUpload.value = '';
+            fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+            uploadBtn.disabled = true;
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            isUploading = false;
+        }
+
+        // ✅ UPDATED: Upload file with clientId + clientName
+        async function uploadFile() {
+            const file = fileUpload.files[0];
+            if (!file || isUploading) return;
+
+            // ✅ Get client info from dropdown
+            const dropdown = document.getElementById('clientSelect');
+            const clientId = dropdown.value;
+            const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || "";
+            const selectedYear = document.getElementById('yearSelect').value;
+
+            // ✅ Client validation
+            if (!clientId) {
+                showNotification('❌ Please select a client first.', 'danger');
+                return;
+            }
+
+            isUploading = true;
+            abortController = new AbortController();
+
+            // Show progress
+            progressSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            uploadBtn.disabled = true;
+            cancelBtn.style.display = 'inline-block';
+
+            try {
+                updateProgress(10, 'Validating file...');
+
+                // Check file size (max 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    throw new Error('File size must be less than 10MB');
+                }
+
+                // Check file type
+                const validExtensions = ['.csv', '.xlsx', '.xls'];
+                const fileName = file.name.toLowerCase();
+                if (!validExtensions.some(ext => fileName.endsWith(ext))) {
+                    throw new Error('Please upload CSV or Excel files only');
+                }
+
+                updateProgress(30, 'Uploading to server...');
+
+                // ✅ FormData with clientId + clientName
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('year', selectedYear);
+                formData.append('clientId', clientId);    // ✅ NEW
+                formData.append('clientName', clientName);  // ✅ NEW
+
+                const response = await fetch('/importExcelFile', {
+                    method: 'POST',
+                    body: formData,
+                    signal: abortController.signal
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                updateProgress(70, 'Processing data...');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    updateProgress(100, 'Import complete!');
+
+                    setTimeout(() => {
+                        showResults(result);
+                        showNotification(
+                            `✅ Data imported successfully for <strong>${clientName}</strong>!`,
+                            'success'
+                        );
+                    }, 500);
+
+                } else {
+                    throw new Error(result.error || 'Import failed');
+                }
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showNotification('Upload cancelled', 'info');
+                } else {
+                    showNotification(`❌ Error: ${error.message}`, 'danger');
+                    console.error('Upload error:', error);
+                }
+                resetForm();
+            }
+        }
+
+        // ✅ UPDATED: Show results with client name + sheet name
+        function showResults(result) {
+            const imported = result.importedRows || 0;
+            const failed = result.failedRows || 0;
+            const sheetName = result.sheetName || '';
+            const clientName = result.clientName || '';
+
+            resultsDetails.innerHTML = `
             <div class="row">
                 <div class="col-6">
                     <div class="text-success">
@@ -1046,151 +1045,162 @@
             ` : ''}
         `;
 
-        progressSection.style.display = 'none';
-        resultsSection.style.display  = 'block';
-    }
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+        }
 
-    // Format currency
-    function formatCurrency(amount) {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2
-        }).format(amount);
-    }
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
 
-    // Cancel upload
-    function cancelUpload() {
-        if (abortController) abortController.abort();
-        resetForm();
-        showNotification('Upload cancelled', 'info');
-    }
+        // Cancel upload
+        function cancelUpload() {
+            if (abortController) abortController.abort();
+            resetForm();
+            showNotification('Upload cancelled', 'info');
+        }
 
-    // ── Event Listeners ──────────────────────────────────────────────────
-    fileUpload.addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        if (file) {
-            fileLabel.innerHTML = `
+        // ── Event Listeners ──────────────────────────────────────────────────
+        fileUpload.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileLabel.innerHTML = `
                 <i class="fas fa-file-excel mr-2 text-success"></i>
                 <strong>${file.name}</strong>
                 <small class="text-muted ml-2">(${(file.size / 1024).toFixed(2)} KB)</small>
             `;
-            uploadBtn.disabled = false;
-        } else {
-            resetForm();
-        }
-    });
-
-    // ✅ Single uploadBtn listener — uploadFile() handles everything
-    uploadBtn.addEventListener('click', uploadFile);
-    cancelBtn.addEventListener('click', cancelUpload);
-    uploadAnotherBtn.addEventListener('click', resetForm);
-
-    // Drag and drop
-    const cardBody = document.querySelector('.card-body');
-    cardBody.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        cardBody.style.backgroundColor = '#f8f9fa';
-    });
-    cardBody.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        cardBody.style.backgroundColor = '';
-    });
-    cardBody.addEventListener('drop', (e) => {
-        e.preventDefault();
-        cardBody.style.backgroundColor = '';
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            fileUpload.files = files;
-            fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-    });
-
-    // ── Logout ───────────────────────────────────────────────────────────
-    function logout() {
-        fetch('/logout', { method: 'POST', credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: "success", title: "Logged out",
-                        text: data.message, timer: 1200, showConfirmButton: false
-                    });
-                    setTimeout(() => { window.location.href = "/login"; }, 1200);
-                } else {
-                    Swal.fire("Error", data.message || "Logout failed", "error");
-                }
-            })
-            .catch(() => Swal.fire("Error", "Server error", "error"));
-    }
-
-    // ── Mobile Menu ──────────────────────────────────────────────────────
-    function initMobileMenu() {
-        const menuBtn = document.querySelector(".button-menu-mobile");
-        if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
-            menuBtn.dataset.mobileListenerAttached = "true";
-            menuBtn.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (window.innerWidth <= 767) {
-                    document.body.classList.toggle("mobile-menu-open");
-                } else {
-                    document.body.classList.toggle("enlarge-menu");
-                }
-            });
-            document.addEventListener("click", function (e) {
-                if (window.innerWidth <= 767) {
-                    const sidebar = document.querySelector(".left-sidenav");
-                    if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-                        document.body.classList.remove("mobile-menu-open");
-                    }
-                }
-            });
-        }
-    }
-
-    // ── DOMContentLoaded — single listener for all init ─────────────────
-    document.addEventListener("DOMContentLoaded", async function () {
-
-        // Mobile menu init
-        initMobileMenu();
-        const observer = new MutationObserver(() => {
-            const menuBtn = document.querySelector(".button-menu-mobile");
-            if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-
-        // ✅ Load assigned clients into dropdown
-        const staffId = String(localStorage.getItem("staffId"));
-        if (!staffId) { console.log("No staff logged in"); return; }
-
-        try {
-            const response = await fetch(`/AssignedClients/${staffId}`);
-            const result   = await response.json();
-
-            const dropdown = document.getElementById("clientSelect");
-            dropdown.innerHTML = `<option value="">Select Client</option>`;
-
-            console.log("API RESULT:", result);
-
-            if (result.success && result.data.length > 0) {
-                result.data.forEach(client => {
-                    const option = document.createElement("option");
-                    option.value            = client.clientId;
-                    option.textContent      = client.fullName;
-                    option.dataset.fullName = client.fullName; // ✅ for uploadFile()
-                    dropdown.appendChild(option);
-                });
+                uploadBtn.disabled = false;
             } else {
-                console.log("No clients found for staffId:", staffId);
+                resetForm();
             }
+        });
 
-        } catch (error) {
-            console.log("Client load error:", error);
+        // ✅ Single uploadBtn listener — uploadFile() handles everything
+        uploadBtn.addEventListener('click', uploadFile);
+        cancelBtn.addEventListener('click', cancelUpload);
+        uploadAnotherBtn.addEventListener('click', resetForm);
+
+        // Drag and drop
+        const cardBody = document.querySelector('.card-body');
+        cardBody.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '#f8f9fa';
+        });
+        cardBody.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '';
+        });
+        cardBody.addEventListener('drop', (e) => {
+            e.preventDefault();
+            cardBody.style.backgroundColor = '';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileUpload.files = files;
+                fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+
+        // ── Logout ───────────────────────────────────────────────────────────
+        function logout() {
+            fetch('/logout', { method: 'POST', credentials: 'include' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: "success", title: "Logged out",
+                            text: data.message, timer: 1200, showConfirmButton: false
+                        });
+                        setTimeout(() => { window.location.href = "/login"; }, 1200);
+                    } else {
+                        Swal.fire("Error", data.message || "Logout failed", "error");
+                    }
+                })
+                .catch(() => Swal.fire("Error", "Server error", "error"));
         }
-    });
 
-    console.log("Upload form initialized");
-</script>
+        // ── Mobile Menu ──────────────────────────────────────────────────────
+        function initMobileMenu() {
+            const menuBtn = document.querySelector(".button-menu-mobile");
+            if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
+                menuBtn.dataset.mobileListenerAttached = "true";
+                menuBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    if (window.innerWidth <= 767) {
+                        document.body.classList.toggle("mobile-menu-open");
+                    } else {
+                        document.body.classList.toggle("enlarge-menu");
+                    }
+                });
+                document.addEventListener("click", function (e) {
+                    if (window.innerWidth <= 767) {
+                        const sidebar = document.querySelector(".left-sidenav");
+                        if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                            document.body.classList.remove("mobile-menu-open");
+                        }
+                    }
+                });
+            }
+        }
+
+        // ── DOMContentLoaded — single listener for all init ─────────────────
+        document.addEventListener("DOMContentLoaded", async function () {
+
+            // Mobile menu init
+            initMobileMenu();
+            const observer = new MutationObserver(() => {
+                const menuBtn = document.querySelector(".button-menu-mobile");
+                if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            // ✅ Load assigned clients into dropdown
+            const staffId = String(localStorage.getItem("staffId"));
+            if (!staffId) { console.log("No staff logged in"); return; }
+
+            try {
+                const response = await fetch(`/AssignedClients/${staffId}`);
+                const result = await response.json();
+
+                const dropdown = document.getElementById("clientSelect");
+                dropdown.innerHTML = `<option value="">Select Client</option>`;
+                // ✅ Jab client select ho, localStorage update karo
+                dropdown.addEventListener("change", function () {
+                    const selectedOption = dropdown.options[dropdown.selectedIndex];
+                    if (dropdown.value) {
+                        localStorage.setItem("clientId", dropdown.value);
+                        localStorage.setItem("clientName", selectedOption.dataset.fullName || selectedOption.textContent);
+                    } else {
+                        localStorage.removeItem("clientId");
+                        localStorage.removeItem("clientName");
+                    }
+                });
+
+                console.log("API RESULT:", result);
+
+                if (result.success && result.data.length > 0) {
+                    result.data.forEach(client => {
+                        const option = document.createElement("option");
+                        option.value = client.clientId;
+                        option.textContent = client.fullName;
+                        option.dataset.fullName = client.fullName; // ✅ for uploadFile()
+                        dropdown.appendChild(option);
+                    });
+                } else {
+                    console.log("No clients found for staffId:", staffId);
+                }
+
+            } catch (error) {
+                console.log("Client load error:", error);
+            }
+        });
+
+        console.log("Upload form initialized");
+    </script>
 
 
 </body>
