@@ -708,7 +708,7 @@
                                 <p class="text-muted mb-0">Upload Excel file to import data directly</p>
 
                                 <!-- Year Selector Dropdown -->
-                                <div class="mt-2">
+                                <!-- <div class="mt-2">
                                     <label for="yearSelect" class="font-weight-bold">Select Year:</label>
                                     <select id="yearSelect" class="form-control"
                                         style="max-width: 200px; display: inline-block; margin-left: 10px;">
@@ -721,9 +721,36 @@
                                         <option value=""></option>
 
                                     </select>
+                                </div> -->
+                                <div class="mt-2 row g-2 align-items-center">
+
+                                    <div class="col-12 col-md-auto">
+                                        <label for="yearSelect" class="font-weight-bold">
+                                            Select Year:
+                                        </label>
+                                    </div>
+
+                                    <div class="col-12 col-md-3">
+                                        <select id="yearSelect" class="form-control">
+                                            <option value="latest">Latest Year</option>
+                                            <option value="previous">Previous Year</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-12 col-md-auto">
+                                        <label for="clientSelect" class="font-weight-bold">
+                                            Select Client:
+                                        </label>
+                                    </div>
+
+                                    <div class="col-12 col-md-3">
+                                        <select id="clientSelect" class="form-control">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+
                                 </div>
 
-                              
                             </div>
 
                             <div class="card">

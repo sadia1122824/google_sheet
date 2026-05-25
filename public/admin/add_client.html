@@ -914,8 +914,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 result.data.forEach(staff => {
 
                     const option = document.createElement("option");
-                    option.value = staff.staffId;
-                    option.textContent = `${staff.fullName} (${staff.staffId})`;
+                    // option.value = staff.staffId;
+                    // option.textContent = `${staff.fullName} (${staff.staffId})`;
+                    option.value = staff.fullName; // staffId ki jagah name save karo
+                    option.textContent = `${staff.fullName}`;
 
                     select.appendChild(option);
                 });
