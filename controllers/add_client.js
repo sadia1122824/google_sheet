@@ -138,9 +138,55 @@ const deleteClient = async (request, reply) => {
 
 
 
+// const updateClient = async (request, reply) => {
+//     try {
+//         const { id } = request.params;
+//         const { fullName, email, phone, clientId, assignStaff, password } = request.body;
+
+//         const updateData = { fullName, email, phone, clientId, assignStaff };
+
+//         if (password && password.trim() !== "") {
+//             const hashedPassword = await bcrypt.hash(password, 10);
+//             updateData.password = hashedPassword;
+//         }
+
+//         const updated = await ClientRecord.findByIdAndUpdate(
+//             id,
+//             updateData,
+//             { new: true }
+//         );
+
+//         if (!updated) {
+//             return reply.status(404).send({ 
+//                 success: false, 
+//                 message: "Client not found" 
+//             });
+//         }
+
+//         return reply.send({ 
+//             success: true, 
+//             message: "Client updated successfully", 
+//             data: updated 
+//         });
+
+//     } catch (error) {
+//         console.log(error);
+//         return reply.status(500).send({ 
+//             success: false, 
+//             message: "Server Error" 
+//         });
+//     }
+// };
+
 const updateClient = async (request, reply) => {
     try {
         const { id } = request.params;
+        
+        // ✅ Step 1: Check karo ID aa rahi hai?
+        console.log("=== UPDATE CLIENT CALLED ===");
+        console.log("ID:", id);
+        console.log("Body:", request.body);
+
         const { fullName, email, phone, clientId, assignStaff, password } = request.body;
 
         const updateData = { fullName, email, phone, clientId, assignStaff };
@@ -150,11 +196,17 @@ const updateClient = async (request, reply) => {
             updateData.password = hashedPassword;
         }
 
+        // ✅ Step 2: Check karo DB call se pehle data sahi hai?
+        console.log("Update Data:", updateData);
+
         const updated = await ClientRecord.findByIdAndUpdate(
             id,
-            updateData,
+            { $set: updateData },   // $set lagao
             { new: true }
         );
+
+        // ✅ Step 3: DB ne kya return kiya?
+        console.log("Updated Result:", updated);
 
         if (!updated) {
             return reply.status(404).send({ 
@@ -170,7 +222,8 @@ const updateClient = async (request, reply) => {
         });
 
     } catch (error) {
-        console.log(error);
+        // ✅ Step 4: Exact error dekho
+        console.log("UPDATE ERROR:", error.message);
         return reply.status(500).send({ 
             success: false, 
             message: "Server Error" 

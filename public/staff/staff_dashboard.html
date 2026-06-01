@@ -746,6 +746,22 @@
             color: var(--color-text-secondary);
             font-weight: 500
         }
+
+        /* Mobile sidebar overlay */
+        body.mobile-menu-open #sidebarOverlay {
+            display: block !important;
+        }
+
+        @media (max-width: 767px) {
+            body:not(.mobile-menu-open) .left-sidenav {
+                transform: translateX(-100%);
+            }
+
+            .left-sidenav {
+                transition: transform 0.25s ease;
+                z-index: 1000;
+            }
+        }
     </style>
 </head>
 
@@ -913,7 +929,7 @@
 
                 <div class="dash-divider"></div>
 
-              
+
 
             </div><!-- container -->
         </div>
@@ -934,99 +950,99 @@
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script>
-// ── Date ────────────────────────────────────────────────────────────
-const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const mons = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const n = new Date();
-document.getElementById('dashDate').textContent =
-  `${days[n.getDay()]}, ${n.getDate()} ${mons[n.getMonth()]} ${n.getFullYear()}`;
+    <script>
+        // ── Date ────────────────────────────────────────────────────────────
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const n = new Date();
+        document.getElementById('dashDate').textContent =
+            `${days[n.getDay()]}, ${n.getDate()} ${mons[n.getMonth()]} ${n.getFullYear()}`;
 
-// ── Globals ──────────────────────────────────────────────────────────
-const COLORS     = ['#534AB7','#0F6E56','#b8670a','#a32d2d','#993556','#185fa5','#639922','#BA7517'];
-const AV_CLASSES = ['av-purple','av-teal','av-amber','av-red','av-pink','av-blue','av-purple','av-teal'];
-const STATUS_MAP = {
-  success: ['s-success','Imported'],
-  pending: ['s-pending','Processing'],
-  error:   ['s-error','Failed']
-};
-let barInst  = null;
-let data7d   = [0,0,0,0,0,0,0];
-let data30d  = new Array(30).fill(0);
+        // ── Globals ──────────────────────────────────────────────────────────
+        const COLORS = ['#534AB7', '#0F6E56', '#b8670a', '#a32d2d', '#993556', '#185fa5', '#639922', '#BA7517'];
+        const AV_CLASSES = ['av-purple', 'av-teal', 'av-amber', 'av-red', 'av-pink', 'av-blue', 'av-purple', 'av-teal'];
+        const STATUS_MAP = {
+            success: ['s-success', 'Imported'],
+            pending: ['s-pending', 'Processing'],
+            error: ['s-error', 'Failed']
+        };
+        let barInst = null;
+        let data7d = [0, 0, 0, 0, 0, 0, 0];
+        let data30d = new Array(30).fill(0);
 
-// ── Animate count ────────────────────────────────────────────────────
-function animateCount(id, target, delay) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  let start = null;
-  const dur = 1300;
-  setTimeout(() => {
-    requestAnimationFrame(function step(ts) {
-      if (!start) start = ts;
-      const p    = Math.min((ts - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 4);
-      el.textContent = Math.round(ease * target);
-      if (p < 1) requestAnimationFrame(step);
-      else el.textContent = target;
-    });
-  }, delay || 0);
-}
+        // ── Animate count ────────────────────────────────────────────────────
+        function animateCount(id, target, delay) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let start = null;
+            const dur = 1300;
+            setTimeout(() => {
+                requestAnimationFrame(function step(ts) {
+                    if (!start) start = ts;
+                    const p = Math.min((ts - start) / dur, 1);
+                    const ease = 1 - Math.pow(1 - p, 4);
+                    el.textContent = Math.round(ease * target);
+                    if (p < 1) requestAnimationFrame(step);
+                    else el.textContent = target;
+                });
+            }, delay || 0);
+        }
 
-// ── Bar chart ────────────────────────────────────────────────────────
-function buildBar(period) {
-  const is30   = period === '30d';
-  const raw    = is30 ? data30d : data7d;
-  const labels = is30
-    ? Array.from({ length: 30 }, (_, i) => String(i + 1))
-    : ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        // ── Bar chart ────────────────────────────────────────────────────────
+        function buildBar(period) {
+            const is30 = period === '30d';
+            const raw = is30 ? data30d : data7d;
+            const labels = is30
+                ? Array.from({ length: 30 }, (_, i) => String(i + 1))
+                : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  if (barInst) barInst.destroy();
-  barInst = new Chart(document.getElementById('barChart'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Files',
-        data: raw,
-        backgroundColor: raw.map((_, i) =>
-          i === raw.length - 2 ? 'rgba(83,74,183,0.9)' : 'rgba(83,74,183,0.25)'
-        ),
-        borderColor: '#534AB7', borderWidth: 2, borderRadius: 6, borderSkipped: false
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      animation: { duration: 900, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 40 },
-      plugins: {
-        legend: { display: false },
-        tooltip: { backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8 }
-      },
-      scales: {
-        x: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 10 }, maxTicksLimit: is30 ? 10 : 7 }, border: { display: false } },
-        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 10 }, stepSize: 1, callback: v => Number.isInteger(v) ? v : '' }, beginAtZero: true, border: { display: false } }
-      }
-    }
-  });
-}
+            if (barInst) barInst.destroy();
+            barInst = new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Files',
+                        data: raw,
+                        backgroundColor: raw.map((_, i) =>
+                            i === raw.length - 2 ? 'rgba(83,74,183,0.9)' : 'rgba(83,74,183,0.25)'
+                        ),
+                        borderColor: '#534AB7', borderWidth: 2, borderRadius: 6, borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 900, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 40 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8 }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 10 }, maxTicksLimit: is30 ? 10 : 7 }, border: { display: false } },
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 10 }, stepSize: 1, callback: v => Number.isInteger(v) ? v : '' }, beginAtZero: true, border: { display: false } }
+                    }
+                }
+            });
+        }
 
-function switchPeriod(el, p) {
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  buildBar(p);
-}
+        function switchPeriod(el, p) {
+            document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            buildBar(p);
+        }
 
-// ── Donut chart ──────────────────────────────────────────────────────
-function buildDonut(uploadsPerClient) {
-  const circ    = 2 * Math.PI * 50;
-  const active  = uploadsPerClient.filter(c => c.uploadCount > 0);
-  const totalUp = active.reduce((a, c) => a + c.uploadCount, 0);
+        // ── Donut chart ──────────────────────────────────────────────────────
+        function buildDonut(uploadsPerClient) {
+            const circ = 2 * Math.PI * 50;
+            const active = uploadsPerClient.filter(c => c.uploadCount > 0);
+            const totalUp = active.reduce((a, c) => a + c.uploadCount, 0);
 
-  document.querySelector('.donut-center .dpct').textContent = totalUp;
+            document.querySelector('.donut-center .dpct').textContent = totalUp;
 
-  const svg = document.getElementById('donutSvg');
-  svg.querySelectorAll('circle.dyn').forEach(c => c.remove());
+            const svg = document.getElementById('donutSvg');
+            svg.querySelectorAll('circle.dyn').forEach(c => c.remove());
 
-  document.getElementById('donutLegend').innerHTML = active.map((c, i) => `
+            document.getElementById('donutLegend').innerHTML = active.map((c, i) => `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <span style="width:10px;height:10px;border-radius:3px;background:${COLORS[i % COLORS.length]};flex-shrink:0"></span>
       <span style="font-size:12px;color:var(--color-text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.fullName}</span>
@@ -1034,41 +1050,41 @@ function buildDonut(uploadsPerClient) {
     </div>
   `).join('');
 
-  if (totalUp === 0) return;
+            if (totalUp === 0) return;
 
-  setTimeout(() => {
-    let offset = 0;
-    active.forEach((c, i) => {
-      const pct    = c.uploadCount / totalUp;
-      const len    = Math.round(circ * pct);
-      const gap    = Math.round(circ - len);
-      const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      circle.classList.add('dyn');
-      circle.setAttribute('cx','65'); circle.setAttribute('cy','65'); circle.setAttribute('r','50');
-      circle.setAttribute('fill','none');
-      circle.setAttribute('stroke', COLORS[i % COLORS.length]);
-      circle.setAttribute('stroke-width','14');
-      circle.setAttribute('stroke-dasharray',`0 ${Math.round(circ)}`);
-      circle.setAttribute('stroke-linecap','round');
-      circle.setAttribute('transform','rotate(-90 65 65)');
-      circle.style.strokeDashoffset  = -offset;
-      circle.style.transition = `stroke-dasharray 1.2s cubic-bezier(.22,1,.36,1) ${0.8 + i * 0.12}s`;
-      svg.appendChild(circle);
-      setTimeout(() => circle.setAttribute('stroke-dasharray',`${len} ${gap}`), 50);
-      offset += len;
-    });
-  }, 400);
-}
+            setTimeout(() => {
+                let offset = 0;
+                active.forEach((c, i) => {
+                    const pct = c.uploadCount / totalUp;
+                    const len = Math.round(circ * pct);
+                    const gap = Math.round(circ - len);
+                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    circle.classList.add('dyn');
+                    circle.setAttribute('cx', '65'); circle.setAttribute('cy', '65'); circle.setAttribute('r', '50');
+                    circle.setAttribute('fill', 'none');
+                    circle.setAttribute('stroke', COLORS[i % COLORS.length]);
+                    circle.setAttribute('stroke-width', '14');
+                    circle.setAttribute('stroke-dasharray', `0 ${Math.round(circ)}`);
+                    circle.setAttribute('stroke-linecap', 'round');
+                    circle.setAttribute('transform', 'rotate(-90 65 65)');
+                    circle.style.strokeDashoffset = -offset;
+                    circle.style.transition = `stroke-dasharray 1.2s cubic-bezier(.22,1,.36,1) ${0.8 + i * 0.12}s`;
+                    svg.appendChild(circle);
+                    setTimeout(() => circle.setAttribute('stroke-dasharray', `${len} ${gap}`), 50);
+                    offset += len;
+                });
+            }, 400);
+        }
 
-// ── Client progress bars ─────────────────────────────────────────────
-function buildClientProgress(uploadsPerClient) {
-  const maxUp = Math.max(...uploadsPerClient.map(c => c.uploadCount), 1);
-  document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clients`;
+        // ── Client progress bars ─────────────────────────────────────────────
+        function buildClientProgress(uploadsPerClient) {
+            const maxUp = Math.max(...uploadsPerClient.map(c => c.uploadCount), 1);
+            document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clients`;
 
-  document.getElementById('clientProgress').innerHTML = uploadsPerClient.map((c, i) => {
-    const initials = c.fullName.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-    const pct      = ((c.uploadCount / maxUp) * 100).toFixed(0);
-    return `
+            document.getElementById('clientProgress').innerHTML = uploadsPerClient.map((c, i) => {
+                const initials = c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const pct = ((c.uploadCount / maxUp) * 100).toFixed(0);
+                return `
       <div class="cp-item">
         <div class="av-circle ${AV_CLASSES[i % AV_CLASSES.length]}">${initials}</div>
         <div class="cp-info">
@@ -1080,26 +1096,26 @@ function buildClientProgress(uploadsPerClient) {
         </div>
         <div class="cp-val" style="color:${COLORS[i % COLORS.length]}">${c.uploadCount}</div>
       </div>`;
-  }).join('');
+            }).join('');
 
-  setTimeout(() => {
-    document.querySelectorAll('.cp-bar-fill').forEach(b => b.style.transform = 'scaleX(1)');
-  }, 500);
-}
+            setTimeout(() => {
+                document.querySelectorAll('.cp-bar-fill').forEach(b => b.style.transform = 'scaleX(1)');
+            }, 500);
+        }
 
-// ── Timeline ─────────────────────────────────────────────────────────
-function buildTimeline(timeline) {
-  if (!timeline || timeline.length === 0) {
-    document.getElementById('timeline').innerHTML =
-      `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">No recent activity</p>`;
-    return;
-  }
-  document.getElementById('timeline').innerHTML = timeline.map(t => {
-    const isSuccess = t.status === 'success';
-    const isError   = t.status === 'error';
-    const icon = isSuccess ? '✅' : isError ? '❌' : '📁';
-    const cls  = isSuccess ? 'tl-success' : isError ? 'tl-upload' : 'tl-client';
-    return `
+        // ── Timeline ─────────────────────────────────────────────────────────
+        function buildTimeline(timeline) {
+            if (!timeline || timeline.length === 0) {
+                document.getElementById('timeline').innerHTML =
+                    `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">No recent activity</p>`;
+                return;
+            }
+            document.getElementById('timeline').innerHTML = timeline.map(t => {
+                const isSuccess = t.status === 'success';
+                const isError = t.status === 'error';
+                const icon = isSuccess ? '✅' : isError ? '❌' : '📁';
+                const cls = isSuccess ? 'tl-success' : isError ? 'tl-upload' : 'tl-client';
+                return `
       <div class="tl-item">
         <div class="tl-dot ${cls}">${icon}</div>
         <div class="tl-content">
@@ -1107,21 +1123,21 @@ function buildTimeline(timeline) {
           <div class="tl-time">${t.importedRows} rows · ${formatTimeAgo(t.createdAt)}</div>
         </div>
       </div>`;
-  }).join('');
-}
+            }).join('');
+        }
 
-// ── Uploads table ────────────────────────────────────────────────────
-function buildTable(recentUploads) {
-  if (!recentUploads || recentUploads.length === 0) {
-    document.getElementById('uploadsTbody').innerHTML =
-      `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">No uploads yet</td></tr>`;
-    return;
-  }
-  document.getElementById('uploadsTbody').innerHTML = recentUploads.map((r, i) => {
-    const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending','Unknown'];
-    const initials   = (r.clientName || 'UN').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-    const avCls      = AV_CLASSES[i % AV_CLASSES.length];
-    return `
+        // ── Uploads table ────────────────────────────────────────────────────
+        function buildTable(recentUploads) {
+            if (!recentUploads || recentUploads.length === 0) {
+                document.getElementById('uploadsTbody').innerHTML =
+                    `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">No uploads yet</td></tr>`;
+                return;
+            }
+            document.getElementById('uploadsTbody').innerHTML = recentUploads.map((r, i) => {
+                const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending', 'Unknown'];
+                const initials = (r.clientName || 'UN').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                const avCls = AV_CLASSES[i % AV_CLASSES.length];
+                return `
       <tr style="opacity:0;animation:fadeInRight .4s ease ${1.3 + i * 0.1}s forwards">
         <td>
           <div style="display:flex;align-items:center;gap:9px">
@@ -1139,123 +1155,123 @@ function buildTable(recentUploads) {
         </td>
         <td><span class="status-badge ${cls}">${lbl}</span></td>
       </tr>`;
-  }).join('');
-}
+            }).join('');
+        }
 
-// ── Time ago ─────────────────────────────────────────────────────────
-function formatTimeAgo(dateStr) {
-  if (!dateStr) return '—';
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 1)  return 'Just now';
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24)  return `${hrs}h ago`;
-  const d = new Date(dateStr);
-  return `${d.getDate()} ${mons[d.getMonth()]}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-}
+        // ── Time ago ─────────────────────────────────────────────────────────
+        function formatTimeAgo(dateStr) {
+            if (!dateStr) return '—';
+            const diff = Date.now() - new Date(dateStr).getTime();
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const d = new Date(dateStr);
+            return `${d.getDate()} ${mons[d.getMonth()]}, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
 
-// ── MAIN: Load dashboard from API ────────────────────────────────────
-async function loadDashboard(staffId) {
-  try {
-    // ✅ params route: /getStaffDashboard/:staffId
-    const res    = await fetch(`/getStaffDashboard/${staffId}`);
-    const result = await res.json();
+        // ── MAIN: Load dashboard from API ────────────────────────────────────
+        async function loadDashboard(staffId) {
+            try {
+                // ✅ params route: /getStaffDashboard/:staffId
+                const res = await fetch(`/getStaffDashboard/${staffId}`);
+                const result = await res.json();
 
-    console.log('📊 Dashboard API response:', result);
+                console.log('📊 Dashboard API response:', result);
 
-    if (!result.success) {
-      console.error('Dashboard error:', result.error);
-      return;
-    }
+                if (!result.success) {
+                    console.error('Dashboard error:', result.error);
+                    return;
+                }
 
-    const { stats, uploadsPerClient, weeklyActivity, recentUploads, timeline } = result.data;
+                const { stats, uploadsPerClient, weeklyActivity, recentUploads, timeline } = result.data;
 
-    // Stats
-    animateCount('v1', stats.totalUploads,      350);
-    animateCount('v2', stats.totalClients,      500);
-    animateCount('v3', stats.successfulImports, 650);
-    animateCount('v4', stats.todayUploads,      800);
+                // Stats
+                animateCount('v1', stats.totalUploads, 350);
+                animateCount('v2', stats.totalClients, 500);
+                animateCount('v3', stats.successfulImports, 650);
+                animateCount('v4', stats.todayUploads, 800);
 
-    setTimeout(() => {
-      ['bar1','bar2','bar3','bar4'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.transform = 'scaleX(1)';
-      });
-    }, 600);
+                setTimeout(() => {
+                    ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.style.transform = 'scaleX(1)';
+                    });
+                }, 600);
 
-    // Store for switchPeriod
-    data7d  = weeklyActivity || [0,0,0,0,0,0,0];
+                // Store for switchPeriod
+                data7d = weeklyActivity || [0, 0, 0, 0, 0, 0, 0];
 
-    // Build all sections
-    buildBar('7d');
-    buildDonut(uploadsPerClient    || []);
-    buildClientProgress(uploadsPerClient || []);
-    buildTimeline(timeline         || []);
-    buildTable(recentUploads       || []);
+                // Build all sections
+                buildBar('7d');
+                buildDonut(uploadsPerClient || []);
+                buildClientProgress(uploadsPerClient || []);
+                buildTimeline(timeline || []);
+                buildTable(recentUploads || []);
 
-  } catch (err) {
-    console.error('Dashboard load error:', err);
-  }
-}
+            } catch (err) {
+                console.error('Dashboard load error:', err);
+            }
+        }
 
-// ── Load clients dropdown ─────────────────────────────────────────────
-async function loadClients(staffId) {
-  try {
-    const res    = await fetch(`/AssignedClients/${staffId}`);
-    const result = await res.json();
+        // ── Load clients dropdown ─────────────────────────────────────────────
+        async function loadClients(staffId) {
+            try {
+                const res = await fetch(`/AssignedClients/${staffId}`);
+                const result = await res.json();
 
-    const dropdown = document.getElementById('clientSelect');
-    if (!dropdown) return;
+                const dropdown = document.getElementById('clientSelect');
+                if (!dropdown) return;
 
-    dropdown.innerHTML = `<option value="">Select Client</option>`;
+                dropdown.innerHTML = `<option value="">Select Client</option>`;
 
-    dropdown.addEventListener('change', function () {
-      const opt = dropdown.options[dropdown.selectedIndex];
-      if (dropdown.value) {
-        localStorage.setItem('clientId',   dropdown.value);
-        localStorage.setItem('clientName', opt.dataset.fullName || opt.textContent);
-      } else {
-        localStorage.removeItem('clientId');
-        localStorage.removeItem('clientName');
-      }
-    });
+                dropdown.addEventListener('change', function () {
+                    const opt = dropdown.options[dropdown.selectedIndex];
+                    if (dropdown.value) {
+                        localStorage.setItem('clientId', dropdown.value);
+                        localStorage.setItem('clientName', opt.dataset.fullName || opt.textContent);
+                    } else {
+                        localStorage.removeItem('clientId');
+                        localStorage.removeItem('clientName');
+                    }
+                });
 
-    if (result.success && result.data.length > 0) {
-      result.data.forEach(client => {
-        const opt           = document.createElement('option');
-        opt.value           = client.clientId;
-        opt.textContent     = client.fullName;
-        opt.dataset.fullName = client.fullName;
-        dropdown.appendChild(opt);
-      });
-    } else {
-      console.log('No clients for staffId:', staffId);
-    }
-  } catch (err) {
-    console.error('Client load error:', err);
-  }
-}
+                if (result.success && result.data.length > 0) {
+                    result.data.forEach(client => {
+                        const opt = document.createElement('option');
+                        opt.value = client.clientId;
+                        opt.textContent = client.fullName;
+                        opt.dataset.fullName = client.fullName;
+                        dropdown.appendChild(opt);
+                    });
+                } else {
+                    console.log('No clients for staffId:', staffId);
+                }
+            } catch (err) {
+                console.error('Client load error:', err);
+            }
+        }
 
-// ── Upload file ───────────────────────────────────────────────────────
-const fileUpload       = document.getElementById('fileUpload');
-const fileLabel        = document.getElementById('fileLabel');
-const uploadBtn        = document.getElementById('uploadBtn');
-const cancelBtn        = document.getElementById('cancelBtn');
-const notificationAlert= document.getElementById('notificationAlert');
-const progressSection  = document.getElementById('progressSection');
-const progressBar      = document.getElementById('progressBar');
-const progressStatus   = document.getElementById('progressStatus');
-const progressPercent  = document.getElementById('progressPercent');
-const resultsSection   = document.getElementById('resultsSection');
-const resultsDetails   = document.getElementById('resultsDetails');
-const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
+        // ── Upload file ───────────────────────────────────────────────────────
+        const fileUpload = document.getElementById('fileUpload');
+        const fileLabel = document.getElementById('fileLabel');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const notificationAlert = document.getElementById('notificationAlert');
+        const progressSection = document.getElementById('progressSection');
+        const progressBar = document.getElementById('progressBar');
+        const progressStatus = document.getElementById('progressStatus');
+        const progressPercent = document.getElementById('progressPercent');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsDetails = document.getElementById('resultsDetails');
+        const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
 
-let isUploading    = false;
-let abortController = null;
+        let isUploading = false;
+        let abortController = null;
 
-function showNotification(message, type = 'success') {
-  notificationAlert.innerHTML = `
+        function showNotification(message, type = 'success') {
+            notificationAlert.innerHTML = `
     <div class="d-flex align-items-center">
       <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
       <span>${message}</span>
@@ -1264,102 +1280,102 @@ function showNotification(message, type = 'success') {
         <span>&times;</span>
       </button>
     </div>`;
-  notificationAlert.className = `alert alert-${type} alert-dismissible`;
-  notificationAlert.style.display = 'block';
-  if (type === 'success') setTimeout(() => { notificationAlert.style.display = 'none'; }, 5000);
-}
+            notificationAlert.className = `alert alert-${type} alert-dismissible`;
+            notificationAlert.style.display = 'block';
+            if (type === 'success') setTimeout(() => { notificationAlert.style.display = 'none'; }, 5000);
+        }
 
-function updateProgress(percent, status) {
-  progressBar.style.width     = `${percent}%`;
-  progressPercent.textContent = `${percent}%`;
-  progressStatus.textContent  = status;
-}
+        function updateProgress(percent, status) {
+            progressBar.style.width = `${percent}%`;
+            progressPercent.textContent = `${percent}%`;
+            progressStatus.textContent = status;
+        }
 
-function resetForm() {
-  fileUpload.value    = '';
-  fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
-  uploadBtn.disabled  = true;
-  progressSection.style.display = 'none';
-  resultsSection.style.display  = 'none';
-  isUploading = false;
-}
+        function resetForm() {
+            fileUpload.value = '';
+            fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+            uploadBtn.disabled = true;
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'none';
+            isUploading = false;
+        }
 
-async function uploadFile() {
-  const file = fileUpload.files[0];
-  if (!file || isUploading) return;
+        async function uploadFile() {
+            const file = fileUpload.files[0];
+            if (!file || isUploading) return;
 
-  const dropdown     = document.getElementById('clientSelect');
-  const clientId     = dropdown.value;
-  const clientName   = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || '';
-  const selectedYear = document.getElementById('yearSelect').value;
-  const staffId      = localStorage.getItem('staffId');
+            const dropdown = document.getElementById('clientSelect');
+            const clientId = dropdown.value;
+            const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || '';
+            const selectedYear = document.getElementById('yearSelect').value;
+            const staffId = localStorage.getItem('staffId');
 
-  if (!clientId) {
-    showNotification('❌ Please select a client first.', 'danger');
-    return;
-  }
+            if (!clientId) {
+                showNotification('❌ Please select a client first.', 'danger');
+                return;
+            }
 
-  isUploading     = true;
-  abortController = new AbortController();
-  progressSection.style.display = 'block';
-  resultsSection.style.display  = 'none';
-  uploadBtn.disabled             = true;
-  cancelBtn.style.display        = 'inline-block';
+            isUploading = true;
+            abortController = new AbortController();
+            progressSection.style.display = 'block';
+            resultsSection.style.display = 'none';
+            uploadBtn.disabled = true;
+            cancelBtn.style.display = 'inline-block';
 
-  try {
-    updateProgress(10, 'Validating file...');
+            try {
+                updateProgress(10, 'Validating file...');
 
-    if (file.size > 10 * 1024 * 1024) throw new Error('File size must be less than 10MB');
-    const validExts = ['.csv','.xlsx','.xls'];
-    if (!validExts.some(ext => file.name.toLowerCase().endsWith(ext)))
-      throw new Error('Please upload CSV or Excel files only');
+                if (file.size > 10 * 1024 * 1024) throw new Error('File size must be less than 10MB');
+                const validExts = ['.csv', '.xlsx', '.xls'];
+                if (!validExts.some(ext => file.name.toLowerCase().endsWith(ext)))
+                    throw new Error('Please upload CSV or Excel files only');
 
-    updateProgress(30, 'Uploading to server...');
+                updateProgress(30, 'Uploading to server...');
 
-    const formData = new FormData();
-    formData.append('file',       file);
-    formData.append('year',       selectedYear);
-    formData.append('clientId',   clientId);
-    formData.append('clientName', clientName);
-    formData.append('staffId',    staffId || '');   // ✅ staffId bhejo
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('year', selectedYear);
+                formData.append('clientId', clientId);
+                formData.append('clientName', clientName);
+                formData.append('staffId', staffId || '');   // ✅ staffId bhejo
 
-    const response = await fetch('/importExcelFile', {
-      method: 'POST',
-      body:   formData,
-      signal: abortController.signal
-    });
+                const response = await fetch('/importExcelFile', {
+                    method: 'POST',
+                    body: formData,
+                    signal: abortController.signal
+                });
 
-    if (!response.ok) throw new Error(`Server error: ${response.status}`);
+                if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-    updateProgress(70, 'Processing data...');
-    const result = await response.json();
+                updateProgress(70, 'Processing data...');
+                const result = await response.json();
 
-    if (result.success) {
-      updateProgress(100, 'Import complete!');
-      setTimeout(async () => {
-        showResults(result);
-        showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
-        // ✅ Dashboard live refresh
-        if (staffId) await loadDashboard(staffId);
-      }, 500);
-    } else {
-      throw new Error(result.error || 'Import failed');
-    }
+                if (result.success) {
+                    updateProgress(100, 'Import complete!');
+                    setTimeout(async () => {
+                        showResults(result);
+                        showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
+                        // ✅ Dashboard live refresh
+                        if (staffId) await loadDashboard(staffId);
+                    }, 500);
+                } else {
+                    throw new Error(result.error || 'Import failed');
+                }
 
-  } catch (error) {
-    if (error.name === 'AbortError') showNotification('Upload cancelled', 'info');
-    else showNotification(`❌ Error: ${error.message}`, 'danger');
-    resetForm();
-  }
-}
+            } catch (error) {
+                if (error.name === 'AbortError') showNotification('Upload cancelled', 'info');
+                else showNotification(`❌ Error: ${error.message}`, 'danger');
+                resetForm();
+            }
+        }
 
-function showResults(result) {
-  const imported   = result.importedRows || 0;
-  const failed     = result.failedRows   || 0;
-  const sheetName  = result.sheetName    || '';
-  const clientName = result.clientName   || '';
+        function showResults(result) {
+            const imported = result.importedRows || 0;
+            const failed = result.failedRows || 0;
+            const sheetName = result.sheetName || '';
+            const clientName = result.clientName || '';
 
-  resultsDetails.innerHTML = `
+            resultsDetails.innerHTML = `
     <div class="row">
       <div class="col-6">
         <div class="text-success">
@@ -1374,7 +1390,7 @@ function showResults(result) {
       </div>` : ''}
     </div>
     ${clientName ? `<div class="mt-2"><i class="fas fa-user mr-1 text-primary"></i><small><strong>Client:</strong> ${clientName}</small></div>` : ''}
-    ${sheetName  ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Sheet:</strong> ${sheetName}</small></div>` : ''}
+    ${sheetName ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Sheet:</strong> ${sheetName}</small></div>` : ''}
     ${result.googleSheets?.sheetUrl ? `
     <div class="mt-1">
       <a href="${result.googleSheets.sheetUrl}" target="_blank" class="btn btn-sm btn-outline-success mt-1">
@@ -1382,109 +1398,128 @@ function showResults(result) {
       </a>
     </div>` : ''}`;
 
-  progressSection.style.display = 'none';
-  resultsSection.style.display  = 'block';
-}
+            progressSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+        }
 
-function cancelUpload() {
-  if (abortController) abortController.abort();
-  resetForm();
-  showNotification('Upload cancelled', 'info');
-}
+        function cancelUpload() {
+            if (abortController) abortController.abort();
+            resetForm();
+            showNotification('Upload cancelled', 'info');
+        }
 
-// ── Event listeners ───────────────────────────────────────────────────
-if (fileUpload) {
-  fileUpload.addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (file) {
-      fileLabel.innerHTML = `
+        // ── Event listeners ───────────────────────────────────────────────────
+        if (fileUpload) {
+            fileUpload.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    fileLabel.innerHTML = `
         <i class="fas fa-file-excel mr-2 text-success"></i>
         <strong>${file.name}</strong>
         <small class="text-muted ml-2">(${(file.size / 1024).toFixed(2)} KB)</small>`;
-      uploadBtn.disabled = false;
-    } else {
-      resetForm();
-    }
-  });
-}
-if (uploadBtn)       uploadBtn.addEventListener('click', uploadFile);
-if (cancelBtn)       cancelBtn.addEventListener('click', cancelUpload);
-if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetForm);
+                    uploadBtn.disabled = false;
+                } else {
+                    resetForm();
+                }
+            });
+        }
+        if (uploadBtn) uploadBtn.addEventListener('click', uploadFile);
+        if (cancelBtn) cancelBtn.addEventListener('click', cancelUpload);
+        if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetForm);
 
-const cardBody = document.querySelector('.card-body');
-if (cardBody) {
-  cardBody.addEventListener('dragover',  e => { e.preventDefault(); cardBody.style.backgroundColor = '#f8f9fa'; });
-  cardBody.addEventListener('dragleave', e => { e.preventDefault(); cardBody.style.backgroundColor = ''; });
-  cardBody.addEventListener('drop', e => {
-    e.preventDefault();
-    cardBody.style.backgroundColor = '';
-    if (e.dataTransfer.files.length > 0) {
-      fileUpload.files = e.dataTransfer.files;
-      fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-  });
-}
+        const cardBody = document.querySelector('.card-body');
+        if (cardBody) {
+            cardBody.addEventListener('dragover', e => { e.preventDefault(); cardBody.style.backgroundColor = '#f8f9fa'; });
+            cardBody.addEventListener('dragleave', e => { e.preventDefault(); cardBody.style.backgroundColor = ''; });
+            cardBody.addEventListener('drop', e => {
+                e.preventDefault();
+                cardBody.style.backgroundColor = '';
+                if (e.dataTransfer.files.length > 0) {
+                    fileUpload.files = e.dataTransfer.files;
+                    fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
 
-// ── Logout ────────────────────────────────────────────────────────────
-function logout() {
-  fetch('/logout', { method: 'POST', credentials: 'include' })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        Swal.fire({ icon:'success', title:'Logged out', text:data.message, timer:1200, showConfirmButton:false });
-        setTimeout(() => { window.location.href = '/login'; }, 1200);
-      } else {
-        Swal.fire('Error', data.message || 'Logout failed', 'error');
-      }
-    })
-    .catch(() => Swal.fire('Error', 'Server error', 'error'));
-}
+        // ── Logout ────────────────────────────────────────────────────────────
+        function logout() {
+            fetch('/logout', { method: 'POST', credentials: 'include' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: 'Logged out', text: data.message, timer: 1200, showConfirmButton: false });
+                        setTimeout(() => { window.location.href = '/login'; }, 1200);
+                    } else {
+                        Swal.fire('Error', data.message || 'Logout failed', 'error');
+                    }
+                })
+                .catch(() => Swal.fire('Error', 'Server error', 'error'));
+        }
 
-// ── Mobile menu ───────────────────────────────────────────────────────
-function initMobileMenu() {
-  const menuBtn = document.querySelector('.button-menu-mobile');
-  if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
-    menuBtn.dataset.mobileListenerAttached = 'true';
-    menuBtn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      if (window.innerWidth <= 767) document.body.classList.toggle('mobile-menu-open');
-      else                          document.body.classList.toggle('enlarge-menu');
-    });
-    document.addEventListener('click', function (e) {
-      if (window.innerWidth <= 767) {
-        const sidebar = document.querySelector('.left-sidenav');
-        if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target))
-          document.body.classList.remove('mobile-menu-open');
-      }
-    });
-  }
-}
+        // ── Mobile menu ───────────────────────────────────────────────────────
+        function initMobileMenu() {
+            const menuBtn = document.querySelector('.button-menu-mobile');
+            if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
+                menuBtn.dataset.mobileListenerAttached = 'true';
 
-// ── DOMContentLoaded ──────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async function () {
-  initMobileMenu();
+                menuBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    document.body.classList.toggle('mobile-menu-open');
+                });
 
-  const observer = new MutationObserver(() => {
-    const menuBtn = document.querySelector('.button-menu-mobile');
-    if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
-  });
-  observer.observe(document.body, { childList: true, subtree: true });
+                // Close on outside click
+                document.addEventListener('click', function (e) {
+                    if (!document.body.classList.contains('mobile-menu-open')) return;
+                    const sidebar = document.querySelector('.left-sidenav');
+                    if (
+                        sidebar &&
+                        !sidebar.contains(e.target) &&
+                        !menuBtn.contains(e.target)
+                    ) {
+                        document.body.classList.remove('mobile-menu-open');
+                    }
+                });
 
-  const staffId = localStorage.getItem('staffId');
+                // Close on overlay tap (add overlay element)
+                const overlay = document.createElement('div');
+                overlay.id = 'sidebarOverlay';
+                overlay.style.cssText = `
+      display:none;position:fixed;inset:0;
+      background:rgba(0,0,0,0.45);z-index:999;
+    `;
+                document.body.appendChild(overlay);
 
-  if (!staffId || staffId === 'null') {
-    console.warn('No staffId — redirecting to login');
-    window.location.href = '/login';
-    return;
-  }
+                overlay.addEventListener('click', () => {
+                    document.body.classList.remove('mobile-menu-open');
+                });
+            }
+        }
 
-  // ✅ Dashboard + dropdown parallel load
-  await Promise.all([
-    loadDashboard(staffId),
-    loadClients(staffId)
-  ]);
-});
-</script>
+        // ── DOMContentLoaded ──────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', async function () {
+            initMobileMenu();
+
+            const observer = new MutationObserver(() => {
+                const menuBtn = document.querySelector('.button-menu-mobile');
+                if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+
+            const staffId = localStorage.getItem('staffId');
+
+            if (!staffId || staffId === 'null') {
+                console.warn('No staffId — redirecting to login');
+                window.location.href = '/login';
+                return;
+            }
+
+            // ✅ Dashboard + dropdown parallel load
+            await Promise.all([
+                loadDashboard(staffId),
+                loadClients(staffId)
+            ]);
+        });
+    </script>
 </body>
 
 </html>
