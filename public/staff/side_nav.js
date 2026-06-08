@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   const sideNavbar = document.getElementById("side-navbar");
   if (!sideNavbar) return;
 
@@ -21,24 +20,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
           <li class="menu-label mt-0">Main</li>
 
-                 <li>
-<a href="/staffDashboard">
-  <i data-feather="file-plus" class="menu-icon"></i>
-  <span>Dashboard</span>
-</a>
+                <li>
+  <a href="/staffDashboard">
+    <i data-feather="home" class="menu-icon"></i>
+    <span>Dashboard</span>
+  </a>
 </li>
 
-           <li>
-<a href="uploadExcell">
-  <i data-feather="file-plus" class="menu-icon"></i>
-  <span>Upload Excel Data</span>
-</a>
+<li>
+  <a href="uploadExcell">
+    <i data-feather="upload-cloud" class="menu-icon"></i>
+    <span>Upload Excel Data</span>
+  </a>
 </li>
-           <li>
-<a href="showTable">
-  <i data-feather="file-plus" class="menu-icon"></i>
-  <span>Show Excell </span>
-</a>
+
+<li>
+  <a href="showTable">
+    <i data-feather="database" class="menu-icon"></i>
+    <span>Show Excel</span>
+  </a>
 </li>
 
   

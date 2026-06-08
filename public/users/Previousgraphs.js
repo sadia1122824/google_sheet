@@ -257,35 +257,72 @@ function updateKPIs(sums){
    DONUT
 ══════════════════════════════════════════ */
 function buildDonut(activeCols){
-  const CODE_COL=findCodeColIndex();
-  const IS_EXP=v=>/^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
-  const expMap={};
-  allDataRows.forEach(row=>{
-    if(isSkipRow(row))return;
-    const cellVal=(row[CODE_COL]??'').toString().trim();
-    if(!IS_EXP(cellVal))return;
-    const label=extractLabel(cellVal)||cellVal;
-    activeCols.forEach(col=>{
-      const v=cellNum(row,col.colIndex);
-      if(v!==0)expMap[label]=(expMap[label]||0)+Math.abs(v);
+  const CODE_COL = findCodeColIndex();
+  const IS_EXP = v => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
+  const expMap = {};
+  allDataRows.forEach(row => {
+    if(isSkipRow(row)) return;
+    const cellVal = (row[CODE_COL] ?? '').toString().trim();
+    if(!IS_EXP(cellVal)) return;
+    const label = extractLabel(cellVal) || cellVal;
+    activeCols.forEach(col => {
+      const v = cellNum(row, col.colIndex);
+      if(v !== 0) expMap[label] = (expMap[label] || 0) + Math.abs(v);
     });
   });
-  const entries=Object.entries(expMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const labels=entries.map(e=>e[0]);
-  const vals  =entries.map(e=>e[1]);
-  const palette=['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
-  const dark=isDark();
+
+  const entries = Object.entries(expMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+  const labels  = entries.map(e => e[0]);
+  const vals    = entries.map(e => e[1]);
+  const total   = vals.reduce((a,b) => a+b, 0);   // ← TOTAL ADD KIYA
+  const palette = ['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
+  const dark    = isDark();
+
   mk('chartDonut','doughnut',{labels,datasets:[{
-    data:vals,backgroundColor:palette.slice(0,labels.length),
-    borderWidth:2,hoverOffset:6,borderColor:dark?'#161b27':'#fff'
+    data: vals,
+    backgroundColor: palette.slice(0,labels.length),
+    borderWidth: 2,
+    hoverOffset: 6,
+    borderColor: dark ? '#161b27' : '#fff'
   }]},{
-    responsive:true,maintainAspectRatio:false,animation:{duration:500},
-    plugins:{
-      legend:{display:true,position:'right',
-        labels:{color:dark?'#dde4f5':'#0e1220',font:{size:10},boxWidth:10,padding:8,boxHeight:10}},
-      tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${fmt(ctx.parsed)}`}}
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 500 },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: dark ? '#161b27' : '#fff',
+        borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
+        borderWidth: 1,
+        titleColor: dark ? '#dde4f5' : '#0e1220',
+        bodyColor: dark ? '#8892a4' : '#7a83a8',
+        padding: 10,
+        cornerRadius: 10,
+        callbacks: {
+          // ← PERCENTAGE TOOLTIP
+          label: ctx => {
+            const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+            return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
+          }
+        }
+      }
     },
-    cutout:'60%'
+    cutout: '60%',
+    // ← CENTER LABEL ON HOVER
+    onHover: (event, elements) => {
+      const centerVal = document.getElementById('donutCenterVal');
+      const centerSub = document.getElementById('donutCenterSub');
+      if(!centerVal || !centerSub) return;
+      if(elements.length > 0){
+        const idx = elements[0].index;
+        const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
+        centerVal.textContent = pct + '%';
+        centerSub.textContent = (labels[idx] || '').substring(0, 14);
+      } else {
+        centerVal.textContent = fmt(total);
+        centerSub.textContent = 'total';
+      }
+    }
   });
 }
 

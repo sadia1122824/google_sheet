@@ -625,6 +625,76 @@
             font-weight: 600;
             float: right;
         }
+
+        /* Sidebar Links */
+        .left-sidenav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #5b6475;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        /* Hover Effect */
+        .left-sidenav-menu a:hover {
+            transform: translateX(5px);
+            color: #2563eb;
+        }
+
+        /* Active Link */
+        .left-sidenav-menu a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* Icon Styling */
+        .left-sidenav-menu .menu-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            transition: all 0.25s ease;
+        }
+
+        /* Icon Hover Animation */
+        .left-sidenav-menu a:hover .menu-icon {
+            transform: scale(1.1);
+        }
+
+        /* Modern Left Border Indicator */
+        .left-sidenav-menu a::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: #2563eb;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+        }
+
+        .left-sidenav-menu a:hover::before,
+        .left-sidenav-menu a.active::before {
+            height: 70%;
+        }
+
+        /* Menu Label */
+        .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9aa4b2;
+            font-weight: 600;
+            margin: 18px 16px 8px;
+        }
     </style>
 
 </head>
@@ -881,27 +951,27 @@
 
 
 
-<script>
+    <script>
 
-    // =========================
-    // LOAD CLIENTS
-    // =========================
-    async function loadClients() {
+        // =========================
+        // LOAD CLIENTS
+        // =========================
+        async function loadClients() {
 
-        try {
+            try {
 
-            const response = await fetch("/getClients");
+                const response = await fetch("/getClients");
 
-            const result = await response.json();
+                const result = await response.json();
 
-            const tableBody = document.getElementById("clientTableBody");
+                const tableBody = document.getElementById("clientTableBody");
 
-            tableBody.innerHTML = "";
+                tableBody.innerHTML = "";
 
-            // No Data
-            if (!result.data || result.data.length === 0) {
+                // No Data
+                if (!result.data || result.data.length === 0) {
 
-                tableBody.innerHTML = `
+                    tableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="text-center text-danger">
                         No Clients Found
@@ -909,15 +979,15 @@
                 </tr>
             `;
 
-                console.log("No Clients Found");
+                    console.log("No Clients Found");
 
-                return;
-            }
+                    return;
+                }
 
-            // Loop Clients
-            result.data.forEach((client, index) => {
+                // Loop Clients
+                result.data.forEach((client, index) => {
 
-                tableBody.innerHTML += `
+                    tableBody.innerHTML += `
 
                 <tr>
 
@@ -962,220 +1032,220 @@
 
                 </tr>
             `;
+                });
+
+                console.log("Clients Loaded Successfully");
+
+            } catch (error) {
+
+                console.log("Load Clients Error:", error);
+            }
+        }
+
+        // =========================
+        // DELETE CLIENT
+        // =========================
+        async function deleteClient(id) {
+
+
+
+            try {
+
+                const response = await fetch(`/deleteClient/${id}`, {
+                    method: "DELETE"
+                });
+
+                const result = await response.json();
+
+                console.log(result.message);
+
+                loadClients();
+
+            } catch (error) {
+
+                console.log("Delete Failed:", error);
+            }
+        }
+
+
+        // Modal Open
+        function openUpdateClientModal(id, fullName, email, phone, clientId, assignStaff) {
+
+            document.getElementById('updateClientId').value = id;
+            document.getElementById('updateClientFullName').value = fullName;
+            document.getElementById('updateClientEmail').value = email;
+            document.getElementById('updateClientPhone').value = phone;
+            document.getElementById('updateClientIdField').value = clientId;
+            document.getElementById('updateAssignStaff').value = assignStaff;
+
+            document.getElementById('updateClientModal').style.display = 'block';
+
+            console.log("Update Modal Opened");
+        }
+
+        // Modal Close
+        function closeUpdateClientModal() {
+
+            document.getElementById('updateClientModal').style.display = 'none';
+
+            document.getElementById('updateClientPassword').value = '';
+
+            document.getElementById('updateClientPassword').type = 'password';
+
+            document.getElementById('clientPasswordEyeIcon')
+                .classList.replace('fa-eye-slash', 'fa-eye');
+
+            console.log("Update Modal Closed");
+        }
+
+        // Background click se close
+        document.getElementById('updateClientModal')
+            .addEventListener('click', function (e) {
+
+                if (e.target === this) {
+
+                    closeUpdateClientModal();
+                }
             });
 
-            console.log("Clients Loaded Successfully");
+        // Password Toggle
+        function toggleClientPasswordVisibility() {
 
-        } catch (error) {
+            const input = document.getElementById('updateClientPassword');
 
-            console.log("Load Clients Error:", error);
+            const icon = document.getElementById('clientPasswordEyeIcon');
+
+            if (input.type === 'password') {
+
+                input.type = 'text';
+
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+
+                console.log("Password Visible");
+
+            } else {
+
+                input.type = 'password';
+
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+
+                console.log("Password Hidden");
+            }
         }
-    }
 
-    // =========================
-    // DELETE CLIENT
-    // =========================
-    async function deleteClient(id) {
+        // Submit Update
+        async function submitClientUpdate() {
 
-     
+            const id = document.getElementById('updateClientId').value;
 
-        try {
+            const fullName = document.getElementById('updateClientFullName').value.trim();
 
-            const response = await fetch(`/deleteClient/${id}`, {
-                method: "DELETE"
-            });
+            const email = document.getElementById('updateClientEmail').value.trim();
 
-            const result = await response.json();
+            const phone = document.getElementById('updateClientPhone').value.trim();
 
-            console.log(result.message);
+            const clientId = document.getElementById('updateClientIdField').value.trim();
 
-            loadClients();
+            const assignStaff = document.getElementById('updateAssignStaff').value.trim();
 
-        } catch (error) {
+            const password = document.getElementById('updateClientPassword').value.trim();
 
-            console.log("Delete Failed:", error);
-        }
-    }
+            if (!fullName || !email || !phone || !clientId) {
 
+                console.log("Please fill all required fields");
 
-    // Modal Open
-    function openUpdateClientModal(id, fullName, email, phone, clientId, assignStaff) {
+                return;
+            }
 
-        document.getElementById('updateClientId').value = id;
-        document.getElementById('updateClientFullName').value = fullName;
-        document.getElementById('updateClientEmail').value = email;
-        document.getElementById('updateClientPhone').value = phone;
-        document.getElementById('updateClientIdField').value = clientId;
-        document.getElementById('updateAssignStaff').value = assignStaff;
+            const btn = document.getElementById('updateClientBtn');
 
-        document.getElementById('updateClientModal').style.display = 'block';
+            btn.disabled = true;
 
-        console.log("Update Modal Opened");
-    }
+            btn.innerHTML = '<span class="loading"></span> Saving...';
 
-    // Modal Close
-    function closeUpdateClientModal() {
+            const payload = {
+                fullName,
+                email,
+                phone,
+                clientId,
+                assignStaff
+            };
 
-        document.getElementById('updateClientModal').style.display = 'none';
+            if (password !== "") {
 
-        document.getElementById('updateClientPassword').value = '';
+                payload.password = password;
+            }
 
-        document.getElementById('updateClientPassword').type = 'password';
+            try {
 
-        document.getElementById('clientPasswordEyeIcon')
-            .classList.replace('fa-eye-slash', 'fa-eye');
+                const response = await fetch(`/updateClient/${id}`, {
 
-        console.log("Update Modal Closed");
-    }
+                    method: "PUT",
 
-    // Background click se close
-    document.getElementById('updateClientModal')
-        .addEventListener('click', function (e) {
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-            if (e.target === this) {
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                console.log(result.message || "Updated Successfully");
 
                 closeUpdateClientModal();
+
+                loadClients();
+
+            } catch (error) {
+
+                console.log("Update Failed:", error);
+
+            } finally {
+
+                btn.disabled = false;
+
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
             }
-        });
-
-    // Password Toggle
-    function toggleClientPasswordVisibility() {
-
-        const input = document.getElementById('updateClientPassword');
-
-        const icon = document.getElementById('clientPasswordEyeIcon');
-
-        if (input.type === 'password') {
-
-            input.type = 'text';
-
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-
-            console.log("Password Visible");
-
-        } else {
-
-            input.type = 'password';
-
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-
-            console.log("Password Hidden");
-        }
-    }
-
-    // Submit Update
-    async function submitClientUpdate() {
-
-        const id = document.getElementById('updateClientId').value;
-
-        const fullName = document.getElementById('updateClientFullName').value.trim();
-
-        const email = document.getElementById('updateClientEmail').value.trim();
-
-        const phone = document.getElementById('updateClientPhone').value.trim();
-
-        const clientId = document.getElementById('updateClientIdField').value.trim();
-
-        const assignStaff = document.getElementById('updateAssignStaff').value.trim();
-
-        const password = document.getElementById('updateClientPassword').value.trim();
-
-        if (!fullName || !email || !phone || !clientId) {
-
-            console.log("Please fill all required fields");
-
-            return;
         }
 
-        const btn = document.getElementById('updateClientBtn');
+        // =========================
+        // AUTO LOAD
+        // =========================
+        loadClients();
 
-        btn.disabled = true;
+        const hamburgerBtn = document.querySelector('.button-menu-mobile');
 
-        btn.innerHTML = '<span class="loading"></span> Saving...';
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', function () {
+                const isMobile = window.innerWidth <= 767;
 
-        const payload = {
-            fullName,
-            email,
-            phone,
-            clientId,
-            assignStaff
-        };
-
-        if (password !== "") {
-
-            payload.password = password;
-        }
-
-        try {
-
-            const response = await fetch(`/updateClient/${id}`, {
-
-                method: "PUT",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(payload)
+                if (isMobile) {
+                    document.body.classList.toggle('mobile-menu-open');
+                } else {
+                    document.body.classList.toggle('enlarge-menu');
+                }
             });
-
-            const result = await response.json();
-
-            console.log(result.message || "Updated Successfully");
-
-            closeUpdateClientModal();
-
-            loadClients();
-
-        } catch (error) {
-
-            console.log("Update Failed:", error);
-
-        } finally {
-
-            btn.disabled = false;
-
-            btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
         }
-    }
 
-    // =========================
-    // AUTO LOAD
-    // =========================
-    loadClients();
+        // Mobile par bahar click se sidebar band
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth > 767) return;
 
-       const hamburgerBtn = document.querySelector('.button-menu-mobile');
+            const sidebar = document.querySelector('.left-sidenav');
+            const hamburger = document.querySelector('.button-menu-mobile');
 
-    if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', function () {
-            const isMobile = window.innerWidth <= 767;
-
-            if (isMobile) {
-                document.body.classList.toggle('mobile-menu-open');
-            } else {
-                document.body.classList.toggle('enlarge-menu');
+            if (sidebar && hamburger &&
+                !sidebar.contains(e.target) &&
+                !hamburger.contains(e.target)
+            ) {
+                document.body.classList.remove('mobile-menu-open');
             }
         });
-    }
-
-    // Mobile par bahar click se sidebar band
-    document.addEventListener('click', function (e) {
-        if (window.innerWidth > 767) return;
-
-        const sidebar = document.querySelector('.left-sidenav');
-        const hamburger = document.querySelector('.button-menu-mobile');
-
-        if (sidebar && hamburger &&
-            !sidebar.contains(e.target) &&
-            !hamburger.contains(e.target)
-        ) {
-            document.body.classList.remove('mobile-menu-open');
-        }
-    });
 
 
 
-</script>
+    </script>
 
 </body>
 

@@ -1155,6 +1155,16 @@ body {
 
 .skel-cell { height: 14px; }
 
+:root {
+  --pct-col-bg: #ffd54f;       /* % columns — amber/yellow */
+  --month-col-bg: #90caf9;     /* month/year columns — blue */
+}
+
+[data-theme="dark"] {
+  --pct-col-bg: #5c4400;       /* dark mode — deep amber */
+  --month-col-bg: #0a3060;     /* dark mode — deep blue */
+}
+
 /* ── Sidebar nav skeleton ── */
 .skel-nav-item {
   display: flex;

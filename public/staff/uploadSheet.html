@@ -271,17 +271,32 @@
         }
 
         /* Input grid */
+        /* Input grid */
         .input-grid {
             display: grid;
             grid-template-columns: 2fr 1fr auto;
             gap: 15px;
             margin-bottom: 1.5rem;
             align-items: end;
+            width: 100%;
+            /* ADD */
+            box-sizing: border-box;
+            /* ADD */
+        }
+
+        .input-grid select,
+        .input-grid input {
+            width: 100%;
+            max-width: 100%;
+            /* ADD */
+            box-sizing: border-box;
+
         }
 
         @media (max-width: 768px) {
             .input-grid {
                 grid-template-columns: 1fr;
+                overflow: hidden;
             }
         }
 
@@ -444,6 +459,13 @@
         /* Make sure card content has proper padding */
         .card-body {
             padding: 1.5rem !important;
+            overflow: hidden;
+        }
+
+        .card {
+            overflow: hidden;
+            /* ADD */
+            width: 100%;
         }
 
         /* uses toast */
@@ -624,6 +646,70 @@
             border-radius: 0.25rem;
             font-weight: 600;
             float: right;
+        }
+
+        /* Modern Sidebar Menu */
+        .left-sidenav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            margin: 5px 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .left-sidenav-menu a:hover {
+            color: #2563eb;
+            transform: translateX(6px);
+        }
+
+        .left-sidenav-menu a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .left-sidenav-menu .menu-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.2;
+            transition: all 0.3s ease;
+        }
+
+        .left-sidenav-menu a:hover .menu-icon {
+            transform: scale(1.15);
+        }
+
+        .left-sidenav-menu a::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: #2563eb;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .left-sidenav-menu a:hover::before,
+        .left-sidenav-menu a.active::before {
+            height: 75%;
+        }
+
+        .menu-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin: 15px 16px 10px;
         }
     </style>
 
@@ -1178,7 +1264,6 @@
         // ── DOMContentLoaded — single listener for all init ─────────────────
         document.addEventListener("DOMContentLoaded", async function () {
 
-            // Mobile menu init
             initMobileMenu();
             const observer = new MutationObserver(() => {
                 const menuBtn = document.querySelector(".button-menu-mobile");
@@ -1186,17 +1271,26 @@
             });
             observer.observe(document.body, { childList: true, subtree: true });
 
-            // ✅ Load assigned clients into dropdown
-            const staffId = String(localStorage.getItem("staffId"));
-            if (!staffId) { console.log("No staff logged in"); return; }
+            // ✅ staffName localStorage se lo
+            const staffName = localStorage.getItem("staffName");
+
+            if (!staffName || staffName === "null" || staffName === "undefined") {
+                console.log("❌ No staffName in localStorage");
+                return;
+            }
+
+            console.log("✅ staffName:", staffName);
 
             try {
-                const response = await fetch(`/AssignedClients/${staffId}`);
+                // ✅ encodeURIComponent — space ko URL safe banata hai
+                const response = await fetch(`/AssignedClients/${encodeURIComponent(staffName)}`);
                 const result = await response.json();
+
+                console.log("✅ API result:", result);
 
                 const dropdown = document.getElementById("clientSelect");
                 dropdown.innerHTML = `<option value="">Select Client</option>`;
-                // ✅ Jab client select ho, localStorage update karo
+
                 dropdown.addEventListener("change", function () {
                     const selectedOption = dropdown.options[dropdown.selectedIndex];
                     if (dropdown.value) {
@@ -1208,22 +1302,21 @@
                     }
                 });
 
-                console.log("API RESULT:", result);
-
                 if (result.success && result.data.length > 0) {
                     result.data.forEach(client => {
                         const option = document.createElement("option");
                         option.value = client.clientId;
                         option.textContent = client.fullName;
-                        option.dataset.fullName = client.fullName; // ✅ for uploadFile()
+                        option.dataset.fullName = client.fullName;
                         dropdown.appendChild(option);
                     });
+                    console.log("✅ Clients loaded:", result.data.length);
                 } else {
-                    console.log("No clients found for staffId:", staffId);
+                    console.log("⚠️ No clients found for staffName:", staffName);
                 }
 
             } catch (error) {
-                console.log("Client load error:", error);
+                console.error("❌ Client load error:", error);
             }
         });
 

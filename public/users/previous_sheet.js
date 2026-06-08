@@ -291,6 +291,7 @@ function cellNum(row, ci) {
 }
 
 function getPctForCol(row, colIndex) {
+  // Method 1: pctColIndices mein registered hai (Jan-May wale)
   if (pctColIndices.has(colIndex + 1)) {
     const raw =
       row[colIndex + 1] !== null && row[colIndex + 1] !== undefined
@@ -298,9 +299,24 @@ function getPctForCol(row, colIndex) {
         : "";
     if (raw) {
       const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
-      return isNaN(v) ? null : v;
+      if (!isNaN(v)) return v;
     }
   }
+
+  // Method 2: header blank hai aur data mein % jaisi value hai (Jun-Dec wale)
+  const nextHeader = (headers[colIndex + 1] || "").toString().trim();
+  if (nextHeader === "") {
+    const raw =
+      row[colIndex + 1] !== null && row[colIndex + 1] !== undefined
+        ? row[colIndex + 1].toString().trim()
+        : "";
+    if (raw) {
+      const v = parseFloat(raw.replace(/[^0-9.\-]/g, ""));
+      // % values -100 se 100 ke beech hoti hain
+      if (!isNaN(v) && v >= -100 && v <= 100) return v;
+    }
+  }
+
   return null;
 }
 
@@ -317,18 +333,62 @@ function parseColumnsFromHeaders() {
   monthCols = [];
   yearCols = [];
   pctColIndices = new Set();
+
   headers.forEach((h, i) => {
     const s = (h || "").toString().trim();
-    if (!s) return;
-    if (s === "%") {
+
+    // Exact % header
+    if (
+      s === "%" ||
+      s.startsWith("%") ||
+      s.toLowerCase().startsWith("percent")
+    ) {
       pctColIndices.add(i);
       return;
     }
+
     if (isYear(s)) yearCols.push({ label: s, colIndex: i });
     else if (isMonth(s)) monthCols.push({ label: s, colIndex: i });
   });
-}
 
+  // ─── NAYA FIX ───────────────────────────────────────────────
+  // Empty/blank header columns jo month/year ke baad aate hain
+  // unhe automatically % column maano
+  headers.forEach((h, i) => {
+    const s = (h || "").toString().trim();
+    if (s !== "") return; // sirf blank headers
+    if (pctColIndices.has(i)) return; // already added
+
+    // Dekho kya previous column month ya year tha
+    const prevHeader = (headers[i - 1] || "").toString().trim();
+    const isPrevMonth = isMonth(prevHeader);
+    const isPrevYear = isYear(prevHeader);
+    const isPrevPct = pctColIndices.has(i - 1);
+
+    // Agar previous column month/year tha, ya ek column pehle % tha
+    // toh yeh blank column bhi % hai
+    if (isPrevMonth || isPrevYear || isPrevPct) {
+      // Data rows mein check karo — kya is column mein % jaisi values hain?
+      let looksLikePct = false;
+      for (let r = 0; r < Math.min(allDataRows.length, 20); r++) {
+        const row = allDataRows[r];
+        if (!row) continue;
+        const val = (row[i] || "").toString().trim();
+        if (!val) continue;
+        const num = parseFloat(val.replace(/[^0-9.\-]/g, ""));
+        // % values usually -100 to 100 ke beech hoti hain
+        if (!isNaN(num) && num >= -100 && num <= 100) {
+          looksLikePct = true;
+          break;
+        }
+      }
+      if (looksLikePct) {
+        pctColIndices.add(i);
+      }
+    }
+  });
+  // ─────────────────────────────────────────────────────────────
+}
 function populateFilterDropdowns() {
   ["selMonth1", "selMonth2"].forEach((id, idx) => {
     const el = document.getElementById(id);
@@ -797,9 +857,9 @@ function onCodePeriodChange() {
   }
 
   if (!col1 && !col2) {
-  const allPeriods = monthCols.length > 0 ? monthCols : yearCols;
-  
-  let html = `<div style="font-size:11px;font-weight:700;color:#7c3aed;margin:8px 0 6px;display:flex;align-items:center;gap:5px;">
+    const allPeriods = monthCols.length > 0 ? monthCols : yearCols;
+
+    let html = `<div style="font-size:11px;font-weight:700;color:#7c3aed;margin:8px 0 6px;display:flex;align-items:center;gap:5px;">
     <i class="bi bi-table"></i> ${code} — ${label}
   </div>
   <table style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -813,54 +873,58 @@ function onCodePeriodChange() {
     </thead>
     <tbody>`;
 
-  let hasAny = false;
+    let hasAny = false;
 
-  allPeriods.forEach((col) => {
-    const v = cellNum(row, col.colIndex);
-    const pctVal = getPctForCol(row, col.colIndex);
-    
-    let incomeVal = "", expenseVal = "", plVal = "", rowBg = "";
-    
-    if (v > 0) {
-      incomeVal = `<span style="color:#2e7d32;font-weight:600;">${fmt(v)}</span>`;
-      expenseVal = `<span style="color:#bbb;">—</span>`;
-      plVal = `<span style="color:#2e7d32;font-weight:600;">+${fmt(v)}</span>`;
-      rowBg = "#f9fff9";
-      hasAny = true;
-    } else if (v < 0) {
-      incomeVal = `<span style="color:#bbb;">—</span>`;
-      expenseVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
-      plVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
-      rowBg = "#fff9f9";
-      hasAny = true;
-    } else {
-      incomeVal = `<span style="color:#ccc;">—</span>`;
-      expenseVal = `<span style="color:#ccc;">—</span>`;
-      plVal = `<span style="color:#ccc;">—</span>`;
-      rowBg = "";
-    }
+    allPeriods.forEach((col) => {
+      const v = cellNum(row, col.colIndex);
+      const pctVal = getPctForCol(row, col.colIndex);
 
-    const pctBadge = pctVal !== null
-      ? `<span style="color:#888;font-size:10px;margin-left:4px;">(${pctVal}%)</span>`
-      : "";
+      let incomeVal = "",
+        expenseVal = "",
+        plVal = "",
+        rowBg = "";
 
-    html += `<tr style="background:${rowBg};border-bottom:0.5px solid #eee;">
+      if (v > 0) {
+        incomeVal = `<span style="color:#2e7d32;font-weight:600;">${fmt(v)}</span>`;
+        expenseVal = `<span style="color:#bbb;">—</span>`;
+        plVal = `<span style="color:#2e7d32;font-weight:600;">+${fmt(v)}</span>`;
+        rowBg = "#f9fff9";
+        hasAny = true;
+      } else if (v < 0) {
+        incomeVal = `<span style="color:#bbb;">—</span>`;
+        expenseVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
+        plVal = `<span style="color:#c62828;font-weight:600;">−${fmt(Math.abs(v))}</span>`;
+        rowBg = "#fff9f9";
+        hasAny = true;
+      } else {
+        incomeVal = `<span style="color:#ccc;">—</span>`;
+        expenseVal = `<span style="color:#ccc;">—</span>`;
+        plVal = `<span style="color:#ccc;">—</span>`;
+        rowBg = "";
+      }
+
+      const pctBadge =
+        pctVal !== null
+          ? `<span style="color:#888;font-size:10px;margin-left:4px;">(${pctVal}%)</span>`
+          : "";
+
+      html += `<tr style="background:${rowBg};border-bottom:0.5px solid #eee;">
       <td style="padding:5px 8px;font-weight:500;">${col.label}${pctBadge}</td>
       <td style="padding:5px 8px;text-align:right;">${incomeVal}</td>
       <td style="padding:5px 8px;text-align:right;">${expenseVal}</td>
       <td style="padding:5px 8px;text-align:right;">${plVal}</td>
     </tr>`;
-  });
+    });
 
-  if (!hasAny) {
-    html += `<tr><td colspan="4" style="padding:10px;color:#888;text-align:center;">Koi data nahi mila</td></tr>`;
+    if (!hasAny) {
+      html += `<tr><td colspan="4" style="padding:10px;color:#888;text-align:center;">Koi data nahi mila</td></tr>`;
+    }
+
+    html += `</tbody></table>`;
+    summaryDiv.innerHTML = html;
+    summaryDiv.style.display = "block";
+    return;
   }
-
-  html += `</tbody></table>`;
-  summaryDiv.innerHTML = html;
-  summaryDiv.style.display = "block";
-  return;
-}
 
   if (col1 && !col2) {
     const val1 = cellNum(row, col1.colIndex);
@@ -945,7 +1009,6 @@ function resetAllFilters() {
   }
   updatePills();
 }
-
 async function loadSheetData() {
   try {
     const clientId = localStorage.getItem("clientId");
@@ -966,7 +1029,8 @@ async function loadSheetData() {
     const loader = document.getElementById("loader");
 
     if (!result.success) {
-      document.getElementById("tableBody").innerHTML = `<tr><td>${result.error}</td></tr>`;
+      document.getElementById("tableBody").innerHTML =
+        `<tr><td>${result.error}</td></tr>`;
       loader.style.display = "none";
       return;
     }
@@ -974,7 +1038,8 @@ async function loadSheetData() {
     const rawData = result.data;
 
     if (!rawData || rawData.length === 0) {
-      document.getElementById("tableBody").innerHTML = `<tr><td>No data</td></tr>`;
+      document.getElementById("tableBody").innerHTML =
+        `<tr><td>No data</td></tr>`;
       loader.style.display = "none";
       return;
     }
@@ -986,10 +1051,10 @@ async function loadSheetData() {
         .map(([, val]) => val);
     });
 
-    infoRows    = data.slice(0, 3);
-    headers     = data[3] || [];
+    infoRows = data.slice(0, 3);
+    headers = data[3] || [];
     allDataRows = data.slice(4);
-    colOffset   = 0;
+    colOffset = 0;
     currentPage = 1;
     parseColumnsFromHeaders();
     populateFilterDropdowns();
@@ -997,11 +1062,13 @@ async function loadSheetData() {
     populateCodeDropdown();
     document.getElementById("loader").style.display = "none";
     renderTable();
-    document.getElementById("paginationBar").style.display = allDataRows.length ? "flex" : "none";
-
+    document.getElementById("paginationBar").style.display = allDataRows.length
+      ? "flex"
+      : "none";
   } catch (err) {
     console.error(err);
-    document.getElementById("tableBody").innerHTML = `<tr><td>${err.message}</td></tr>`;
+    document.getElementById("tableBody").innerHTML =
+      `<tr><td>${err.message}</td></tr>`;
     document.getElementById("loader").style.display = "none";
   }
 }
@@ -1062,8 +1129,18 @@ function renderTable() {
         "<tr>" +
         visHeaders
           .map((_, i) => {
-            const val = row[colOffset + i] ?? "";
-            return `<td title="${val}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+            const absIdx = colOffset + i;
+            const val = row[absIdx] ?? "";
+            const isPct = pctColIndices.has(absIdx);
+            const isMonthOrYear =
+              monthCols.some((m) => m.colIndex === absIdx) ||
+              yearCols.some((y) => y.colIndex === absIdx);
+            const bgStyle = isPct
+              ? "background: var(--pct-col-bg, #fff8e1);"
+              : isMonthOrYear
+                ? "background: var(--month-col-bg, #e8f4ff);"
+                : "";
+            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
           })
           .join("") +
         "</tr>";
@@ -1134,6 +1211,59 @@ function changeRowsPerPage() {
 // ═══════════════════════════════════════════════════════════════════
 //  FULLSCREEN TABLE
 // ═══════════════════════════════════════════════════════════════════
+// function openFullscreenTable() {
+//   const overlay = document.getElementById("fullscreenOverlay");
+//   const fsHead = document.getElementById("fsTableHead");
+//   const fsBody = document.getElementById("fsTableBody");
+//   const fsColCnt = document.getElementById("fsColCount");
+//   const fsRowCnt = document.getElementById("fsRowCount");
+//   if (!overlay || !fsHead || !fsBody) return;
+
+//   // Build header row
+//   fsHead.innerHTML = `<tr>${headers.map((h) => `<th title="${h}">${h}</th>`).join("")}</tr>`;
+
+//   // Build body: info rows first
+//   let bodyHtml = "";
+//   infoRows.forEach((row) => {
+//     const text = row.filter((c) => c !== "").join(" ");
+//     bodyHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="text-align:left;">${text}</td></tr>`;
+//   });
+
+//   // All data rows (no pagination limit)
+//   let dataRowCount = 0;
+//   allDataRows.forEach((row) => {
+//     if (!row) return;
+//     bodyHtml +=
+//       "<tr>" +
+//       headers
+//         .map((_, i) => {
+//           const val = row[i] ?? "";
+//           return `<td title="${val}">${val}</td>`;
+//         })
+//         .join("") +
+//       "</tr>";
+//     dataRowCount++;
+//   });
+
+//   fsBody.innerHTML = bodyHtml;
+
+//   // Update counters
+//   if (fsColCnt) fsColCnt.textContent = `${headers.length} columns`;
+//   if (fsRowCnt)
+//     fsRowCnt.textContent = `${dataRowCount} rows · ${headers.length} columns`;
+
+//   // Show overlay
+//   overlay.classList.add("open");
+//   document.body.style.overflow = "hidden";
+
+//   // Scroll to top
+//   const wrapper = document.getElementById("fsTableWrapper");
+//   if (wrapper) {
+//     wrapper.scrollTop = 0;
+//     wrapper.scrollLeft = 0;
+//   }
+// }
+
 function openFullscreenTable() {
   const overlay = document.getElementById("fullscreenOverlay");
   const fsHead = document.getElementById("fsTableHead");
@@ -1161,7 +1291,16 @@ function openFullscreenTable() {
       headers
         .map((_, i) => {
           const val = row[i] ?? "";
-          return `<td title="${val}">${val}</td>`;
+          const isPct = pctColIndices.has(i);
+          const isMonthOrYear =
+            monthCols.some((m) => m.colIndex === i) ||
+            yearCols.some((y) => y.colIndex === i);
+          const bgStyle = isPct
+            ? "background: var(--pct-col-bg, #ffd54f);"
+            : isMonthOrYear
+              ? "background: var(--month-col-bg, #90caf9);"
+              : "";
+          return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
         })
         .join("") +
       "</tr>";
@@ -1700,64 +1839,12 @@ function fmtBotText(t) {
     .replace(/\n/g, "<br>");
 }
 
-
-// dark mode toggle logic
-
 function updateLogoByTheme() {
+  const logos = document.querySelectorAll(".theme-logo");
 
-  const logo = document.getElementById("themeLogo");
-
-  const currentTheme =
-    document.documentElement.getAttribute("data-theme");
-
-  // DARK THEME
-  if (currentTheme === "dark") {
-
-    // dark theme par dark logo
-    logo.src = "/users/icons/image2.png";
-
-  } else {
-
-    // white theme par white logo
-    logo.src = "/users/icons/image1.png";
-  }
-}
-
-(function () {
-  var saved = localStorage.getItem('appTheme') || 'light';
-
-  document.documentElement.setAttribute('data-theme', saved);
-
-  // page load par logo update
-  window.addEventListener("DOMContentLoaded", updateLogoByTheme);
-})();
-
- function toggleTheme() {
-
-  var current =
-    document.documentElement.getAttribute('data-theme') || 'light';
-
-  var next = current === 'dark' ? 'light' : 'dark';
-
-  document.documentElement.setAttribute('data-theme', next);
-
-  localStorage.setItem('appTheme', next);
-
-  updateLogoByTheme();
-}
-
-
-
-function updateLogoByTheme() {
-
-  const logos =
-    document.querySelectorAll(".theme-logo");
-
-  const currentTheme =
-    document.documentElement.getAttribute("data-theme");
+  const currentTheme = document.documentElement.getAttribute("data-theme");
 
   logos.forEach((logo) => {
-
     logo.src =
       currentTheme === "dark"
         ? "/users/icons/image2.png"
@@ -1765,26 +1852,21 @@ function updateLogoByTheme() {
   });
 }
 
-
 // PAGE LOAD
 document.addEventListener("DOMContentLoaded", () => {
-  const saved =
-    localStorage.getItem("appTheme") || "light";
+  const saved = localStorage.getItem("appTheme") || "light";
 
   document.documentElement.setAttribute("data-theme", saved);
 
   updateLogoByTheme();
 });
 
-
 // TOGGLE THEME
 function toggleTheme() {
-
   const current =
     document.documentElement.getAttribute("data-theme") || "light";
 
-  const next =
-    current === "dark" ? "light" : "dark";
+  const next = current === "dark" ? "light" : "dark";
 
   document.documentElement.setAttribute("data-theme", next);
 

@@ -191,7 +191,7 @@
             opacity: 0;
             animation: slideDown 0.5s ease 0.15s forwards;
             margin-bottom: 22px;
-             margin-top: 15px;
+            margin-top: 15px;
         }
 
         .dash-title-area h4 {
@@ -575,6 +575,78 @@
             border-radius: 50%;
             animation: spin .8s linear infinite;
         }
+
+
+
+        /* Sidebar Links */
+        .left-sidenav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #5b6475;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        /* Hover Effect */
+        .left-sidenav-menu a:hover {
+            transform: translateX(5px);
+            color: #2563eb;
+        }
+
+        /* Active Link */
+        .left-sidenav-menu a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* Icon Styling */
+        .left-sidenav-menu .menu-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            transition: all 0.25s ease;
+        }
+
+        /* Icon Hover Animation */
+        .left-sidenav-menu a:hover .menu-icon {
+            transform: scale(1.1);
+        }
+
+        /* Modern Left Border Indicator */
+        .left-sidenav-menu a::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: #2563eb;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+        }
+
+        .left-sidenav-menu a:hover::before,
+        .left-sidenav-menu a.active::before {
+            height: 70%;
+        }
+
+        /* Menu Label */
+        .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9aa4b2;
+            font-weight: 600;
+            margin: 18px 16px 8px;
+        }
     </style>
 </head>
 
@@ -872,214 +944,214 @@
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
     <script src="../admin/assets/js/app.min.js"></script>
 
-  <script>
-    /* ============================================
-   DATE
-============================================ */
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const now = new Date();
-document.getElementById('dashDate').textContent =
-    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    <script>
+        /* ============================================
+       DATE
+    ============================================ */
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const now = new Date();
+        document.getElementById('dashDate').textContent =
+            `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-/* ============================================
-   COUNT-UP ANIMATION
-============================================ */
-function animateCount(id, target, delay) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    let start = null;
-    const dur = 1300;
-    setTimeout(() => {
-        requestAnimationFrame(function step(ts) {
-            if (!start) start = ts;
-            const p = Math.min((ts - start) / dur, 1);
-            const ease = 1 - Math.pow(1 - p, 4);
-            el.textContent = Math.round(ease * target);
-            if (p < 1) requestAnimationFrame(step);
-            else el.textContent = target;
-        });
-    }, delay || 0);
-}
-
-/* ============================================
-   BOTTOM BAR ANIMATION
-============================================ */
-function animateBars() {
-    setTimeout(() => {
-        ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
+        /* ============================================
+           COUNT-UP ANIMATION
+        ============================================ */
+        function animateCount(id, target, delay) {
             const el = document.getElementById(id);
-            if (el) el.style.transform = 'scaleX(1)';
-        });
-    }, 600);
-}
-
-/* ============================================
-   DONUT CHART
-============================================ */
-function initDonut(staffPct, clientPct) {
-    const circ = 2 * Math.PI * 50;
-    const cl = Math.round(circ * clientPct / 100);
-    const sl = Math.round(circ * staffPct / 100);
-    setTimeout(() => {
-        document.getElementById('dc-clients').setAttribute('stroke-dasharray', `${cl} ${Math.round(circ - cl)}`);
-        setTimeout(() => {
-            const ds = document.getElementById('dc-staff');
-            ds.setAttribute('stroke-dasharray', `${sl} ${Math.round(circ - sl)}`);
-            ds.setAttribute('stroke-dashoffset', `-${cl}`);
-        }, 250);
-        document.getElementById('pf-staff').style.cssText += ';transform:scaleX(1)';
-        document.getElementById('pf-clients').style.cssText += ';transform:scaleX(1)';
-    }, 850);
-}
-
-/* ============================================
-   BAR CHART — DYNAMIC (API se data)
-============================================ */
-let barChartInstance = null;
-let apiChartData = null; // API se aayega, hardcoded nahi
-
-function buildBarChart(period) {
-    // Agar API data nahi aaya abhi to chart mat banao
-    if (!apiChartData) return;
-
-    let labels, staff, clients;
-
-    if (period === '1y') {
-        // Poore 12 months
-        labels  = apiChartData.labels;
-        staff   = apiChartData.staff;
-        clients = apiChartData.clients;
-    } else {
-        // Last 6 months ka slice
-        labels  = apiChartData.labels.slice(-6);
-        staff   = apiChartData.staff.slice(-6);
-        clients = apiChartData.clients.slice(-6);
-    }
-
-    if (barChartInstance) barChartInstance.destroy();
-
-    barChartInstance = new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [
-                { label: 'Staff',   data: staff,   backgroundColor: '#534AB7', borderRadius: 5, borderSkipped: false },
-                { label: 'Clients', data: clients, backgroundColor: '#0F6E56', borderRadius: 5, borderSkipped: false }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 1100, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 55 },
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { title: l => `Month: ${l[0].label}` } }
-            },
-            scales: {
-                x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 11 } }, border: { display: false } },
-                y: {
-                    grid: { color: 'rgba(0,0,0,0.05)' },
-                    ticks: {
-                        color: '#a0aec0',
-                        font: { size: 11 },
-                        stepSize: 1,
-                        // Sirf whole numbers dikhao
-                        callback: val => Number.isInteger(val) ? val : ''
-                    },
-                    border: { display: false },
-                    beginAtZero: true
-                }
-            }
+            if (!el) return;
+            let start = null;
+            const dur = 1300;
+            setTimeout(() => {
+                requestAnimationFrame(function step(ts) {
+                    if (!start) start = ts;
+                    const p = Math.min((ts - start) / dur, 1);
+                    const ease = 1 - Math.pow(1 - p, 4);
+                    el.textContent = Math.round(ease * target);
+                    if (p < 1) requestAnimationFrame(step);
+                    else el.textContent = target;
+                });
+            }, delay || 0);
         }
-    });
-}
 
-function switchTab(el, period) {
-    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    buildBarChart(period);
-}
+        /* ============================================
+           BOTTOM BAR ANIMATION
+        ============================================ */
+        function animateBars() {
+            setTimeout(() => {
+                ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.transform = 'scaleX(1)';
+                });
+            }, 600);
+        }
 
-/* ============================================
-   TABLE ROW ANIMATION
-============================================ */
-function animateRows(tbodyId) {
-    const rows = document.querySelectorAll(`#${tbodyId} tr`);
-    rows.forEach((tr, i) => {
-        tr.style.opacity = '0';
-        tr.style.animation = `fadeInRight .4s ease ${1.1 + i * 0.1}s forwards`;
-    });
-}
+        /* ============================================
+           DONUT CHART
+        ============================================ */
+        function initDonut(staffPct, clientPct) {
+            const circ = 2 * Math.PI * 50;
+            const cl = Math.round(circ * clientPct / 100);
+            const sl = Math.round(circ * staffPct / 100);
+            setTimeout(() => {
+                document.getElementById('dc-clients').setAttribute('stroke-dasharray', `${cl} ${Math.round(circ - cl)}`);
+                setTimeout(() => {
+                    const ds = document.getElementById('dc-staff');
+                    ds.setAttribute('stroke-dasharray', `${sl} ${Math.round(circ - sl)}`);
+                    ds.setAttribute('stroke-dashoffset', `-${cl}`);
+                }, 250);
+                document.getElementById('pf-staff').style.cssText += ';transform:scaleX(1)';
+                document.getElementById('pf-clients').style.cssText += ';transform:scaleX(1)';
+            }, 850);
+        }
 
-/* ============================================
-   FORMAT DATE
-============================================ */
-function formatDate(dateStr) {
-    if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
-}
+        /* ============================================
+           BAR CHART — DYNAMIC (API se data)
+        ============================================ */
+        let barChartInstance = null;
+        let apiChartData = null; // API se aayega, hardcoded nahi
 
-/* ============================================
-   LOAD DASHBOARD DATA FROM API
-============================================ */
-async function loadDashboardStats() {
-    try {
-        const token = localStorage.getItem('adminToken');
-        const response = await fetch(`/dashboard`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        const result = await response.json();
+        function buildBarChart(period) {
+            // Agar API data nahi aaya abhi to chart mat banao
+            if (!apiChartData) return;
 
-        if (result.success) {
-            const { totalStaff, totalClients, recentStaff, recentClients, monthlyChart } = result.data;
+            let labels, staff, clients;
 
-            // ── Stat Cards ──────────────────────────────────────
-            animateCount('totalStaffCount',  totalStaff, 350);
-            animateCount('totalClientCount', totalClients, 500);
-            animateCount('todayCount',       0, 650);
-            animateCount('totalRecords',     totalStaff + totalClients, 800);
-
-            // ── Badges ──────────────────────────────────────────
-            document.getElementById('staffBadge').textContent  = recentStaff.length;
-            document.getElementById('clientBadge').textContent = recentClients.length;
-
-            // ── Donut Chart ──────────────────────────────────────
-            const total = totalStaff + totalClients || 1;
-            const sp = Math.round(totalStaff  / total * 100);
-            const cp = Math.round(totalClients / total * 100);
-            document.getElementById('staffPct').textContent       = sp + '%';
-            document.getElementById('clientPct').textContent      = cp + '%';
-            document.getElementById('donut-main-pct').textContent = cp + '%';
-            document.getElementById('pf-staff').style.width       = sp + '%';
-            document.getElementById('pf-clients').style.width     = cp + '%';
-            initDonut(sp, cp);
-
-            // ── Bar Chart — API se dynamic data ─────────────────
-            if (monthlyChart) {
-                apiChartData = {
-                    labels:  monthlyChart.labels,
-                    staff:   monthlyChart.staff,
-                    clients: monthlyChart.clients
-                };
-                buildBarChart('6m'); // default 6M tab
+            if (period === '1y') {
+                // Poore 12 months
+                labels = apiChartData.labels;
+                staff = apiChartData.staff;
+                clients = apiChartData.clients;
+            } else {
+                // Last 6 months ka slice
+                labels = apiChartData.labels.slice(-6);
+                staff = apiChartData.staff.slice(-6);
+                clients = apiChartData.clients.slice(-6);
             }
 
-            // ── Staff Table ──────────────────────────────────────
-            const staffTbody = document.getElementById('recentStaffTable');
-            if (!recentStaff || recentStaff.length === 0) {
-                staffTbody.innerHTML = `
+            if (barChartInstance) barChartInstance.destroy();
+
+            barChartInstance = new Chart(document.getElementById('barChart'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Staff', data: staff, backgroundColor: '#534AB7', borderRadius: 5, borderSkipped: false },
+                        { label: 'Clients', data: clients, backgroundColor: '#0F6E56', borderRadius: 5, borderSkipped: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 1100, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 55 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { title: l => `Month: ${l[0].label}` } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 11 } }, border: { display: false } },
+                        y: {
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: {
+                                color: '#a0aec0',
+                                font: { size: 11 },
+                                stepSize: 1,
+                                // Sirf whole numbers dikhao
+                                callback: val => Number.isInteger(val) ? val : ''
+                            },
+                            border: { display: false },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function switchTab(el, period) {
+            document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            buildBarChart(period);
+        }
+
+        /* ============================================
+           TABLE ROW ANIMATION
+        ============================================ */
+        function animateRows(tbodyId) {
+            const rows = document.querySelectorAll(`#${tbodyId} tr`);
+            rows.forEach((tr, i) => {
+                tr.style.opacity = '0';
+                tr.style.animation = `fadeInRight .4s ease ${1.1 + i * 0.1}s forwards`;
+            });
+        }
+
+        /* ============================================
+           FORMAT DATE
+        ============================================ */
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            return new Date(dateStr).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
+        /* ============================================
+           LOAD DASHBOARD DATA FROM API
+        ============================================ */
+        async function loadDashboardStats() {
+            try {
+                const token = localStorage.getItem('adminToken');
+                const response = await fetch(`/dashboard`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    const { totalStaff, totalClients, recentStaff, recentClients, monthlyChart } = result.data;
+
+                    // ── Stat Cards ──────────────────────────────────────
+                    animateCount('totalStaffCount', totalStaff, 350);
+                    animateCount('totalClientCount', totalClients, 500);
+                    animateCount('todayCount', 0, 650);
+                    animateCount('totalRecords', totalStaff + totalClients, 800);
+
+                    // ── Badges ──────────────────────────────────────────
+                    document.getElementById('staffBadge').textContent = recentStaff.length;
+                    document.getElementById('clientBadge').textContent = recentClients.length;
+
+                    // ── Donut Chart ──────────────────────────────────────
+                    const total = totalStaff + totalClients || 1;
+                    const sp = Math.round(totalStaff / total * 100);
+                    const cp = Math.round(totalClients / total * 100);
+                    document.getElementById('staffPct').textContent = sp + '%';
+                    document.getElementById('clientPct').textContent = cp + '%';
+                    document.getElementById('donut-main-pct').textContent = cp + '%';
+                    document.getElementById('pf-staff').style.width = sp + '%';
+                    document.getElementById('pf-clients').style.width = cp + '%';
+                    initDonut(sp, cp);
+
+                    // ── Bar Chart — API se dynamic data ─────────────────
+                    if (monthlyChart) {
+                        apiChartData = {
+                            labels: monthlyChart.labels,
+                            staff: monthlyChart.staff,
+                            clients: monthlyChart.clients
+                        };
+                        buildBarChart('6m'); // default 6M tab
+                    }
+
+                    // ── Staff Table ──────────────────────────────────────
+                    const staffTbody = document.getElementById('recentStaffTable');
+                    if (!recentStaff || recentStaff.length === 0) {
+                        staffTbody.innerHTML = `
                     <tr style="opacity:1">
                         <td colspan="4" class="text-center text-muted py-3">
                             <i class="fas fa-inbox mr-1"></i> No staff added yet
                         </td>
                     </tr>`;
-            } else {
-                staffTbody.innerHTML = recentStaff.map(s => `
+                    } else {
+                        staffTbody.innerHTML = recentStaff.map(s => `
                     <tr>
                         <td>
                             <div class="d-flex align-items-center">
@@ -1092,20 +1164,20 @@ async function loadDashboardStats() {
                         <td style="color:#a0aec0;font-size:12px">${formatDate(s.createdAt)}</td>
                     </tr>
                 `).join('');
-                animateRows('recentStaffTable');
-            }
+                        animateRows('recentStaffTable');
+                    }
 
-            // ── Clients Table ────────────────────────────────────
-            const clientsTbody = document.getElementById('recentClientsTable');
-            if (!recentClients || recentClients.length === 0) {
-                clientsTbody.innerHTML = `
+                    // ── Clients Table ────────────────────────────────────
+                    const clientsTbody = document.getElementById('recentClientsTable');
+                    if (!recentClients || recentClients.length === 0) {
+                        clientsTbody.innerHTML = `
                     <tr style="opacity:1">
                         <td colspan="4" class="text-center text-muted py-3">
                             <i class="fas fa-inbox mr-1"></i> No clients added yet
                         </td>
                     </tr>`;
-            } else {
-                clientsTbody.innerHTML = recentClients.map(c => `
+                    } else {
+                        clientsTbody.innerHTML = recentClients.map(c => `
                     <tr>
                         <td>
                             <div class="d-flex align-items-center">
@@ -1118,54 +1190,54 @@ async function loadDashboardStats() {
                         <td style="color:#a0aec0;font-size:12px">${formatDate(c.createdAt)}</td>
                     </tr>
                 `).join('');
-                animateRows('recentClientsTable');
+                        animateRows('recentClientsTable');
+                    }
+
+                } else {
+                    showFallback();
+                }
+            } catch (err) {
+                console.error('Dashboard error:', err);
+                showFallback();
             }
-
-        } else {
-            showFallback();
         }
-    } catch (err) {
-        console.error('Dashboard error:', err);
-        showFallback();
-    }
-}
 
-/* ============================================
-   FALLBACK — Jab API connect na ho
-============================================ */
-function showFallback() {
-    animateCount('totalStaffCount',  24, 350);
-    animateCount('totalClientCount', 38, 500);
-    animateCount('todayCount',        7, 650);
-    animateCount('totalRecords',     62, 800);
-    document.getElementById('staffBadge').textContent  = 5;
-    document.getElementById('clientBadge').textContent = 5;
-    initDonut(38, 62);
+        /* ============================================
+           FALLBACK — Jab API connect na ho
+        ============================================ */
+        function showFallback() {
+            animateCount('totalStaffCount', 24, 350);
+            animateCount('totalClientCount', 38, 500);
+            animateCount('todayCount', 7, 650);
+            animateCount('totalRecords', 62, 800);
+            document.getElementById('staffBadge').textContent = 5;
+            document.getElementById('clientBadge').textContent = 5;
+            initDonut(38, 62);
 
-    // Fallback chart data
-    apiChartData = {
-        labels:  ['Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'],
-        staff:   [4, 6, 8, 5, 10, 14, 8, 12, 10, 18, 22, 30],
-        clients: [8, 10, 12, 9, 16, 20, 14, 18, 22, 28, 32, 46]
-    };
-    buildBarChart('6m');
+            // Fallback chart data
+            apiChartData = {
+                labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                staff: [4, 6, 8, 5, 10, 14, 8, 12, 10, 18, 22, 30],
+                clients: [8, 10, 12, 9, 16, 20, 14, 18, 22, 28, 32, 46]
+            };
+            buildBarChart('6m');
 
-    const demoStaff = [
-        { fullName: 'Ahmed Raza',   staffId: 'ST-001', role: 'Manager',    createdAt: new Date() },
-        { fullName: 'Sara Khan',    staffId: 'ST-002', role: 'HR',         createdAt: new Date() },
-        { fullName: 'Bilal Tariq',  staffId: 'ST-003', role: 'Accountant', createdAt: new Date() },
-        { fullName: 'Nadia Malik',  staffId: 'ST-004', role: 'Developer',  createdAt: new Date() },
-        { fullName: 'Usman Ali',    staffId: 'ST-005', role: 'Support',    createdAt: new Date() },
-    ];
-    const demoClients = [
-        { fullName: 'Fatima Zahra',    clientId: 'CL-101', assignStaff: 'ST-001', createdAt: new Date() },
-        { fullName: 'Hassan Mirza',    clientId: 'CL-102', assignStaff: 'ST-002', createdAt: new Date() },
-        { fullName: 'Ayesha Siddiqui', clientId: 'CL-103', assignStaff: 'ST-001', createdAt: new Date() },
-        { fullName: 'Zain Abbas',      clientId: 'CL-104', assignStaff: 'ST-003', createdAt: new Date() },
-        { fullName: 'Maryam Qureshi',  clientId: 'CL-105', assignStaff: 'ST-002', createdAt: new Date() },
-    ];
+            const demoStaff = [
+                { fullName: 'Ahmed Raza', staffId: 'ST-001', role: 'Manager', createdAt: new Date() },
+                { fullName: 'Sara Khan', staffId: 'ST-002', role: 'HR', createdAt: new Date() },
+                { fullName: 'Bilal Tariq', staffId: 'ST-003', role: 'Accountant', createdAt: new Date() },
+                { fullName: 'Nadia Malik', staffId: 'ST-004', role: 'Developer', createdAt: new Date() },
+                { fullName: 'Usman Ali', staffId: 'ST-005', role: 'Support', createdAt: new Date() },
+            ];
+            const demoClients = [
+                { fullName: 'Fatima Zahra', clientId: 'CL-101', assignStaff: 'ST-001', createdAt: new Date() },
+                { fullName: 'Hassan Mirza', clientId: 'CL-102', assignStaff: 'ST-002', createdAt: new Date() },
+                { fullName: 'Ayesha Siddiqui', clientId: 'CL-103', assignStaff: 'ST-001', createdAt: new Date() },
+                { fullName: 'Zain Abbas', clientId: 'CL-104', assignStaff: 'ST-003', createdAt: new Date() },
+                { fullName: 'Maryam Qureshi', clientId: 'CL-105', assignStaff: 'ST-002', createdAt: new Date() },
+            ];
 
-    document.getElementById('recentStaffTable').innerHTML = demoStaff.map(s => `
+            document.getElementById('recentStaffTable').innerHTML = demoStaff.map(s => `
         <tr>
             <td><div class="d-flex align-items-center"><div class="av-circle av-purple">${s.fullName[0]}</div><span>${s.fullName}</span></div></td>
             <td><code style="color:#534AB7;font-size:12px">${s.staffId}</code></td>
@@ -1174,7 +1246,7 @@ function showFallback() {
         </tr>
     `).join('');
 
-    document.getElementById('recentClientsTable').innerHTML = demoClients.map(c => `
+            document.getElementById('recentClientsTable').innerHTML = demoClients.map(c => `
         <tr>
             <td><div class="d-flex align-items-center"><div class="av-circle av-teal">${c.fullName[0]}</div><span>${c.fullName}</span></div></td>
             <td><code style="color:#0f6e56;font-size:12px">${c.clientId}</code></td>
@@ -1183,53 +1255,53 @@ function showFallback() {
         </tr>
     `).join('');
 
-    animateRows('recentStaffTable');
-    animateRows('recentClientsTable');
-}
+            animateRows('recentStaffTable');
+            animateRows('recentClientsTable');
+        }
 
-function reloadDashboard() { location.reload(); }
+        function reloadDashboard() { location.reload(); }
 
-/* ============================================
-   INIT
-============================================ */
-document.addEventListener('DOMContentLoaded', () => {
-    // buildBarChart yahan nahi — API ke baad chalega
-    animateBars();
-    loadDashboardStats();
-    if (typeof feather !== 'undefined') feather.replace();
-});
+        /* ============================================
+           INIT
+        ============================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            // buildBarChart yahan nahi — API ke baad chalega
+            animateBars();
+            loadDashboardStats();
+            if (typeof feather !== 'undefined') feather.replace();
+        });
 
-   const hamburgerBtn = document.querySelector('.button-menu-mobile');
+        const hamburgerBtn = document.querySelector('.button-menu-mobile');
 
-    if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', function () {
-            const isMobile = window.innerWidth <= 767;
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', function () {
+                const isMobile = window.innerWidth <= 767;
 
-            if (isMobile) {
-                document.body.classList.toggle('mobile-menu-open');
-            } else {
-                document.body.classList.toggle('enlarge-menu');
+                if (isMobile) {
+                    document.body.classList.toggle('mobile-menu-open');
+                } else {
+                    document.body.classList.toggle('enlarge-menu');
+                }
+            });
+        }
+
+        // Mobile par bahar click se sidebar band
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth > 767) return;
+
+            const sidebar = document.querySelector('.left-sidenav');
+            const hamburger = document.querySelector('.button-menu-mobile');
+
+            if (sidebar && hamburger &&
+                !sidebar.contains(e.target) &&
+                !hamburger.contains(e.target)
+            ) {
+                document.body.classList.remove('mobile-menu-open');
             }
         });
-    }
-
-    // Mobile par bahar click se sidebar band
-    document.addEventListener('click', function (e) {
-        if (window.innerWidth > 767) return;
-
-        const sidebar = document.querySelector('.left-sidenav');
-        const hamburger = document.querySelector('.button-menu-mobile');
-
-        if (sidebar && hamburger &&
-            !sidebar.contains(e.target) &&
-            !hamburger.contains(e.target)
-        ) {
-            document.body.classList.remove('mobile-menu-open');
-        }
-    });
 
 
-  </script>
+    </script>
 
 </body>
 

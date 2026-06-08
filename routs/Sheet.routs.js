@@ -43,7 +43,7 @@ AssignedClients
 
   // staff prehandler
   app.get('/uploadExcell',{ preHandler: [app.staffauthenticate] }, uploadExcell);
-   app.get('/AssignedClients/:staffId',{ preHandler: [app.staffauthenticate] }, AssignedClients);
+   app.get('/AssignedClients/:staffName',{ preHandler: [app.staffauthenticate] }, AssignedClients);
    app.get('/getMostRecentSheet/:clientId',getMostRecentSheet);
     app.get('/showTable',{ preHandler: [app.staffauthenticate] }, showTable);
     app.delete('/deleteSheetData/:clientId', deleteSheetData);

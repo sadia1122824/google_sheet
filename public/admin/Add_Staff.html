@@ -625,6 +625,76 @@
             font-weight: 600;
             float: right;
         }
+
+        /* Sidebar Links */
+        .left-sidenav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #5b6475;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        /* Hover Effect */
+        .left-sidenav-menu a:hover {
+            transform: translateX(5px);
+            color: #2563eb;
+        }
+
+        /* Active Link */
+        .left-sidenav-menu a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* Icon Styling */
+        .left-sidenav-menu .menu-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            transition: all 0.25s ease;
+        }
+
+        /* Icon Hover Animation */
+        .left-sidenav-menu a:hover .menu-icon {
+            transform: scale(1.1);
+        }
+
+        /* Modern Left Border Indicator */
+        .left-sidenav-menu a::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: #2563eb;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+        }
+
+        .left-sidenav-menu a:hover::before,
+        .left-sidenav-menu a.active::before {
+            height: 70%;
+        }
+
+        /* Menu Label */
+        .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9aa4b2;
+            font-weight: 600;
+            margin: 18px 16px 8px;
+        }
     </style>
 
 </head>
@@ -869,85 +939,85 @@
     <!-- App js -->
     <!-- <script src="side_navbar.js"></script> -->
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
 
-    // =========================
-    // 1. HAMBURGER MENU TOGGLE
-    // =========================
-    const hamburgerBtn = document.querySelector('.button-menu-mobile');
+            // =========================
+            // 1. HAMBURGER MENU TOGGLE
+            // =========================
+            const hamburgerBtn = document.querySelector('.button-menu-mobile');
 
-    if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', function () {
-            const isMobile = window.innerWidth <= 767;
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', function () {
+                    const isMobile = window.innerWidth <= 767;
 
-            if (isMobile) {
-                document.body.classList.toggle('mobile-menu-open');
-            } else {
-                document.body.classList.toggle('enlarge-menu');
+                    if (isMobile) {
+                        document.body.classList.toggle('mobile-menu-open');
+                    } else {
+                        document.body.classList.toggle('enlarge-menu');
+                    }
+                });
             }
-        });
-    }
 
-    // Mobile par bahar click se sidebar band
-    document.addEventListener('click', function (e) {
-        if (window.innerWidth > 767) return;
+            // Mobile par bahar click se sidebar band
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth > 767) return;
 
-        const sidebar = document.querySelector('.left-sidenav');
-        const hamburger = document.querySelector('.button-menu-mobile');
+                const sidebar = document.querySelector('.left-sidenav');
+                const hamburger = document.querySelector('.button-menu-mobile');
 
-        if (sidebar && hamburger &&
-            !sidebar.contains(e.target) &&
-            !hamburger.contains(e.target)
-        ) {
-            document.body.classList.remove('mobile-menu-open');
-        }
-    });
-
-
-    // =========================
-    // 2. STAFF FORM SUBMIT
-    // =========================
-    document.getElementById("staffForm").addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const staffData = {
-            fullName: document.getElementById("staffName").value,
-            email: document.getElementById("staffEmail").value,
-            password: document.getElementById("staffPassword").value,
-            phone: document.getElementById("staffPhone").value,
-            staffId: document.getElementById("staffId").value,
-            role: document.getElementById("staffRole").value
-        };
-
-        try {
-            const response = await fetch("/staffRecord", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(staffData)
+                if (sidebar && hamburger &&
+                    !sidebar.contains(e.target) &&
+                    !hamburger.contains(e.target)
+                ) {
+                    document.body.classList.remove('mobile-menu-open');
+                }
             });
 
-            const result = await response.json();
-            const alertBox = document.getElementById("staffAlert");
 
-            alertBox.style.display = "block";
+            // =========================
+            // 2. STAFF FORM SUBMIT
+            // =========================
+            document.getElementById("staffForm").addEventListener("submit", async function (e) {
+                e.preventDefault();
 
-            if (response.ok) {
-                alertBox.className = "alert alert-success";
-                alertBox.innerText = result.message;
-                document.getElementById("staffForm").reset();
-            } else {
-                alertBox.className = "alert alert-danger";
-                alertBox.innerText = result.message;
-            }
+                const staffData = {
+                    fullName: document.getElementById("staffName").value,
+                    email: document.getElementById("staffEmail").value,
+                    password: document.getElementById("staffPassword").value,
+                    phone: document.getElementById("staffPhone").value,
+                    staffId: document.getElementById("staffId").value,
+                    role: document.getElementById("staffRole").value
+                };
 
-        } catch (error) {
-            console.log(error);
-        }
-    });
+                try {
+                    const response = await fetch("/staffRecord", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(staffData)
+                    });
 
-});
-</script>
+                    const result = await response.json();
+                    const alertBox = document.getElementById("staffAlert");
+
+                    alertBox.style.display = "block";
+
+                    if (response.ok) {
+                        alertBox.className = "alert alert-success";
+                        alertBox.innerText = result.message;
+                        document.getElementById("staffForm").reset();
+                    } else {
+                        alertBox.className = "alert alert-danger";
+                        alertBox.innerText = result.message;
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+
+        });
+    </script>
 
 
 

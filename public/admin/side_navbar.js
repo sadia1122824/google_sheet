@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-
   const sideNavbar = document.getElementById("side-navbar");
   if (!sideNavbar) return;
 
@@ -23,33 +22,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
         
 
-           <li>
-<a href="/">
-  <i data-feather="file-plus" class="menu-icon"></i>
-  <span>dashboard</span>
-</a>
+        <li>
+  <a href="/">
+    <i data-feather="home" class="menu-icon"></i>
+    <span>Dashboard</span>
+  </a>
 
-<a href="/staffRecord">
-  <i data-feather="user-plus" class="menu-icon"></i>
-  <span>Add Staff</span>
-</a>
+  <a href="/staffRecord">
+    <i data-feather="user-plus" class="menu-icon"></i>
+    <span>Add Staff</span>
+  </a>
 
-<a href="/showStaffRecord">
-  <i data-feather="users" class="menu-icon"></i>
-  <span>Show Staff</span>
-</a>
+  <a href="/showStaffRecord">
+    <i data-feather="users" class="menu-icon"></i>
+    <span>Show Staff</span>
+  </a>
 
-<a href="/AddClients">
-  <i data-feather="briefcase" class="menu-icon"></i>
-  <span>Add Client</span>
-</a>
+  <a href="/AddClients">
+    <i data-feather="briefcase" class="menu-icon"></i>
+    <span>Add Client</span>
+  </a>
 
-<a href="/showClients">
-  <i data-feather="users" class="menu-icon"></i>
-  <span>Show Clients</span>
-</a>
+  <a href="/showClients">
+    <i data-feather="user-check" class="menu-icon"></i>
+    <span>Show Clients</span>
+  </a>
 </li>
-
   
 
 

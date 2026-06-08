@@ -331,19 +331,42 @@ const loginCredentials = async (request, reply) => {
 //     }
 // };
 
+// const AssignedClients = async (request, reply) => {
+//   try {
+//     const { staffId } = request.params;
+
+//     const clients = await ClientRecord.find({
+//       assignStaff: String(staffId),
+//     }).select("clientId fullName email _id"); // ✅ sirf zarori fields
+
+//     return reply.send({
+//       success: true,
+//       data: clients.map((c) => ({
+//         _id: c._id,
+//         clientId: c.clientId, // numeric ID (e.g. "1234")
+//         fullName: c.fullName,
+//         email: c.email,
+//       })),
+//     });
+//   } catch (error) {
+//     return reply.status(500).send({ success: false, message: error.message });
+//   }
+// };
+
+
 const AssignedClients = async (request, reply) => {
   try {
-    const { staffId } = request.params;
+    const { staffName } = request.params;  // ✅ staffId → staffName
 
     const clients = await ClientRecord.find({
-      assignStaff: String(staffId),
-    }).select("clientId fullName email _id"); // ✅ sirf zarori fields
+      assignStaff: decodeURIComponent(staffName),  // ✅ "sana%20friend" → "sana friend"
+    }).select("clientId fullName email _id");
 
     return reply.send({
       success: true,
       data: clients.map((c) => ({
         _id: c._id,
-        clientId: c.clientId, // numeric ID (e.g. "1234")
+        clientId: c.clientId,
         fullName: c.fullName,
         email: c.email,
       })),
@@ -352,7 +375,6 @@ const AssignedClients = async (request, reply) => {
     return reply.status(500).send({ success: false, message: error.message });
   }
 };
-
 const dashboard = async (req, reply) => {
   return reply.sendFile("staff/staff_dashboard.html");
 };

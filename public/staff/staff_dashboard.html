@@ -762,6 +762,70 @@
                 z-index: 1000;
             }
         }
+
+        /* Modern Sidebar Menu */
+        .left-sidenav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            margin: 5px 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .left-sidenav-menu a:hover {
+            color: #2563eb;
+            transform: translateX(6px);
+        }
+
+        .left-sidenav-menu a.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .left-sidenav-menu .menu-icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2.2;
+            transition: all 0.3s ease;
+        }
+
+        .left-sidenav-menu a:hover .menu-icon {
+            transform: scale(1.15);
+        }
+
+        .left-sidenav-menu a::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: #2563eb;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .left-sidenav-menu a:hover::before,
+        .left-sidenav-menu a.active::before {
+            height: 75%;
+        }
+
+        .menu-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin: 15px 16px 10px;
+        }
     </style>
 </head>
 
