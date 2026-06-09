@@ -1014,7 +1014,8 @@
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script>
+   
+ <!-- <script>
         // ── Date ────────────────────────────────────────────────────────────
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1236,10 +1237,10 @@
         }
 
         // ── MAIN: Load dashboard from API ────────────────────────────────────
-        async function loadDashboard(staffId) {
+        async function loadDashboard(staffName) {
             try {
                 // ✅ params route: /getStaffDashboard/:staffId
-                const res = await fetch(`/getStaffDashboard/${staffId}`);
+                const res = await fetch(`/getStaffDashboard/${staffName}`);
                 const result = await res.json();
 
                 console.log('📊 Dashboard API response:', result);
@@ -1280,9 +1281,9 @@
         }
 
         // ── Load clients dropdown ─────────────────────────────────────────────
-        async function loadClients(staffId) {
+        async function loadClients(staffName) {
             try {
-                const res = await fetch(`/AssignedClients/${staffId}`);
+                const res = await fetch(`/AssignedClients/${staffName}`);
                 const result = await res.json();
 
                 const dropdown = document.getElementById('clientSelect');
@@ -1310,7 +1311,7 @@
                         dropdown.appendChild(opt);
                     });
                 } else {
-                    console.log('No clients for staffId:', staffId);
+                    console.log('No clients for staffName:', staffName);
                 }
             } catch (err) {
                 console.error('Client load error:', err);
@@ -1372,7 +1373,7 @@
             const clientId = dropdown.value;
             const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || '';
             const selectedYear = document.getElementById('yearSelect').value;
-            const staffId = localStorage.getItem('staffId');
+            const staffName = localStorage.getItem('staffName');
 
             if (!clientId) {
                 showNotification('❌ Please select a client first.', 'danger');
@@ -1401,7 +1402,7 @@
                 formData.append('year', selectedYear);
                 formData.append('clientId', clientId);
                 formData.append('clientName', clientName);
-                formData.append('staffId', staffId || '');   // ✅ staffId bhejo
+                formData.append('staffName', staffName || '');   // ✅ staffName bhejo
 
                 const response = await fetch('/importExcelFile', {
                     method: 'POST',
@@ -1420,7 +1421,7 @@
                         showResults(result);
                         showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
                         // ✅ Dashboard live refresh
-                        if (staffId) await loadDashboard(staffId);
+                        if (staffName) await loadDashboard(staffName);
                     }, 500);
                 } else {
                     throw new Error(result.error || 'Import failed');
@@ -1522,43 +1523,27 @@
 
         // ── Mobile menu ───────────────────────────────────────────────────────
         function initMobileMenu() {
-            const menuBtn = document.querySelector('.button-menu-mobile');
+            const menuBtn = document.querySelector(".button-menu-mobile");
             if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
-                menuBtn.dataset.mobileListenerAttached = 'true';
-
-                menuBtn.addEventListener('click', function (e) {
+                menuBtn.dataset.mobileListenerAttached = "true";
+                menuBtn.addEventListener("click", function (e) {
                     e.stopPropagation();
-                    document.body.classList.toggle('mobile-menu-open');
-                });
-
-                // Close on outside click
-                document.addEventListener('click', function (e) {
-                    if (!document.body.classList.contains('mobile-menu-open')) return;
-                    const sidebar = document.querySelector('.left-sidenav');
-                    if (
-                        sidebar &&
-                        !sidebar.contains(e.target) &&
-                        !menuBtn.contains(e.target)
-                    ) {
-                        document.body.classList.remove('mobile-menu-open');
+                    if (window.innerWidth <= 767) {
+                        document.body.classList.toggle("mobile-menu-open");
+                    } else {
+                        document.body.classList.toggle("enlarge-menu");
                     }
                 });
-
-                // Close on overlay tap (add overlay element)
-                const overlay = document.createElement('div');
-                overlay.id = 'sidebarOverlay';
-                overlay.style.cssText = `
-      display:none;position:fixed;inset:0;
-      background:rgba(0,0,0,0.45);z-index:999;
-    `;
-                document.body.appendChild(overlay);
-
-                overlay.addEventListener('click', () => {
-                    document.body.classList.remove('mobile-menu-open');
+                document.addEventListener("click", function (e) {
+                    if (window.innerWidth <= 767) {
+                        const sidebar = document.querySelector(".left-sidenav");
+                        if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                            document.body.classList.remove("mobile-menu-open");
+                        }
+                    }
                 });
             }
         }
-
         // ── DOMContentLoaded ──────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async function () {
             initMobileMenu();
@@ -1569,21 +1554,652 @@
             });
             observer.observe(document.body, { childList: true, subtree: true });
 
-            const staffId = localStorage.getItem('staffId');
+            const staffName = localStorage.getItem('staffName');
 
-            if (!staffId || staffId === 'null') {
-                console.warn('No staffId — redirecting to login');
+            if (!staffName || staffName === 'null') {
+                console.warn('No staffName — redirecting to login');
                 window.location.href = '/login';
                 return;
             }
 
             // ✅ Dashboard + dropdown parallel load
             await Promise.all([
-                loadDashboard(staffId),
-                loadClients(staffId)
+                loadDashboard(staffName),
+                loadClients(staffName)
             ]);
         });
-    </script>
+    </script> -->
+<script>
+    // ── Date ────────────────────────────────────────────────────────────
+const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const n = new Date();
+document.getElementById('dashDate').textContent =
+    `${days[n.getDay()]}, ${n.getDate()} ${mons[n.getMonth()]} ${n.getFullYear()}`;
+
+// ── Globals ──────────────────────────────────────────────────────────
+const COLORS = ['#534AB7', '#0F6E56', '#b8670a', '#a32d2d', '#993556', '#185fa5', '#639922', '#BA7517'];
+const AV_CLASSES = ['av-purple', 'av-teal', 'av-amber', 'av-red', 'av-pink', 'av-blue', 'av-purple', 'av-teal'];
+const STATUS_MAP = {
+    success: ['s-success', 'Imported'],
+    pending: ['s-pending', 'Processing'],
+    error: ['s-error', 'Failed']
+};
+let barInst = null;
+let data7d = [0, 0, 0, 0, 0, 0, 0];
+let data30d = new Array(30).fill(0);
+
+// ── Animate count ────────────────────────────────────────────────────
+function animateCount(id, target, delay) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let start = null;
+    const dur = 1300;
+    setTimeout(() => {
+        requestAnimationFrame(function step(ts) {
+            if (!start) start = ts;
+            const p = Math.min((ts - start) / dur, 1);
+            const ease = 1 - Math.pow(1 - p, 4);
+            el.textContent = Math.round(ease * target);
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = target;
+        });
+    }, delay || 0);
+}
+
+// ── Bar chart ────────────────────────────────────────────────────────
+function buildBar(period) {
+    const is30 = period === '30d';
+    const raw = is30 ? data30d : data7d;
+    const labels = is30
+        ? Array.from({ length: 30 }, (_, i) => String(i + 1))
+        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    if (barInst) barInst.destroy();
+    barInst = new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Files',
+                data: raw,
+                backgroundColor: raw.map((_, i) =>
+                    i === raw.length - 2 ? 'rgba(83,74,183,0.9)' : 'rgba(83,74,183,0.25)'
+                ),
+                borderColor: '#534AB7', borderWidth: 2, borderRadius: 6, borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            animation: { duration: 900, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 40 },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b', titleColor: '#f8fafc',
+                    bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#a0aec0', font: { size: 10 }, maxTicksLimit: is30 ? 10 : 7 },
+                    border: { display: false }
+                },
+                y: {
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: {
+                        color: '#a0aec0', font: { size: 10 }, stepSize: 1,
+                        callback: v => Number.isInteger(v) ? v : ''
+                    },
+                    beginAtZero: true, border: { display: false }
+                }
+            }
+        }
+    });
+}
+
+function switchPeriod(el, p) {
+    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    buildBar(p);
+}
+
+// ── Donut chart ──────────────────────────────────────────────────────
+function buildDonut(uploadsPerClient) {
+    const circ = 2 * Math.PI * 50;
+    const active = uploadsPerClient.filter(c => c.uploadCount > 0);
+    const totalUp = active.reduce((a, c) => a + c.uploadCount, 0);
+
+    document.querySelector('.donut-center .dpct').textContent = totalUp;
+
+    const svg = document.getElementById('donutSvg');
+    svg.querySelectorAll('circle.dyn').forEach(c => c.remove());
+
+    document.getElementById('donutLegend').innerHTML = active.map((c, i) => `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="width:10px;height:10px;border-radius:3px;background:${COLORS[i % COLORS.length]};flex-shrink:0"></span>
+            <span style="font-size:12px;color:var(--color-text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.fullName}</span>
+            <span style="font-size:12px;font-weight:700;color:var(--color-text-primary);font-family:'Space Mono',monospace">${c.uploadCount}</span>
+        </div>
+    `).join('');
+
+    if (totalUp === 0) return;
+
+    setTimeout(() => {
+        let offset = 0;
+        active.forEach((c, i) => {
+            const pct = c.uploadCount / totalUp;
+            const len = Math.round(circ * pct);
+            const gap = Math.round(circ - len);
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.classList.add('dyn');
+            circle.setAttribute('cx', '65'); circle.setAttribute('cy', '65'); circle.setAttribute('r', '50');
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('stroke', COLORS[i % COLORS.length]);
+            circle.setAttribute('stroke-width', '14');
+            circle.setAttribute('stroke-dasharray', `0 ${Math.round(circ)}`);
+            circle.setAttribute('stroke-linecap', 'round');
+            circle.setAttribute('transform', 'rotate(-90 65 65)');
+            circle.style.strokeDashoffset = -offset;
+            circle.style.transition = `stroke-dasharray 1.2s cubic-bezier(.22,1,.36,1) ${0.8 + i * 0.12}s`;
+            svg.appendChild(circle);
+            setTimeout(() => circle.setAttribute('stroke-dasharray', `${len} ${gap}`), 50);
+            offset += len;
+        });
+    }, 400);
+}
+
+// ── Client progress bars ─────────────────────────────────────────────
+function buildClientProgress(uploadsPerClient) {
+    const maxUp = Math.max(...uploadsPerClient.map(c => c.uploadCount), 1);
+    document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clients`;
+
+    document.getElementById('clientProgress').innerHTML = uploadsPerClient.map((c, i) => {
+        const initials = c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const pct = ((c.uploadCount / maxUp) * 100).toFixed(0);
+        return `
+        <div class="cp-item">
+            <div class="av-circle ${AV_CLASSES[i % AV_CLASSES.length]}">${initials}</div>
+            <div class="cp-info">
+                <div class="cp-name">${c.fullName}</div>
+                <div class="cp-bar-bg">
+                    <div class="cp-bar-fill" style="background:${COLORS[i % COLORS.length]};width:${pct}%"></div>
+                </div>
+                <div class="cp-sub">${c.uploadCount} files</div>
+            </div>
+            <div class="cp-val" style="color:${COLORS[i % COLORS.length]}">${c.uploadCount}</div>
+        </div>`;
+    }).join('');
+
+    setTimeout(() => {
+        document.querySelectorAll('.cp-bar-fill').forEach(b => b.style.transform = 'scaleX(1)');
+    }, 500);
+}
+
+// ── Timeline ─────────────────────────────────────────────────────────
+function buildTimeline(timeline) {
+    if (!timeline || timeline.length === 0) {
+        document.getElementById('timeline').innerHTML =
+            `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">No recent activity</p>`;
+        return;
+    }
+    document.getElementById('timeline').innerHTML = timeline.map(t => {
+        const isSuccess = t.status === 'success';
+        const isError = t.status === 'error';
+        const icon = isSuccess ? '✅' : isError ? '❌' : '📁';
+        const cls = isSuccess ? 'tl-success' : isError ? 'tl-upload' : 'tl-client';
+        return `
+        <div class="tl-item">
+            <div class="tl-dot ${cls}">${icon}</div>
+            <div class="tl-content">
+                <div class="tl-title">${t.fileName} — ${t.clientName}</div>
+                <div class="tl-time">${t.importedRows} rows · ${formatTimeAgo(t.createdAt)}</div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── Uploads table ────────────────────────────────────────────────────
+function buildTable(recentUploads) {
+    if (!recentUploads || recentUploads.length === 0) {
+        document.getElementById('uploadsTbody').innerHTML =
+            `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">No uploads yet</td></tr>`;
+        return;
+    }
+    document.getElementById('uploadsTbody').innerHTML = recentUploads.map((r, i) => {
+        const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending', 'Unknown'];
+        const initials = (r.clientName || 'UN').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+        const avCls = AV_CLASSES[i % AV_CLASSES.length];
+        return `
+        <tr style="opacity:0;animation:fadeInRight .4s ease ${1.3 + i * 0.1}s forwards">
+            <td>
+                <div style="display:flex;align-items:center;gap:9px">
+                    <div class="av-circle ${avCls}" style="width:30px;height:30px;font-size:11px">${initials}</div>
+                    <span style="font-weight:600">${r.clientName || '—'}</span>
+                </div>
+            </td>
+            <td style="color:var(--color-text-secondary)">${r.fileName || '—'}</td>
+            <td style="font-family:'Space Mono',monospace;font-weight:600">
+                ${r.importedRows > 0 ? r.importedRows.toLocaleString() : '—'}
+            </td>
+            <td><span class="year-tag">${r.year || '—'}</span></td>
+            <td style="white-space:nowrap;font-size:12px;color:var(--color-text-secondary)">
+                ${formatTimeAgo(r.createdAt)}
+            </td>
+            <td><span class="status-badge ${cls}">${lbl}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+// ── Time ago ─────────────────────────────────────────────────────────
+function formatTimeAgo(dateStr) {
+    if (!dateStr) return '—';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const d = new Date(dateStr);
+    return `${d.getDate()} ${mons[d.getMonth()]}, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+// ── MAIN: Load dashboard from API ────────────────────────────────────
+async function loadDashboard(staffName) {
+    console.log('📡 loadDashboard called — staffName:', staffName);
+    try {
+        const res = await fetch(`/getStaffDashboard/${staffName}`, {
+            cache: 'no-store'  // ✅ Browser cache bypass — fresh data har baar
+        });
+        console.log('📡 API status:', res.status);
+
+        if (!res.ok) {
+            console.error('❌ API HTTP error:', res.status);
+            return;
+        }
+
+        const result = await res.json();
+        console.log('📊 Dashboard API response:', result);
+
+        if (!result.success) {
+            console.error('❌ Dashboard API error:', result.error);
+            return;
+        }
+
+        const { stats, uploadsPerClient, weeklyActivity, recentUploads, timeline } = result.data;
+
+        // ── Stats counters
+        animateCount('v1', stats.totalUploads || 0, 350);
+        animateCount('v2', stats.totalClients || 0, 500);
+        animateCount('v3', stats.successfulImports || 0, 650);
+        animateCount('v4', stats.todayUploads || 0, 800);
+
+        // ── Progress bars on stat cards
+        setTimeout(() => {
+            ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.transform = 'scaleX(1)';
+            });
+        }, 600);
+
+        // ── Store chart data globally for period switching
+        data7d = (weeklyActivity && weeklyActivity.length === 7)
+            ? weeklyActivity
+            : [0, 0, 0, 0, 0, 0, 0];
+
+        // ── Build all sections
+        buildBar('7d');
+        buildDonut(uploadsPerClient || []);
+        buildClientProgress(uploadsPerClient || []);
+        buildTimeline(timeline || []);
+        buildTable(recentUploads || []);
+
+        console.log('✅ Dashboard updated successfully');
+
+    } catch (err) {
+        console.error('❌ Dashboard load error:', err);
+    }
+}
+
+// ── Load clients dropdown ─────────────────────────────────────────────
+async function loadClients(staffName) {
+    try {
+        const res = await fetch(`/AssignedClients/${staffName}`);
+        const result = await res.json();
+
+        const dropdown = document.getElementById('clientSelect');
+        if (!dropdown) return;
+
+        dropdown.innerHTML = `<option value="">Select Client</option>`;
+
+        // Remove old listener by cloning
+        const newDropdown = dropdown.cloneNode(true);
+        dropdown.parentNode.replaceChild(newDropdown, dropdown);
+
+        newDropdown.addEventListener('change', function () {
+            const opt = newDropdown.options[newDropdown.selectedIndex];
+            if (newDropdown.value) {
+                localStorage.setItem('clientId', newDropdown.value);
+                localStorage.setItem('clientName', opt.dataset.fullName || opt.textContent);
+            } else {
+                localStorage.removeItem('clientId');
+                localStorage.removeItem('clientName');
+            }
+        });
+
+        if (result.success && result.data.length > 0) {
+            result.data.forEach(client => {
+                const opt = document.createElement('option');
+                opt.value = client.clientId;
+                opt.textContent = client.fullName;
+                opt.dataset.fullName = client.fullName;
+                newDropdown.appendChild(opt);
+            });
+        } else {
+            console.log('No clients for staffName:', staffName);
+        }
+    } catch (err) {
+        console.error('Client load error:', err);
+    }
+}
+
+// ── DOM refs ──────────────────────────────────────────────────────────
+const fileUpload       = document.getElementById('fileUpload');
+const fileLabel        = document.getElementById('fileLabel');
+const uploadBtn        = document.getElementById('uploadBtn');
+const cancelBtn        = document.getElementById('cancelBtn');
+const notificationAlert = document.getElementById('notificationAlert');
+const progressSection  = document.getElementById('progressSection');
+const progressBar      = document.getElementById('progressBar');
+const progressStatus   = document.getElementById('progressStatus');
+const progressPercent  = document.getElementById('progressPercent');
+const resultsSection   = document.getElementById('resultsSection');
+const resultsDetails   = document.getElementById('resultsDetails');
+const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
+
+let isUploading = false;
+let abortController = null;
+
+// ── Notification ──────────────────────────────────────────────────────
+function showNotification(message, type = 'success') {
+    if (!notificationAlert) return;
+    notificationAlert.innerHTML = `
+    <div class="d-flex align-items-center">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
+        <span>${message}</span>
+        <button type="button" class="close ml-auto"
+            onclick="this.parentElement.parentElement.style.display='none'">
+            <span>&times;</span>
+        </button>
+    </div>`;
+    notificationAlert.className = `alert alert-${type} alert-dismissible`;
+    notificationAlert.style.display = 'block';
+    if (type === 'success') setTimeout(() => { notificationAlert.style.display = 'none'; }, 5000);
+}
+
+// ── Progress ──────────────────────────────────────────────────────────
+function updateProgress(percent, status) {
+    if (progressBar)     progressBar.style.width       = `${percent}%`;
+    if (progressPercent) progressPercent.textContent   = `${percent}%`;
+    if (progressStatus)  progressStatus.textContent    = status;
+}
+
+// ── Reset form ────────────────────────────────────────────────────────
+function resetForm() {
+    if (fileUpload)      fileUpload.value = '';
+    if (fileLabel)       fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+    if (uploadBtn)       uploadBtn.disabled = true;
+    if (progressSection) progressSection.style.display = 'none';
+    if (resultsSection)  resultsSection.style.display  = 'none';
+    isUploading = false;
+}
+
+// ── Upload file ───────────────────────────────────────────────────────
+async function uploadFile() {
+    const file = fileUpload ? fileUpload.files[0] : null;
+    if (!file || isUploading) return;
+
+    const dropdown     = document.getElementById('clientSelect');
+    const clientId     = dropdown ? dropdown.value : '';
+    const clientName   = dropdown
+        ? (dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || '')
+        : '';
+    const yearSelect   = document.getElementById('yearSelect');
+    const selectedYear = yearSelect ? yearSelect.value : '';
+    const staffName    = localStorage.getItem('staffName');  // ✅ Fresh read every time
+
+    if (!clientId) {
+        showNotification('❌ Please select a client first.', 'danger');
+        return;
+    }
+
+    if (!staffName || staffName === 'null') {
+        showNotification('❌ Session expired. Please login again.', 'danger');
+        setTimeout(() => { window.location.href = '/login'; }, 1500);
+        return;
+    }
+
+    isUploading = true;
+    abortController = new AbortController();
+    if (progressSection) progressSection.style.display = 'block';
+    if (resultsSection)  resultsSection.style.display  = 'none';
+    if (uploadBtn)       uploadBtn.disabled             = true;
+    if (cancelBtn)       cancelBtn.style.display        = 'inline-block';
+
+    try {
+        updateProgress(10, 'Validating file...');
+
+        if (file.size > 10 * 1024 * 1024)
+            throw new Error('File size must be less than 10MB');
+
+        const validExts = ['.csv', '.xlsx', '.xls'];
+        if (!validExts.some(ext => file.name.toLowerCase().endsWith(ext)))
+            throw new Error('Please upload CSV or Excel files only');
+
+        updateProgress(30, 'Uploading to server...');
+
+        const formData = new FormData();
+        formData.append('file',       file);
+        formData.append('year',       selectedYear);
+        formData.append('clientId',   clientId);
+        formData.append('clientName', clientName);
+        formData.append('staffName',  staffName);
+
+        const response = await fetch('/importExcelFile', {
+            method: 'POST',
+            body:   formData,
+            signal: abortController.signal
+        });
+
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+        updateProgress(70, 'Processing data...');
+        const result = await response.json();
+
+        if (result.success) {
+            updateProgress(100, 'Import complete!');
+
+            // ✅ Wait briefly so progress bar is visible at 100%
+            await new Promise(resolve => setTimeout(resolve, 600));
+
+            showResults(result);
+            showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
+
+            // ✅ Refresh dashboard with fresh staffName
+            const freshStaffName = localStorage.getItem('staffName');
+            console.log('🔄 Refreshing dashboard for staffName:', freshStaffName);
+
+            if (freshStaffName && freshStaffName !== 'null') {
+                await loadDashboard(freshStaffName);
+                console.log('✅ Dashboard refreshed after upload');
+            } else {
+                console.warn('❌ staffName not found in localStorage after upload');
+            }
+
+            isUploading = false;  // ✅ Reset only after everything is done
+
+        } else {
+            throw new Error(result.error || 'Import failed');
+        }
+
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            showNotification('Upload cancelled', 'info');
+        } else {
+            console.error('Upload error:', error);
+            showNotification(`❌ Error: ${error.message}`, 'danger');
+        }
+        resetForm();
+    }
+}
+
+// ── Show results ──────────────────────────────────────────────────────
+function showResults(result) {
+    if (!resultsDetails) return;
+
+    const imported   = result.importedRows || 0;
+    const failed     = result.failedRows   || 0;
+    const sheetName  = result.sheetName    || '';
+    const clientName = result.clientName   || '';
+
+    resultsDetails.innerHTML = `
+    <div class="row">
+        <div class="col-6">
+            <div class="text-success">
+                <i class="fas fa-check mr-1"></i><strong>${imported}</strong> rows imported
+            </div>
+        </div>
+        ${failed > 0 ? `
+        <div class="col-6">
+            <div class="text-warning">
+                <i class="fas fa-exclamation-triangle mr-1"></i><strong>${failed}</strong> rows failed
+            </div>
+        </div>` : ''}
+    </div>
+    ${clientName ? `<div class="mt-2"><i class="fas fa-user mr-1 text-primary"></i><small><strong>Client:</strong> ${clientName}</small></div>` : ''}
+    ${sheetName  ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Sheet:</strong> ${sheetName}</small></div>` : ''}
+    ${result.googleSheets?.sheetUrl ? `
+    <div class="mt-1">
+        <a href="${result.googleSheets.sheetUrl}" target="_blank" class="btn btn-sm btn-outline-success mt-1">
+            <i class="fas fa-external-link-alt mr-1"></i> Open Google Sheet
+        </a>
+    </div>` : ''}`;
+
+    if (progressSection) progressSection.style.display = 'none';
+    if (resultsSection)  resultsSection.style.display  = 'block';
+}
+
+// ── Cancel upload ─────────────────────────────────────────────────────
+function cancelUpload() {
+    if (abortController) abortController.abort();
+    resetForm();
+    showNotification('Upload cancelled', 'info');
+}
+
+// ── Event listeners ───────────────────────────────────────────────────
+if (fileUpload) {
+    fileUpload.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            if (fileLabel) fileLabel.innerHTML = `
+                <i class="fas fa-file-excel mr-2 text-success"></i>
+                <strong>${file.name}</strong>
+                <small class="text-muted ml-2">(${(file.size / 1024).toFixed(2)} KB)</small>`;
+            if (uploadBtn) uploadBtn.disabled = false;
+        } else {
+            resetForm();
+        }
+    });
+}
+
+if (uploadBtn)      uploadBtn.addEventListener('click',  uploadFile);
+if (cancelBtn)      cancelBtn.addEventListener('click',  cancelUpload);
+if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetForm);
+
+// ── Drag & drop ───────────────────────────────────────────────────────
+const cardBody = document.querySelector('.card-body');
+if (cardBody) {
+    cardBody.addEventListener('dragover',  e => { e.preventDefault(); cardBody.style.backgroundColor = '#f8f9fa'; });
+    cardBody.addEventListener('dragleave', e => { e.preventDefault(); cardBody.style.backgroundColor = ''; });
+    cardBody.addEventListener('drop', e => {
+        e.preventDefault();
+        cardBody.style.backgroundColor = '';
+        if (e.dataTransfer.files.length > 0 && fileUpload) {
+            fileUpload.files = e.dataTransfer.files;
+            fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    });
+}
+
+// ── Logout ────────────────────────────────────────────────────────────
+function logout() {
+    fetch('/logout', { method: 'POST', credentials: 'include' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success', title: 'Logged out',
+                    text: data.message, timer: 1200, showConfirmButton: false
+                });
+                setTimeout(() => { window.location.href = '/login'; }, 1200);
+            } else {
+                Swal.fire('Error', data.message || 'Logout failed', 'error');
+            }
+        })
+        .catch(() => Swal.fire('Error', 'Server error', 'error'));
+}
+
+// ── Mobile menu ───────────────────────────────────────────────────────
+function initMobileMenu() {
+    const menuBtn = document.querySelector(".button-menu-mobile");
+    if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
+        menuBtn.dataset.mobileListenerAttached = "true";
+        menuBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (window.innerWidth <= 767) {
+                document.body.classList.toggle("mobile-menu-open");
+            } else {
+                document.body.classList.toggle("enlarge-menu");
+            }
+        });
+        document.addEventListener("click", function (e) {
+            if (window.innerWidth <= 767) {
+                const sidebar = document.querySelector(".left-sidenav");
+                if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    document.body.classList.remove("mobile-menu-open");
+                }
+            }
+        });
+    }
+}
+
+// ── DOMContentLoaded ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async function () {
+    initMobileMenu();
+
+    const observer = new MutationObserver(() => {
+        const menuBtn = document.querySelector('.button-menu-mobile');
+        if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    const staffName = localStorage.getItem('staffName');
+    console.log('🚀 Page loaded — staffName:', staffName);
+
+    if (!staffName || staffName === 'null') {
+        console.warn('No staffName — redirecting to login');
+        window.location.href = '/login';
+        return;
+    }
+
+    // ✅ Load dashboard + dropdown in parallel
+    await Promise.all([
+        loadDashboard(staffName),
+        loadClients(staffName)
+    ]);
+});
+</script>
+
 </body>
 
 </html>

@@ -379,22 +379,187 @@ const dashboard = async (req, reply) => {
   return reply.sendFile("staff/staff_dashboard.html");
 };
 
+// const getStaffDashboard = async (request, reply) => {
+//   try {
+//     const staffId = request.query.staffId || request.params.staffId;
+
+//     console.log("🔍 staffId:", staffId);
+
+//     if (!staffId || staffId === "null") {
+//       return reply
+//         .code(400)
+//         .send({ success: false, error: "staffId required" });
+//     }
+
+//     // 1. Staff ke assigned clients
+//     const clients = await ClientRecord.find({
+//       assignStaff: String(staffId),
+//     }).select("clientId fullName");
+
+//     const clientIds = clients.map((c) => String(c.clientId));
+
+//     // 2. Agar koi client nahi
+//     if (clientIds.length === 0) {
+//       return reply.send({
+//         success: true,
+//         data: {
+//           stats: {
+//             totalUploads: 0,
+//             totalClients: 0,
+//             successfulImports: 0,
+//             todayUploads: 0,
+//           },
+//           uploadsPerClient: [],
+//           weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
+//           recentUploads: [],
+//           timeline: [],
+//         },
+//       });
+//     }
+
+//     // 3. Total uploads
+//     const totalUploads = await UploadRecord.countDocuments({
+//       staffId: String(staffId),
+//     });
+
+//     // 4. Successful imports
+//     const successfulImports = await UploadRecord.countDocuments({
+//       staffId: String(staffId),
+//       status: "success",
+//     });
+
+//     // 5. Today uploads
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayUploads = await UploadRecord.countDocuments({
+//       staffId: String(staffId),
+//       createdAt: { $gte: todayStart },
+//     });
+
+//     // 6. Uploads per client
+//     const uploadsPerClient = await Promise.all(
+//       clients.map(async (c) => {
+//         const count = await UploadRecord.countDocuments({
+//           staffId: String(staffId),
+//           clientId: String(c.clientId),
+//         });
+//         return {
+//           clientId: c.clientId,
+//           fullName: c.fullName,
+//           uploadCount: count,
+//         };
+//       }),
+//     );
+
+//     // 7. Last 7 days activity
+//     const sevenDaysAgo = new Date();
+//     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+//     sevenDaysAgo.setHours(0, 0, 0, 0);
+
+//     const weeklyRaw = await UploadRecord.aggregate([
+//       {
+//         $match: {
+//           staffId: String(staffId),
+//           createdAt: { $gte: sevenDaysAgo },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+//           },
+//           count: { $sum: 1 },
+//         },
+//       },
+//     ]);
+
+//     // 7 din ka array (missing days = 0)
+//     const weeklyActivity = [];
+//     for (let i = 6; i >= 0; i--) {
+//       const d = new Date();
+//       d.setDate(d.getDate() - i);
+//       const dateStr = d.toISOString().split("T")[0];
+//       const found = weeklyRaw.find((w) => w._id === dateStr);
+//       weeklyActivity.push(found ? found.count : 0);
+//     }
+
+//     // 8. Recent uploads (last 10)
+//     const recentUploads = await UploadRecord.find({ staffId: String(staffId) })
+//       .sort({ createdAt: -1 })
+//       .limit(10)
+//       .lean();
+
+//     // clientName attach karo
+//     const clientMap = {};
+//     clients.forEach((c) => {
+//       clientMap[String(c.clientId)] = c.fullName;
+//     });
+
+//     const recentWithNames = recentUploads.map((u) => ({
+//       ...u,
+//       clientName: clientMap[String(u.clientId)] || "Unknown",
+//     }));
+
+//     // 9. Timeline (last 6 events)
+//     const timeline = recentWithNames.slice(0, 6);
+
+//     return reply.send({
+//       success: true,
+//       data: {
+//         stats: {
+//           totalUploads,
+//           totalClients: clients.length,
+//           successfulImports,
+//           todayUploads,
+//         },
+//         uploadsPerClient,
+//         weeklyActivity,
+//         recentUploads: recentWithNames,
+//         timeline,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Dashboard error:", error);
+//     return reply.code(500).send({ success: false, error: error.message });
+//   }
+// };
+
 const getStaffDashboard = async (request, reply) => {
   try {
-    const staffId = request.query.staffId || request.params.staffId;
+    const staffName =
+      request.params?.staffName ||
+      request.query?.staffName;
 
-    console.log("🔍 staffId:", staffId);
+    console.log("🔍 staffName received:", staffName);
 
-    if (!staffId || staffId === "null") {
+    if (!staffName || staffName === "null") {
       return reply
         .code(400)
-        .send({ success: false, error: "staffId required" });
+        .send({ success: false, error: "staffName required" });
     }
 
-    // 1. Staff ke assigned clients
+    // ✅ fullName field se lookup karo
+    const staffRecord = await StaffRecord.findOne({
+      fullName: staffName,
+    }).lean();
+
+    console.log("👤 staffRecord found:", staffRecord);
+
+    if (!staffRecord) {
+      return reply
+        .code(404)
+        .send({ success: false, error: `Staff not found: ${staffName}` });
+    }
+
+    const staffId = String(staffRecord.staffId); // "ST123"
+    console.log("✅ Resolved staffId:", staffId);
+
+    // 1. Assigned clients — assignStaff mein fullName store hai
     const clients = await ClientRecord.find({
-      assignStaff: String(staffId),
+      assignStaff: staffName,
     }).select("clientId fullName");
+
+    console.log("👥 Clients found:", clients.length);
 
     const clientIds = clients.map((c) => String(c.clientId));
 
@@ -419,12 +584,12 @@ const getStaffDashboard = async (request, reply) => {
 
     // 3. Total uploads
     const totalUploads = await UploadRecord.countDocuments({
-      staffId: String(staffId),
+      staffId: staffId,
     });
 
     // 4. Successful imports
     const successfulImports = await UploadRecord.countDocuments({
-      staffId: String(staffId),
+      staffId: staffId,
       status: "success",
     });
 
@@ -432,7 +597,7 @@ const getStaffDashboard = async (request, reply) => {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayUploads = await UploadRecord.countDocuments({
-      staffId: String(staffId),
+      staffId: staffId,
       createdAt: { $gte: todayStart },
     });
 
@@ -440,7 +605,7 @@ const getStaffDashboard = async (request, reply) => {
     const uploadsPerClient = await Promise.all(
       clients.map(async (c) => {
         const count = await UploadRecord.countDocuments({
-          staffId: String(staffId),
+          staffId: staffId,
           clientId: String(c.clientId),
         });
         return {
@@ -448,7 +613,7 @@ const getStaffDashboard = async (request, reply) => {
           fullName: c.fullName,
           uploadCount: count,
         };
-      }),
+      })
     );
 
     // 7. Last 7 days activity
@@ -459,7 +624,7 @@ const getStaffDashboard = async (request, reply) => {
     const weeklyRaw = await UploadRecord.aggregate([
       {
         $match: {
-          staffId: String(staffId),
+          staffId: staffId,
           createdAt: { $gte: sevenDaysAgo },
         },
       },
@@ -473,7 +638,6 @@ const getStaffDashboard = async (request, reply) => {
       },
     ]);
 
-    // 7 din ka array (missing days = 0)
     const weeklyActivity = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
@@ -484,7 +648,7 @@ const getStaffDashboard = async (request, reply) => {
     }
 
     // 8. Recent uploads (last 10)
-    const recentUploads = await UploadRecord.find({ staffId: String(staffId) })
+    const recentUploads = await UploadRecord.find({ staffId: staffId })
       .sort({ createdAt: -1 })
       .limit(10)
       .lean();
@@ -497,7 +661,7 @@ const getStaffDashboard = async (request, reply) => {
 
     const recentWithNames = recentUploads.map((u) => ({
       ...u,
-      clientName: clientMap[String(u.clientId)] || "Unknown",
+      clientName: clientMap[String(u.clientId)] || u.clientName || "Unknown",
     }));
 
     // 9. Timeline (last 6 events)

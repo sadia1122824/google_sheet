@@ -16,7 +16,7 @@ const staffRouts = async(app,options)=>{
   app.get('/loginStaff', loginStaff);
    app.post('/loginStaff', loginCredentials);
    app.get('/staffDashboard',{ preHandler: [app.staffauthenticate] }, dashboard);
-   app.get('/getStaffDashboard/:staffId', getStaffDashboard);
+   app.get('/getStaffDashboard/:staffName', getStaffDashboard);
 
 }
 
