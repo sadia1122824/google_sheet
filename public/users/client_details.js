@@ -1132,14 +1132,15 @@ function renderTable() {
             const absIdx = colOffset + i;
             const val = row[absIdx] ?? "";
             const isPct = pctColIndices.has(absIdx);
-            const isMonthOrYear =
-              monthCols.some((m) => m.colIndex === absIdx) ||
-              yearCols.some((y) => y.colIndex === absIdx);
+            const isMonth = monthCols.some((m) => m.colIndex === absIdx);
+            const isYear = yearCols.some((y) => y.colIndex === absIdx);
             const bgStyle = isPct
-              ? "background: var(--pct-col-bg, #fff8e1);"
-              : isMonthOrYear
-                ? "background: var(--month-col-bg, #e8f4ff);"
-                : "";
+              ? "background: var(--pct-col-bg, #c8e6c9);"
+              : isYear
+                ? "background: var(--year-col-bg, #ce93d8);"
+                : isMonth
+                  ? "background: var(--month-col-bg, #90caf9);"
+                  : "";
             return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
           })
           .join("") +
@@ -1157,7 +1158,6 @@ function renderTable() {
   const colNav = document.getElementById("colNavBtns");
   if (colNav) colNav.style.display = totalCols > cpp ? "flex" : "none";
 
-  // Show/hide fullscreen button
   const fsBtn = document.getElementById("btnFullscreen");
   if (fsBtn) fsBtn.style.display = totalCols > 0 ? "flex" : "none";
 
@@ -1209,60 +1209,7 @@ function changeRowsPerPage() {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  FULLSCREEN TABLE
-// ═══════════════════════════════════════════════════════════════════
-// function openFullscreenTable() {
-//   const overlay = document.getElementById("fullscreenOverlay");
-//   const fsHead = document.getElementById("fsTableHead");
-//   const fsBody = document.getElementById("fsTableBody");
-//   const fsColCnt = document.getElementById("fsColCount");
-//   const fsRowCnt = document.getElementById("fsRowCount");
-//   if (!overlay || !fsHead || !fsBody) return;
-
-//   // Build header row
-//   fsHead.innerHTML = `<tr>${headers.map((h) => `<th title="${h}">${h}</th>`).join("")}</tr>`;
-
-//   // Build body: info rows first
-//   let bodyHtml = "";
-//   infoRows.forEach((row) => {
-//     const text = row.filter((c) => c !== "").join(" ");
-//     bodyHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="text-align:left;">${text}</td></tr>`;
-//   });
-
-//   // All data rows (no pagination limit)
-//   let dataRowCount = 0;
-//   allDataRows.forEach((row) => {
-//     if (!row) return;
-//     bodyHtml +=
-//       "<tr>" +
-//       headers
-//         .map((_, i) => {
-//           const val = row[i] ?? "";
-//           return `<td title="${val}">${val}</td>`;
-//         })
-//         .join("") +
-//       "</tr>";
-//     dataRowCount++;
-//   });
-
-//   fsBody.innerHTML = bodyHtml;
-
-//   // Update counters
-//   if (fsColCnt) fsColCnt.textContent = `${headers.length} columns`;
-//   if (fsRowCnt)
-//     fsRowCnt.textContent = `${dataRowCount} rows · ${headers.length} columns`;
-
-//   // Show overlay
-//   overlay.classList.add("open");
-//   document.body.style.overflow = "hidden";
-
-//   // Scroll to top
-//   const wrapper = document.getElementById("fsTableWrapper");
-//   if (wrapper) {
-//     wrapper.scrollTop = 0;
-//     wrapper.scrollLeft = 0;
-//   }
-// }
+// full screen table view
 
 function openFullscreenTable() {
   const overlay = document.getElementById("fullscreenOverlay");
@@ -1292,14 +1239,15 @@ function openFullscreenTable() {
         .map((_, i) => {
           const val = row[i] ?? "";
           const isPct = pctColIndices.has(i);
-          const isMonthOrYear =
-            monthCols.some((m) => m.colIndex === i) ||
-            yearCols.some((y) => y.colIndex === i);
+          const isMonth = monthCols.some((m) => m.colIndex === i);
+          const isYear = yearCols.some((y) => y.colIndex === i);
           const bgStyle = isPct
-            ? "background: var(--pct-col-bg, #ffd54f);"
-            : isMonthOrYear
-              ? "background: var(--month-col-bg, #90caf9);"
-              : "";
+            ? "background: var(--pct-col-bg, #c8e6c9);"
+            : isYear
+              ? "background: var(--year-col-bg, #ce93d8);"
+              : isMonth
+                ? "background: var(--month-col-bg, #90caf9);"
+                : "";
           return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
         })
         .join("") +
@@ -1325,7 +1273,6 @@ function openFullscreenTable() {
     wrapper.scrollLeft = 0;
   }
 }
-
 function closeFullscreenTable() {
   const overlay = document.getElementById("fullscreenOverlay");
   if (overlay) overlay.classList.remove("open");

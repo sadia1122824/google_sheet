@@ -1156,13 +1156,15 @@ body {
 .skel-cell { height: 14px; }
 
 :root {
-  --pct-col-bg: #ffd54f;       /* % columns — amber/yellow */
-  --month-col-bg: #90caf9;     /* month/year columns — blue */
+  --pct-col-bg: #c8e6c9;      /* Percentage - Light Green */
+  --month-col-bg: #90caf9;    /* Month - Light Blue */
+  --year-col-bg: #eee2e2;     /* Year - Light Pink */
 }
 
 [data-theme="dark"] {
-  --pct-col-bg: #5c4400;       /* dark mode — deep amber */
-  --month-col-bg: #0a3060;     /* dark mode — deep blue */
+  --pct-col-bg: #1b5e20;      /* Dark Green */
+  --month-col-bg: #0a3060;    /* Dark Blue */
+  --year-col-bg: #880e4f;     /* Dark Pink */
 }
 
 /* ── Sidebar nav skeleton ── */
