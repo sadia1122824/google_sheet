@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   sideNavbar.innerHTML = `
     <div class="left-sidenav">
       <div class="brand">
-        <a href="/login" class="logo">
+        <a href="/" class="logo">
           <span>
             <img src="../admin/assets/images/browser_logo/image1.png" class="logo-sm">
           </span>

@@ -2,7 +2,7 @@ const sidebarHTML = `
   <div class="sidebar" id="sidebar">
 
     <div class="sidebar-header">
-      <a href="/webLogin">
+      <a href="/liveSheetGraphs">
         <img
           src="/users/icons/image1.png"
           alt="logo"

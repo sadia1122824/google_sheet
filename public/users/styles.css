@@ -1156,17 +1156,19 @@ body {
 .skel-cell { height: 14px; }
 
 :root {
-  --pct-col-bg: #c8e6c9;      /* Percentage - Light Green */
-  --month-col-bg: #90caf9;    /* Month - Light Blue */
-  --year-col-bg: #eee2e2;     /* Year - Light Pink */
+  --pct-col-bg: #c8e6c9;      /* Light Green */
+  --month-col-bg: #90caf9;    /* Light Blue */
+  /* --year-col-bg: #e0e0e0;     Light Gray */
+  
+  --year-col-bg: #d1c4e9;
+
 }
 
 [data-theme="dark"] {
-  --pct-col-bg: #1b5e20;      /* Dark Green */
-  --month-col-bg: #0a3060;    /* Dark Blue */
-  --year-col-bg: #880e4f;     /* Dark Pink */
+  --pct-col-bg: #1b5e20;
+  --month-col-bg: #0a3060;
+  --year-col-bg: #424242;     /* Dark Gray */
 }
-
 /* ── Sidebar nav skeleton ── */
 .skel-nav-item {
   display: flex;

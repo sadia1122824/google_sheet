@@ -256,6 +256,76 @@ function updateKPIs(sums){
 /* ══════════════════════════════════════════
    DONUT
 ══════════════════════════════════════════ */
+// function buildDonut(activeCols){
+//   const CODE_COL = findCodeColIndex();
+//   const IS_EXP = v => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
+//   const expMap = {};
+//   allDataRows.forEach(row => {
+//     if(isSkipRow(row)) return;
+//     const cellVal = (row[CODE_COL] ?? '').toString().trim();
+//     if(!IS_EXP(cellVal)) return;
+//     const label = extractLabel(cellVal) || cellVal;
+//     activeCols.forEach(col => {
+//       const v = cellNum(row, col.colIndex);
+//       if(v !== 0) expMap[label] = (expMap[label] || 0) + Math.abs(v);
+//     });
+//   });
+
+//   const entries = Object.entries(expMap).sort((a,b) => b[1]-a[1]).slice(0,8);
+//   const labels  = entries.map(e => e[0]);
+//   const vals    = entries.map(e => e[1]);
+//   const total   = vals.reduce((a,b) => a+b, 0);   // ← TOTAL ADD KIYA
+//   const palette = ['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
+//   const dark    = isDark();
+
+//   mk('chartDonut','doughnut',{labels,datasets:[{
+//     data: vals,
+//     backgroundColor: palette.slice(0,labels.length),
+//     borderWidth: 2,
+//     hoverOffset: 6,
+//     borderColor: dark ? '#161b27' : '#fff'
+//   }]},{
+//     responsive: true,
+//     maintainAspectRatio: false,
+//     animation: { duration: 500 },
+//     plugins: {
+//       legend: { display: false },
+//       tooltip: {
+//         backgroundColor: dark ? '#161b27' : '#fff',
+//         borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
+//         borderWidth: 1,
+//         titleColor: dark ? '#dde4f5' : '#0e1220',
+//         bodyColor: dark ? '#8892a4' : '#7a83a8',
+//         padding: 10,
+//         cornerRadius: 10,
+//         callbacks: {
+//           // ← PERCENTAGE TOOLTIP
+//           label: ctx => {
+//             const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+//             return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
+//           }
+//         }
+//       }
+//     },
+//     cutout: '60%',
+//     // ← CENTER LABEL ON HOVER
+//     onHover: (event, elements) => {
+//       const centerVal = document.getElementById('donutCenterVal');
+//       const centerSub = document.getElementById('donutCenterSub');
+//       if(!centerVal || !centerSub) return;
+//       if(elements.length > 0){
+//         const idx = elements[0].index;
+//         const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
+//         centerVal.textContent = pct + '%';
+//         centerSub.textContent = (labels[idx] || '').substring(0, 14);
+//       } else {
+//         centerVal.textContent = fmt(total);
+//         centerSub.textContent = 'total';
+//       }
+//     }
+//   });
+// }
+
 function buildDonut(activeCols){
   const CODE_COL = findCodeColIndex();
   const IS_EXP = v => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
@@ -274,55 +344,101 @@ function buildDonut(activeCols){
   const entries = Object.entries(expMap).sort((a,b) => b[1]-a[1]).slice(0,8);
   const labels  = entries.map(e => e[0]);
   const vals    = entries.map(e => e[1]);
-  const total   = vals.reduce((a,b) => a+b, 0);   // ← TOTAL ADD KIYA
+  const total   = vals.reduce((a,b) => a+b, 0);
   const palette = ['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
   const dark    = isDark();
 
-  mk('chartDonut','doughnut',{labels,datasets:[{
-    data: vals,
-    backgroundColor: palette.slice(0,labels.length),
-    borderWidth: 2,
-    hoverOffset: 6,
-    borderColor: dark ? '#161b27' : '#fff'
-  }]},{
-    responsive: true,
-    maintainAspectRatio: false,
-    animation: { duration: 500 },
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: dark ? '#161b27' : '#fff',
-        borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
-        borderWidth: 1,
-        titleColor: dark ? '#dde4f5' : '#0e1220',
-        bodyColor: dark ? '#8892a4' : '#7a83a8',
-        padding: 10,
-        cornerRadius: 10,
-        callbacks: {
-          // ← PERCENTAGE TOOLTIP
-          label: ctx => {
-            const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
-            return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
+  // destroy old
+  if(chartInst['chartDonut']) chartInst['chartDonut'].destroy();
+  const canvas = document.getElementById('chartDonut');
+  if(!canvas) return;
+
+  const outerLabelsPlugin = {
+  id: 'outerLabels',
+  afterDraw(chart) {
+    const ctx = chart.ctx;
+    const meta = chart.getDatasetMeta(0);
+    if(!meta || !meta.data.length) return;
+    const cx = (chart.chartArea.left + chart.chartArea.right) / 2;
+    const cy = (chart.chartArea.top  + chart.chartArea.bottom) / 2;
+    ctx.save();
+    meta.data.forEach((arc, i) => {
+      const pct = total ? ((vals[i] / total) * 100) : 0;
+      if(pct < 4) return;
+      const angle = (arc.startAngle + arc.endAngle) / 2;
+      const x1 = cx + Math.cos(angle) * arc.outerRadius;
+      const y1 = cy + Math.sin(angle) * arc.outerRadius;
+      const x2 = cx + Math.cos(angle) * (arc.outerRadius + 18);
+      const y2 = cy + Math.sin(angle) * (arc.outerRadius + 18);
+      const xt  = x2 + (Math.cos(angle) >= 0 ? 5 : -5);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = palette[i] || '#888';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      ctx.fillStyle = dark ? '#dde4f5' : '#333';
+      ctx.font = '600 11px sans-serif';
+      ctx.textAlign = Math.cos(angle) >= 0 ? 'left' : 'right';
+      ctx.textBaseline = 'middle';
+      // ↓ SIRF YEH LINE BАДLI HAI
+      ctx.fillText(pct.toFixed(1) + '%  ' + (labels[i] || '').substring(0, 18), xt, y2);
+    });
+    ctx.restore();
+  }
+};
+  chartInst['chartDonut'] = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets:[{
+        data: vals,
+        backgroundColor: palette.slice(0, labels.length),
+        borderWidth: 2,
+        hoverOffset: 6,
+        borderColor: dark ? '#161b27' : '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500 },
+      layout: { padding: 35 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: dark ? '#161b27' : '#fff',
+          borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
+          borderWidth: 1,
+          titleColor: dark ? '#dde4f5' : '#0e1220',
+          bodyColor: dark ? '#8892a4' : '#7a83a8',
+          padding: 10,
+          cornerRadius: 10,
+          callbacks: {
+            label: ctx => {
+              const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+              return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
+            }
           }
+        }
+      },
+      cutout: '60%',
+      onHover: (event, elements) => {
+        const centerVal = document.getElementById('donutCenterVal');
+        const centerSub = document.getElementById('donutCenterSub');
+        if(!centerVal || !centerSub) return;
+        if(elements.length > 0){
+          const idx = elements[0].index;
+          const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
+          centerVal.textContent = pct + '%';
+          centerSub.textContent = (labels[idx] || '').substring(0, 14);
+        } else {
+          centerVal.textContent = fmt(total);
+          centerSub.textContent = 'total';
         }
       }
     },
-    cutout: '60%',
-    // ← CENTER LABEL ON HOVER
-    onHover: (event, elements) => {
-      const centerVal = document.getElementById('donutCenterVal');
-      const centerSub = document.getElementById('donutCenterSub');
-      if(!centerVal || !centerSub) return;
-      if(elements.length > 0){
-        const idx = elements[0].index;
-        const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
-        centerVal.textContent = pct + '%';
-        centerSub.textContent = (labels[idx] || '').substring(0, 14);
-      } else {
-        centerVal.textContent = fmt(total);
-        centerSub.textContent = 'total';
-      }
-    }
+    plugins: [outerLabelsPlugin]
   });
 }
 
