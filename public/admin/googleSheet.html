@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8" />
-    <title>Admin Dashboard</title>
+    <title>Panel de Administración</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="" name="author" />
@@ -19,662 +19,120 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
     <style>
-        /* ==============================================
-           MOBILE RESPONSIVE FIXES  (as-is)
-        =============================================== */
+        /* ============================================== MOBILE RESPONSIVE FIXES =============================================== */
         @media (max-width: 767px) {
-            .left-sidenav {
-                position: fixed !important;
-                z-index: 1051 !important;
-                transform: translateX(-100%) !important;
-                transition: transform 0.3s ease !important;
-                top: 0 !important;
-                left: 0 !important;
-                height: 100vh !important;
-                width: 260px !important;
-            }
-
-            body.mobile-menu-open .left-sidenav {
-                transform: translateX(0) !important;
-            }
-
-            .page-content {
-                padding: 12px !important;
-            }
-
-            .card {
-                margin-bottom: 15px;
-            }
-
-            .card-header {
-                padding: 12px;
-            }
-
-            .card-body {
-                padding: 12px !important;
-            }
-
-            .card-title {
-                font-size: 1rem;
-            }
-
-            .input-group {
-                flex-direction: column;
-            }
-
-            .input-group .custom-file,
-            .input-group-append {
-                width: 100%;
-            }
-
-            .input-group-append {
-                margin-top: 10px;
-            }
-
-            .input-group-append button {
-                width: 100%;
-            }
-
-            .custom-file-label {
-                white-space: normal;
-                text-overflow: unset;
-                overflow: visible;
-            }
-
-            #progressSection .d-flex {
-                flex-direction: column;
-                align-items: flex-start !important;
-            }
-
-            #progressPercent {
-                margin-top: 5px;
-            }
-
-            #resultsSection .row>div {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            .nav-user span {
-                display: none !important;
-            }
-
-            body.enlarge-menu .left-sidenav {
-                transform: translateX(0);
-            }
-
-            .left-sidenav {
-                position: fixed;
-                z-index: 1051;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            body {
-                overflow-x: hidden;
-            }
-        }
-
-        /* ==============================================
-           DASHBOARD ANIMATIONS
-        =============================================== */
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes cardUp {
-            from {
-                opacity: 0;
-                transform: translateY(36px) scale(0.97);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(16px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.4;
-            }
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* ==============================================
-           PAGE TITLE AREA
-        =============================================== */
-        .dash-title-area {
-            opacity: 0;
-            animation: slideDown 0.5s ease 0.15s forwards;
-            margin-bottom: 22px;
-            margin-top: 15px;
-        }
-
-        .dash-title-area h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0 0 3px;
-        }
-
-        .dash-title-area p {
-            font-size: 13px;
-            color: #a0aec0;
-            margin: 0;
-        }
-
-        .live-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #e6f9f2;
-            color: #0f6e56;
-            font-size: 12px;
-            font-weight: 500;
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid #9fe1cb;
-        }
-
-        .live-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #1d9e75;
-            animation: pulse 1.4s ease-in-out infinite;
-        }
-
-        /* ==============================================
-           STAT CARDS
-        =============================================== */
-        .dash-stat-card {
-            border-radius: 14px;
-            padding: 20px 18px 16px;
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(36px) scale(0.97);
-            transition: transform 0.22s ease, box-shadow 0.22s ease;
-            border: none !important;
-            color: #fff;
-        }
-
-        .dash-stat-card:hover {
-            transform: translateY(-3px) scale(1.01) !important;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18) !important;
-        }
-
-        .dash-stat-card.sc1 {
-            background: linear-gradient(135deg, #534AB7, #8f94fb);
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) .3s forwards;
-        }
-
-        .dash-stat-card.sc2 {
-            background: linear-gradient(135deg, #0f6e56, #38ef7d);
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) .44s forwards;
-        }
-
-        .dash-stat-card.sc3 {
-            background: linear-gradient(135deg, #b8670a, #ffd200);
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) .58s forwards;
-        }
-
-        .dash-stat-card.sc4 {
-            background: linear-gradient(135deg, #a32d2d, #f64f59);
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) .72s forwards;
-        }
-
-        .dash-stat-card .sc-icon {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 54px;
-            opacity: 0.18;
-        }
-
-        .dash-stat-card .sc-label {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.6px;
-            text-transform: uppercase;
-            opacity: 0.82;
-            margin-bottom: 8px;
-        }
-
-        .dash-stat-card .sc-value {
-            font-size: 36px;
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 8px;
-        }
-
-        .dash-stat-card .sc-trend {
-            font-size: 12px;
-            opacity: 0.82;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .dash-stat-card .sc-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.35);
-            border-radius: 0 0 14px 14px;
-            transform-origin: left;
-            transform: scaleX(0);
-            transition: transform 1.4s ease 1s;
-        }
-
-        /* ==============================================
-           CHART CARDS
-        =============================================== */
-        .dash-chart-card {
-            border-radius: 14px;
-            border: 1px solid #e9ecef !important;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
-            opacity: 0;
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) .82s forwards;
-        }
-
-        .dash-chart-card.cc2 {
-            animation-delay: .96s;
-        }
-
-        .dash-chart-card .card-header {
-            background: #fff !important;
-            border-bottom: 1px solid #f0f2f5;
-            padding: 14px 18px;
-            border-radius: 14px 14px 0 0 !important;
-        }
-
-        .dash-chart-card .card-header h6 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0 0 2px;
-        }
-
-        .dash-chart-card .card-header p {
-            font-size: 12px;
-            color: #a0aec0;
-            margin: 0;
-        }
-
-        .period-tabs {
-            display: flex;
-            gap: 4px;
-        }
-
-        .ptab {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            color: #a0aec0;
-            border: 1px solid transparent;
-            background: transparent;
-            transition: all .18s;
-        }
-
-        .ptab:hover {
-            background: #f0f2f5;
-            color: #2d3748;
-        }
-
-        .ptab.active {
-            background: #f0f2f5;
-            border-color: #e2e8f0;
-            color: #2d3748;
-        }
-
-        /* ==============================================
-           DONUT CHART
-        =============================================== */
-        .donut-wrapper {
-            position: relative;
-            width: 130px;
-            height: 130px;
-            margin: 0 auto 18px;
-        }
-
-        .donut-center-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .donut-center-text .dpct {
-            font-size: 22px;
-            font-weight: 700;
-            color: #2d3748;
-            line-height: 1;
-        }
-
-        .donut-center-text .dlbl {
-            font-size: 11px;
-            color: #a0aec0;
-        }
-
-        .legend-row {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .leg-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 13px;
-        }
-
-        .leg-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #6c757d;
-        }
-
-        .leg-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 2px;
-        }
-
-        .leg-val {
-            color: #2d3748;
-            font-weight: 600;
-        }
-
-        .prog-bg {
-            height: 5px;
-            border-radius: 4px;
-            background: #f0f2f5;
-            margin-top: 4px;
-            overflow: hidden;
-        }
-
-        .prog-fill {
-            height: 100%;
-            border-radius: 4px;
-            transform-origin: left;
-            transform: scaleX(0);
-            transition: transform 1.3s cubic-bezier(.22, 1, .36, 1) 1.1s;
-        }
-
-        /* ==============================================
-           TABLE CARDS
-        =============================================== */
-        .dash-table-card {
-            border-radius: 14px;
-            border: 1px solid #e9ecef !important;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
-            overflow: hidden;
-            opacity: 0;
-            animation: cardUp .55s cubic-bezier(.22, 1, .36, 1) 1.05s forwards;
-        }
-
-        .dash-table-card.tc2 {
-            animation-delay: 1.18s;
-        }
-
-        .dash-table-card .card-header {
-            background: #fff !important;
-            border-bottom: 2px solid #f0f2f5;
-            padding: 14px 18px;
-        }
-
-        .dash-table-card .card-header h6 {
-            font-size: 13px;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .hdr-badge {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
-
-        .hdr-badge.purple {
-            background: #eeedfe;
-            color: #534ab7;
-        }
-
-        .hdr-badge.teal {
-            background: #e1f5ee;
-            color: #0f6e56;
-        }
-
-        .dash-table-card table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .dash-table-card thead th {
-            background: #f8f9fa;
-            font-size: 11px;
-            font-weight: 600;
-            color: #6c757d;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            padding: 10px 16px;
-            border: none;
-        }
-
-        .dash-table-card tbody td {
-            padding: 11px 16px;
-            font-size: 13px;
-            color: #2d3748;
-            border-top: 1px solid #f0f2f5;
-            vertical-align: middle;
-        }
-
-        .dash-table-card tbody tr {
-            opacity: 0;
-        }
-
-        .dash-table-card tbody tr:hover td {
-            background: #f8f9fc;
-        }
-
-        .av-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            flex-shrink: 0;
-            margin-right: 9px;
-            color: #fff;
-        }
-
-        .av-purple {
-            background: linear-gradient(135deg, #534ab7, #8f94fb);
-        }
-
-        .av-teal {
-            background: linear-gradient(135deg, #0f6e56, #38ef7d);
-        }
-
-        .role-pill {
-            font-size: 11px;
-            padding: 3px 9px;
-            border-radius: 20px;
-            background: #f0f2f5;
-            color: #6c757d;
-            font-weight: 500;
-        }
-
-        /* loading spinner for stat values */
-        .sc-spinner {
-            display: inline-block;
-            width: 22px;
-            height: 22px;
-            border: 3px solid rgba(255, 255, 255, .35);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin .8s linear infinite;
-        }
-
-
-
-        /* Sidebar Links */
-        .left-sidenav-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin: 4px 10px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #5b6475;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.25s ease;
-            position: relative;
-        }
-
-        /* Hover Effect */
-        .left-sidenav-menu a:hover {
-            transform: translateX(5px);
-            color: #2563eb;
-        }
-
-        /* Active Link */
-        .left-sidenav-menu a.active {
-            color: #2563eb;
-            font-weight: 600;
-        }
-
-        /* Icon Styling */
-        .left-sidenav-menu .menu-icon {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-            transition: all 0.25s ease;
-        }
-
-        /* Icon Hover Animation */
-        .left-sidenav-menu a:hover .menu-icon {
-            transform: scale(1.1);
-        }
-
-        /* Modern Left Border Indicator */
-        .left-sidenav-menu a::before {
-            content: "";
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 0;
-            background: #2563eb;
-            border-radius: 10px;
-            transition: all 0.25s ease;
-        }
-
-        .left-sidenav-menu a:hover::before,
-        .left-sidenav-menu a.active::before {
-            height: 70%;
-        }
-
-        /* Menu Label */
-        .menu-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #9aa4b2;
-            font-weight: 600;
-            margin: 18px 16px 8px;
-        }
+            .left-sidenav { position: fixed !important; z-index: 1051 !important; transform: translateX(-100%) !important; transition: transform 0.3s ease !important; top: 0 !important; left: 0 !important; height: 100vh !important; width: 260px !important; }
+            body.mobile-menu-open .left-sidenav { transform: translateX(0) !important; }
+            .page-content { padding: 12px !important; }
+            .card { margin-bottom: 15px; }
+            .card-header { padding: 12px; }
+            .card-body { padding: 12px !important; }
+            .card-title { font-size: 1rem; }
+            .input-group { flex-direction: column; }
+            .input-group .custom-file, .input-group-append { width: 100%; }
+            .input-group-append { margin-top: 10px; }
+            .input-group-append button { width: 100%; }
+            .custom-file-label { white-space: normal; text-overflow: unset; overflow: visible; }
+            #progressSection .d-flex { flex-direction: column; align-items: flex-start !important; }
+            #progressPercent { margin-top: 5px; }
+            #resultsSection .row>div { width: 100%; margin-bottom: 10px; }
+            .nav-user span { display: none !important; }
+            body.enlarge-menu .left-sidenav { transform: translateX(0); }
+            .left-sidenav { position: fixed; z-index: 1051; transform: translateX(-100%); transition: transform 0.3s ease; }
+            body { overflow-x: hidden; }
+        }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes cardUp { from { opacity: 0; transform: translateY(36px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .dash-title-area { opacity: 0; animation: slideDown 0.5s ease 0.15s forwards; margin-bottom: 22px; margin-top: 15px; }
+        .dash-title-area h4 { font-size: 20px; font-weight: 600; color: #2d3748; margin: 0 0 3px; }
+        .dash-title-area p { font-size: 13px; color: #a0aec0; margin: 0; }
+        .live-pill { display: inline-flex; align-items: center; gap: 6px; background: #e6f9f2; color: #0f6e56; font-size: 12px; font-weight: 500; padding: 4px 12px; border-radius: 20px; border: 1px solid #9fe1cb; }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #1d9e75; animation: pulse 1.4s ease-in-out infinite; }
+        .dash-stat-card { border-radius: 14px; padding: 20px 18px 16px; position: relative; overflow: hidden; opacity: 0; transform: translateY(36px) scale(0.97); transition: transform 0.22s ease, box-shadow 0.22s ease; border: none !important; color: #fff; }
+        .dash-stat-card:hover { transform: translateY(-3px) scale(1.01) !important; box-shadow: 0 12px 32px rgba(0,0,0,0.18) !important; }
+        .dash-stat-card.sc1 { background: linear-gradient(135deg, #534AB7, #8f94fb); animation: cardUp .55s cubic-bezier(.22,1,.36,1) .3s forwards; }
+        .dash-stat-card.sc2 { background: linear-gradient(135deg, #0f6e56, #38ef7d); animation: cardUp .55s cubic-bezier(.22,1,.36,1) .44s forwards; }
+        .dash-stat-card.sc3 { background: linear-gradient(135deg, #b8670a, #ffd200); animation: cardUp .55s cubic-bezier(.22,1,.36,1) .58s forwards; }
+        .dash-stat-card.sc4 { background: linear-gradient(135deg, #a32d2d, #f64f59); animation: cardUp .55s cubic-bezier(.22,1,.36,1) .72s forwards; }
+        .dash-stat-card .sc-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 54px; opacity: 0.18; }
+        .dash-stat-card .sc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.82; margin-bottom: 8px; }
+        .dash-stat-card .sc-value { font-size: 36px; font-weight: 700; line-height: 1; margin-bottom: 8px; }
+        .dash-stat-card .sc-trend { font-size: 12px; opacity: 0.82; display: flex; align-items: center; gap: 4px; }
+        .dash-stat-card .sc-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.35); border-radius: 0 0 14px 14px; transform-origin: left; transform: scaleX(0); transition: transform 1.4s ease 1s; }
+        .dash-chart-card { border-radius: 14px; border: 1px solid #e9ecef !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; opacity: 0; animation: cardUp .55s cubic-bezier(.22,1,.36,1) .82s forwards; }
+        .dash-chart-card.cc2 { animation-delay: .96s; }
+        .dash-chart-card .card-header { background: #fff !important; border-bottom: 1px solid #f0f2f5; padding: 14px 18px; border-radius: 14px 14px 0 0 !important; }
+        .dash-chart-card .card-header h6 { font-size: 14px; font-weight: 600; color: #2d3748; margin: 0 0 2px; }
+        .dash-chart-card .card-header p { font-size: 12px; color: #a0aec0; margin: 0; }
+        .period-tabs { display: flex; gap: 4px; }
+        .ptab { font-size: 11px; padding: 4px 10px; border-radius: 8px; cursor: pointer; color: #a0aec0; border: 1px solid transparent; background: transparent; transition: all .18s; }
+        .ptab:hover { background: #f0f2f5; color: #2d3748; }
+        .ptab.active { background: #f0f2f5; border-color: #e2e8f0; color: #2d3748; }
+        .donut-wrapper { position: relative; width: 130px; height: 130px; margin: 0 auto 18px; }
+        .donut-center-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .donut-center-text .dpct { font-size: 22px; font-weight: 700; color: #2d3748; line-height: 1; }
+        .donut-center-text .dlbl { font-size: 11px; color: #a0aec0; }
+        .legend-row { display: flex; flex-direction: column; gap: 10px; }
+        .leg-item { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+        .leg-left { display: flex; align-items: center; gap: 8px; color: #6c757d; }
+        .leg-dot { width: 9px; height: 9px; border-radius: 2px; }
+        .leg-val { color: #2d3748; font-weight: 600; }
+        .prog-bg { height: 5px; border-radius: 4px; background: #f0f2f5; margin-top: 4px; overflow: hidden; }
+        .prog-fill { height: 100%; border-radius: 4px; transform-origin: left; transform: scaleX(0); transition: transform 1.3s cubic-bezier(.22,1,.36,1) 1.1s; }
+        .dash-table-card { border-radius: 14px; border: 1px solid #e9ecef !important; box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important; overflow: hidden; opacity: 0; animation: cardUp .55s cubic-bezier(.22,1,.36,1) 1.05s forwards; }
+        .dash-table-card.tc2 { animation-delay: 1.18s; }
+        .dash-table-card .card-header { background: #fff !important; border-bottom: 2px solid #f0f2f5; padding: 14px 18px; }
+        .dash-table-card .card-header h6 { font-size: 13px; font-weight: 600; color: #2d3748; margin: 0; display: flex; align-items: center; gap: 7px; }
+        .hdr-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+        .hdr-badge.purple { background: #eeedfe; color: #534ab7; }
+        .hdr-badge.teal { background: #e1f5ee; color: #0f6e56; }
+        .dash-table-card table { width: 100%; border-collapse: collapse; }
+        .dash-table-card thead th { background: #f8f9fa; font-size: 11px; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: .5px; padding: 10px 16px; border: none; }
+        .dash-table-card tbody td { padding: 11px 16px; font-size: 13px; color: #2d3748; border-top: 1px solid #f0f2f5; vertical-align: middle; }
+        .dash-table-card tbody tr { opacity: 0; }
+        .dash-table-card tbody tr:hover td { background: #f8f9fc; }
+        .av-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-right: 9px; color: #fff; }
+        .av-purple { background: linear-gradient(135deg, #534ab7, #8f94fb); }
+        .av-teal { background: linear-gradient(135deg, #0f6e56, #38ef7d); }
+        .role-pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; background: #f0f2f5; color: #6c757d; font-weight: 500; }
+        .sc-spinner { display: inline-block; width: 22px; height: 22px; border: 3px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
+        .left-sidenav-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 4px 10px; border-radius: 10px; text-decoration: none; color: #5b6475; font-size: 14px; font-weight: 500; transition: all 0.25s ease; position: relative; }
+        .left-sidenav-menu a:hover { transform: translateX(5px); color: #2563eb; }
+        .left-sidenav-menu a.active { color: #2563eb; font-weight: 600; }
+        .left-sidenav-menu .menu-icon { width: 18px; height: 18px; stroke-width: 2; transition: all 0.25s ease; }
+        .left-sidenav-menu a:hover .menu-icon { transform: scale(1.1); }
+        .left-sidenav-menu a::before { content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 3px; height: 0; background: #2563eb; border-radius: 10px; transition: all 0.25s ease; }
+        .left-sidenav-menu a:hover::before, .left-sidenav-menu a.active::before { height: 70%; }
+        .menu-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9aa4b2; font-weight: 600; margin: 18px 16px 8px; }
     </style>
 </head>
 
 <body>
 
-    <!-- =================== SIDEBAR (as-is) =================== -->
     <div id="side-navbar"></div>
 
     <div class="page-wrapper">
 
-        <!-- =================== TOP BAR (as-is) =================== -->
+        <!-- =================== TOP BAR =================== -->
         <div class="topbar">
             <nav class="navbar-custom">
                 <ul class="list-unstyled topbar-nav float-right mb-0">
                     <li class="dropdown">
-                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown"
-                            href="#" role="button">
+                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown" href="#" role="button">
                             <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">Nick</span>
-                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
-                                class="rounded-circle thumb-sm border" />
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user" class="rounded-circle thumb-sm border" />
                         </a>
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
-                                <i data-feather="power" class="icon-xs mr-2"></i><span>Logout</span>
+                                <i data-feather="power" class="icon-xs mr-2"></i><span>Cerrar sesión</span>
                             </a>
                             <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
-                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Settings</span>
+                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Configuración</span>
                             </a>
                         </div>
                     </li>
@@ -694,136 +152,117 @@
         <div class="page-content">
             <div class="container-fluid">
 
-                <!-- Page Title -->
+                <!-- Título de la Página -->
                 <div class="dash-title-area d-flex align-items-center justify-content-between flex-wrap">
                     <div>
-                        <h4>Admin Dashboard</h4>
-                        <p id="dashDate">Loading date...</p>
+                        <h4>Panel de Administración</h4>
+                        <p id="dashDate">Cargando fecha...</p>
                     </div>
                     <div class="d-flex align-items-center gap-2" style="gap:10px">
-                        <span class="live-pill"><span class="live-dot"></span> Live</span>
+                        <span class="live-pill"><span class="live-dot"></span> En vivo</span>
                         <button class="btn btn-sm btn-light" onclick="reloadDashboard()" style="font-size:12px">
-                            <i data-feather="refresh-cw" style="width:13px;height:13px;margin-right:4px"></i>Refresh
+                            <i data-feather="refresh-cw" style="width:13px;height:13px;margin-right:4px"></i>Actualizar
                         </button>
                     </div>
                 </div>
 
-                <!-- ============ ROW 1: STAT CARDS ============ -->
+                <!-- ============ FILA 1: TARJETAS DE ESTADÍSTICAS ============ -->
                 <div class="row mb-4">
                     <div class="col-xl-3 col-md-6 mb-3">
                         <div class="dash-stat-card sc1">
-                            <div class="sc-label"><i data-feather="users"
-                                    style="width:13px;height:13px;margin-right:4px"></i>Total Staff</div>
+                            <div class="sc-label"><i data-feather="users" style="width:13px;height:13px;margin-right:4px"></i>Total Personal</div>
                             <div class="sc-value" id="totalStaffCount"><span class="sc-spinner"></span></div>
-                            <div class="sc-trend"><i data-feather="trending-up"
-                                    style="width:13px;height:13px"></i>&nbsp;↑ 12% this month</div>
+                            <div class="sc-trend"><i data-feather="trending-up" style="width:13px;height:13px"></i>&nbsp;↑ 12% este mes</div>
                             <i class="fas fa-users sc-icon"></i>
                             <div class="sc-bar" id="bar1"></div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 mb-3">
                         <div class="dash-stat-card sc2">
-                            <div class="sc-label"><i data-feather="user-check"
-                                    style="width:13px;height:13px;margin-right:4px"></i>Total Clients</div>
+                            <div class="sc-label"><i data-feather="user-check" style="width:13px;height:13px;margin-right:4px"></i>Total Clientes</div>
                             <div class="sc-value" id="totalClientCount"><span class="sc-spinner"></span></div>
-                            <div class="sc-trend"><i data-feather="trending-up"
-                                    style="width:13px;height:13px"></i>&nbsp;↑ 8% this month</div>
+                            <div class="sc-trend"><i data-feather="trending-up" style="width:13px;height:13px"></i>&nbsp;↑ 8% este mes</div>
                             <i class="fas fa-user-tie sc-icon"></i>
                             <div class="sc-bar" id="bar2"></div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 mb-3">
                         <div class="dash-stat-card sc3">
-                            <div class="sc-label"><i data-feather="calendar"
-                                    style="width:13px;height:13px;margin-right:4px"></i>Added Today</div>
+                            <div class="sc-label"><i data-feather="calendar" style="width:13px;height:13px;margin-right:4px"></i>Agregados Hoy</div>
                             <div class="sc-value" id="todayCount"><span class="sc-spinner"></span></div>
-                            <div class="sc-trend"><i data-feather="clock" style="width:13px;height:13px"></i>&nbsp;Staff
-                                + Clients today</div>
+                            <div class="sc-trend"><i data-feather="clock" style="width:13px;height:13px"></i>&nbsp;Personal + Clientes hoy</div>
                             <i class="fas fa-calendar-plus sc-icon"></i>
                             <div class="sc-bar" id="bar3"></div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6 mb-3">
                         <div class="dash-stat-card sc4">
-                            <div class="sc-label"><i data-feather="database"
-                                    style="width:13px;height:13px;margin-right:4px"></i>Total Records</div>
+                            <div class="sc-label"><i data-feather="database" style="width:13px;height:13px;margin-right:4px"></i>Total Registros</div>
                             <div class="sc-value" id="totalRecords"><span class="sc-spinner"></span></div>
-                            <div class="sc-trend"><i data-feather="layers"
-                                    style="width:13px;height:13px"></i>&nbsp;Combined records</div>
+                            <div class="sc-trend"><i data-feather="layers" style="width:13px;height:13px"></i>&nbsp;Registros combinados</div>
                             <i class="fas fa-database sc-icon"></i>
                             <div class="sc-bar" id="bar4"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ============ ROW 2: CHARTS ============ -->
+                <!-- ============ FILA 2: GRÁFICOS ============ -->
                 <div class="row mb-4">
 
-                    <!-- Bar Chart -->
+                    <!-- Gráfico de Barras -->
                     <div class="col-lg-8 mb-3">
                         <div class="card dash-chart-card">
                             <div class="card-header d-flex align-items-start justify-content-between">
                                 <div>
-                                    <h6>Monthly Growth</h6>
-                                    <p>Staff & clients added per month</p>
+                                    <h6>Crecimiento Mensual</h6>
+                                    <p>Personal y clientes agregados por mes</p>
                                 </div>
                                 <div class="period-tabs">
                                     <span class="ptab active" onclick="switchTab(this,'6m')">6M</span>
-                                    <span class="ptab" onclick="switchTab(this,'1y')">1Y</span>
+                                    <span class="ptab" onclick="switchTab(this,'1y')">1A</span>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex gap-2 mb-3" style="gap:12px">
                                     <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#6c757d">
-                                        <span
-                                            style="width:10px;height:10px;border-radius:2px;background:#534AB7;display:inline-block"></span>Staff
+                                        <span style="width:10px;height:10px;border-radius:2px;background:#534AB7;display:inline-block"></span>Personal
                                     </span>
                                     <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:#6c757d">
-                                        <span
-                                            style="width:10px;height:10px;border-radius:2px;background:#0F6E56;display:inline-block"></span>Clients
+                                        <span style="width:10px;height:10px;border-radius:2px;background:#0F6E56;display:inline-block"></span>Clientes
                                     </span>
                                 </div>
                                 <div style="position:relative;width:100%;height:220px">
-                                    <canvas id="barChart" role="img"
-                                        aria-label="Bar chart showing monthly staff and client additions over 6 months">
-                                        Monthly: Dec 8/14, Jan 12/18, Feb 10/22, Mar 18/28, Apr 22/32, May 30/46
+                                    <canvas id="barChart" role="img" aria-label="Gráfico de barras mostrando adiciones mensuales de personal y clientes en 6 meses">
+                                        Mensual: Dic 8/14, Ene 12/18, Feb 10/22, Mar 18/28, Abr 22/32, May 30/46
                                     </canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Donut Chart -->
+                    <!-- Gráfico Donut -->
                     <div class="col-lg-4 mb-3">
                         <div class="card dash-chart-card cc2">
                             <div class="card-header">
-                                <h6>Distribution</h6>
-                                <p>Staff vs clients ratio</p>
+                                <h6>Distribución</h6>
+                                <p>Proporción de personal vs clientes</p>
                             </div>
                             <div class="card-body">
                                 <div class="donut-wrapper">
-                                    <svg id="donutSvg" width="130" height="130" viewBox="0 0 130 130" role="img"
-                                        aria-label="Donut chart: 38% staff, 62% clients">
+                                    <svg id="donutSvg" width="130" height="130" viewBox="0 0 130 130" role="img" aria-label="Gráfico donut: 38% personal, 62% clientes">
                                         <circle cx="65" cy="65" r="50" fill="none" stroke="#f0f2f5" stroke-width="14" />
-                                        <circle id="dc-clients" cx="65" cy="65" r="50" fill="none" stroke="#0F6E56"
-                                            stroke-width="14" stroke-dasharray="0 314" stroke-linecap="round"
-                                            transform="rotate(-90 65 65)"
-                                            style="transition:stroke-dasharray 1.3s cubic-bezier(.22,1,.36,1) .9s" />
-                                        <circle id="dc-staff" cx="65" cy="65" r="50" fill="none" stroke="#534AB7"
-                                            stroke-width="14" stroke-dasharray="0 314" stroke-linecap="round"
-                                            transform="rotate(-90 65 65)"
-                                            style="transition:stroke-dasharray 1.3s cubic-bezier(.22,1,.36,1) 1.1s" />
+                                        <circle id="dc-clients" cx="65" cy="65" r="50" fill="none" stroke="#0F6E56" stroke-width="14" stroke-dasharray="0 314" stroke-linecap="round" transform="rotate(-90 65 65)" style="transition:stroke-dasharray 1.3s cubic-bezier(.22,1,.36,1) .9s" />
+                                        <circle id="dc-staff" cx="65" cy="65" r="50" fill="none" stroke="#534AB7" stroke-width="14" stroke-dasharray="0 314" stroke-linecap="round" transform="rotate(-90 65 65)" style="transition:stroke-dasharray 1.3s cubic-bezier(.22,1,.36,1) 1.1s" />
                                     </svg>
                                     <div class="donut-center-text">
                                         <div class="dpct" id="donut-main-pct">62%</div>
-                                        <div class="dlbl">clients</div>
+                                        <div class="dlbl">clientes</div>
                                     </div>
                                 </div>
                                 <div class="legend-row">
                                     <div>
                                         <div class="leg-item">
-                                            <div class="leg-left"><span class="leg-dot"
-                                                    style="background:#534AB7"></span>Staff</div>
+                                            <div class="leg-left"><span class="leg-dot" style="background:#534AB7"></span>Personal</div>
                                             <span class="leg-val" id="staffPct">38%</span>
                                         </div>
                                         <div class="prog-bg">
@@ -832,8 +271,7 @@
                                     </div>
                                     <div>
                                         <div class="leg-item">
-                                            <div class="leg-left"><span class="leg-dot"
-                                                    style="background:#0F6E56"></span>Clients</div>
+                                            <div class="leg-left"><span class="leg-dot" style="background:#0F6E56"></span>Clientes</div>
                                             <span class="leg-val" id="clientPct">62%</span>
                                         </div>
                                         <div class="prog-bg">
@@ -847,16 +285,16 @@
 
                 </div>
 
-                <!-- ============ ROW 3: RECENT TABLES ============ -->
+                <!-- ============ FILA 3: TABLAS RECIENTES ============ -->
                 <div class="row">
 
-                    <!-- Recent Staff -->
+                    <!-- Personal Reciente -->
                     <div class="col-lg-6 mb-4">
                         <div class="card dash-table-card">
                             <div class="card-header d-flex align-items-center justify-content-between">
                                 <h6>
                                     <i class="fas fa-users" style="color:#534AB7"></i>
-                                    Recently Added Staff
+                                    Personal Agregado Recientemente
                                 </h6>
                                 <span class="hdr-badge purple" id="staffBadge">0</span>
                             </div>
@@ -865,18 +303,17 @@
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Staff ID</th>
-                                                <th>Role</th>
-                                                <th>Added</th>
+                                                <th>Nombre</th>
+                                                <th>ID Personal</th>
+                                                <th>Rol</th>
+                                                <th>Agregado</th>
                                             </tr>
                                         </thead>
                                         <tbody id="recentStaffTable">
                                             <tr style="opacity:1">
                                                 <td colspan="4" class="text-center py-3">
-                                                    <div class="spinner-border spinner-border-sm text-primary mr-2">
-                                                    </div>
-                                                    Loading...
+                                                    <div class="spinner-border spinner-border-sm text-primary mr-2"></div>
+                                                    Cargando...
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -886,13 +323,13 @@
                         </div>
                     </div>
 
-                    <!-- Recent Clients -->
+                    <!-- Clientes Recientes -->
                     <div class="col-lg-6 mb-4">
                         <div class="card dash-table-card tc2">
                             <div class="card-header d-flex align-items-center justify-content-between">
                                 <h6>
                                     <i class="fas fa-user-tie" style="color:#0F6E56"></i>
-                                    Recently Added Clients
+                                    Clientes Agregados Recientemente
                                 </h6>
                                 <span class="hdr-badge teal" id="clientBadge">0</span>
                             </div>
@@ -901,18 +338,17 @@
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Client ID</th>
-                                                <th>assignStaff</th>
-                                                <th>Added</th>
+                                                <th>Nombre</th>
+                                                <th>ID Cliente</th>
+                                                <th>Personal Asignado</th>
+                                                <th>Agregado</th>
                                             </tr>
                                         </thead>
                                         <tbody id="recentClientsTable">
                                             <tr style="opacity:1">
                                                 <td colspan="4" class="text-center py-3">
-                                                    <div class="spinner-border spinner-border-sm text-success mr-2">
-                                                    </div>
-                                                    Loading...
+                                                    <div class="spinner-border spinner-border-sm text-success mr-2"></div>
+                                                    Cargando...
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -930,7 +366,7 @@
 
     </div><!-- /page-wrapper -->
 
-    <!-- Scripts (as-is) -->
+    <!-- Scripts -->
     <script src="../admin/side_navbar.js"></script>
     <script src="../admin/assets/js/jquery.min.js"></script>
     <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
@@ -943,412 +379,34 @@
     <script src="../plugins/dropify/js/dropify.min.js"></script>
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
     <script src="../admin/assets/js/app.min.js"></script>
-<!-- 
-    <script>
-        /* ============================================
-       DATE
-    ============================================ */
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const now = new Date();
-        document.getElementById('dashDate').textContent =
-            `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-        /* ============================================
-           COUNT-UP ANIMATION
-        ============================================ */
-        function animateCount(id, target, delay) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            let start = null;
-            const dur = 1300;
-            setTimeout(() => {
-                requestAnimationFrame(function step(ts) {
-                    if (!start) start = ts;
-                    const p = Math.min((ts - start) / dur, 1);
-                    const ease = 1 - Math.pow(1 - p, 4);
-                    el.textContent = Math.round(ease * target);
-                    if (p < 1) requestAnimationFrame(step);
-                    else el.textContent = target;
-                });
-            }, delay || 0);
-        }
-
-        /* ============================================
-           BOTTOM BAR ANIMATION
-        ============================================ */
-        function animateBars() {
-            setTimeout(() => {
-                ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.style.transform = 'scaleX(1)';
-                });
-            }, 600);
-        }
-
-        /* ============================================
-           DONUT CHART
-        ============================================ */
-        function initDonut(staffPct, clientPct) {
-            const circ = 2 * Math.PI * 50;
-            const cl = Math.round(circ * clientPct / 100);
-            const sl = Math.round(circ * staffPct / 100);
-            setTimeout(() => {
-                document.getElementById('dc-clients').setAttribute('stroke-dasharray', `${cl} ${Math.round(circ - cl)}`);
-                setTimeout(() => {
-                    const ds = document.getElementById('dc-staff');
-                    ds.setAttribute('stroke-dasharray', `${sl} ${Math.round(circ - sl)}`);
-                    ds.setAttribute('stroke-dashoffset', `-${cl}`);
-                }, 250);
-                document.getElementById('pf-staff').style.cssText += ';transform:scaleX(1)';
-                document.getElementById('pf-clients').style.cssText += ';transform:scaleX(1)';
-            }, 850);
-        }
-
-        /* ============================================
-           BAR CHART — DYNAMIC (API se data)
-        ============================================ */
-        let barChartInstance = null;
-        let apiChartData = null; // API se aayega, hardcoded nahi
-
-        function buildBarChart(period) {
-            // Agar API data nahi aaya abhi to chart mat banao
-            if (!apiChartData) return;
-
-            let labels, staff, clients;
-
-            if (period === '1y') {
-                // Poore 12 months
-                labels = apiChartData.labels;
-                staff = apiChartData.staff;
-                clients = apiChartData.clients;
-            } else {
-                // Last 6 months ka slice
-                labels = apiChartData.labels.slice(-6);
-                staff = apiChartData.staff.slice(-6);
-                clients = apiChartData.clients.slice(-6);
-            }
-
-            if (barChartInstance) barChartInstance.destroy();
-
-            barChartInstance = new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Staff', data: staff, backgroundColor: '#534AB7', borderRadius: 5, borderSkipped: false },
-                        { label: 'Clients', data: clients, backgroundColor: '#0F6E56', borderRadius: 5, borderSkipped: false }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: { duration: 1100, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 55 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { callbacks: { title: l => `Month: ${l[0].label}` } }
-                    },
-                    scales: {
-                        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 11 } }, border: { display: false } },
-                        y: {
-                            grid: { color: 'rgba(0,0,0,0.05)' },
-                            ticks: {
-                                color: '#a0aec0',
-                                font: { size: 11 },
-                                stepSize: 1,
-                                // Sirf whole numbers dikhao
-                                callback: val => Number.isInteger(val) ? val : ''
-                            },
-                            border: { display: false },
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function switchTab(el, period) {
-            document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            buildBarChart(period);
-        }
-
-        /* ============================================
-           TABLE ROW ANIMATION
-        ============================================ */
-        function animateRows(tbodyId) {
-            const rows = document.querySelectorAll(`#${tbodyId} tr`);
-            rows.forEach((tr, i) => {
-                tr.style.opacity = '0';
-                tr.style.animation = `fadeInRight .4s ease ${1.1 + i * 0.1}s forwards`;
-            });
-        }
-
-        /* ============================================
-           FORMAT DATE
-        ============================================ */
-        function formatDate(dateStr) {
-            if (!dateStr) return '—';
-            return new Date(dateStr).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
-        }
-
-        /* ============================================
-           LOAD DASHBOARD DATA FROM API
-        ============================================ */
-        async function loadDashboardStats() {
-            try {
-                const token = localStorage.getItem('adminToken');
-                const response = await fetch(`/dashboard`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                const result = await response.json();
-
-                if (result.success) {
-                    const { totalStaff, totalClients, recentStaff, recentClients, monthlyChart } = result.data;
-
-                    // ── Stat Cards ──────────────────────────────────────
-                    animateCount('totalStaffCount', totalStaff, 350);
-                    animateCount('totalClientCount', totalClients, 500);
-                    animateCount('todayCount', 0, 650);
-                    animateCount('totalRecords', totalStaff + totalClients, 800);
-
-                    // ── Badges ──────────────────────────────────────────
-                    document.getElementById('staffBadge').textContent = recentStaff.length;
-                    document.getElementById('clientBadge').textContent = recentClients.length;
-
-                    // ── Donut Chart ──────────────────────────────────────
-                    const total = totalStaff + totalClients || 1;
-                    const sp = Math.round(totalStaff / total * 100);
-                    const cp = Math.round(totalClients / total * 100);
-                    document.getElementById('staffPct').textContent = sp + '%';
-                    document.getElementById('clientPct').textContent = cp + '%';
-                    document.getElementById('donut-main-pct').textContent = cp + '%';
-                    document.getElementById('pf-staff').style.width = sp + '%';
-                    document.getElementById('pf-clients').style.width = cp + '%';
-                    initDonut(sp, cp);
-
-                    // ── Bar Chart — API se dynamic data ─────────────────
-                    if (monthlyChart) {
-                        apiChartData = {
-                            labels: monthlyChart.labels,
-                            staff: monthlyChart.staff,
-                            clients: monthlyChart.clients
-                        };
-                        buildBarChart('6m'); // default 6M tab
-                    }
-
-                    // ── Staff Table ──────────────────────────────────────
-                    const staffTbody = document.getElementById('recentStaffTable');
-                    if (!recentStaff || recentStaff.length === 0) {
-                        staffTbody.innerHTML = `
-                    <tr style="opacity:1">
-                        <td colspan="4" class="text-center text-muted py-3">
-                            <i class="fas fa-inbox mr-1"></i> No staff added yet
-                        </td>
-                    </tr>`;
-                    } else {
-                        staffTbody.innerHTML = recentStaff.map(s => `
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="av-circle av-purple">${s.fullName.charAt(0).toUpperCase()}</div>
-                                <span>${s.fullName}</span>
-                            </div>
-                        </td>
-                        <td><code style="color:#534AB7;font-size:12px">${s.staffId}</code></td>
-                        <td><span class="role-pill">${s.role || 'Staff'}</span></td>
-                        <td style="color:#a0aec0;font-size:12px">${formatDate(s.createdAt)}</td>
-                    </tr>
-                `).join('');
-                        animateRows('recentStaffTable');
-                    }
-
-                    // ── Clients Table ────────────────────────────────────
-                    const clientsTbody = document.getElementById('recentClientsTable');
-                    if (!recentClients || recentClients.length === 0) {
-                        clientsTbody.innerHTML = `
-                    <tr style="opacity:1">
-                        <td colspan="4" class="text-center text-muted py-3">
-                            <i class="fas fa-inbox mr-1"></i> No clients added yet
-                        </td>
-                    </tr>`;
-                    } else {
-                        clientsTbody.innerHTML = recentClients.map(c => `
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="av-circle av-teal">${c.fullName.charAt(0).toUpperCase()}</div>
-                                <span>${c.fullName}</span>
-                            </div>
-                        </td>
-                        <td><code style="color:#0f6e56;font-size:12px">${c.clientId}</code></td>
-                        <td style="font-size:12px;color:#6c757d">${c.assignStaff || '—'}</td>
-                        <td style="color:#a0aec0;font-size:12px">${formatDate(c.createdAt)}</td>
-                    </tr>
-                `).join('');
-                        animateRows('recentClientsTable');
-                    }
-
-                } else {
-                    showFallback();
-                }
-            } catch (err) {
-                console.error('Dashboard error:', err);
-                showFallback();
-            }
-        }
-
-        /* ============================================
-           FALLBACK — Jab API connect na ho
-        ============================================ */
-        function showFallback() {
-            animateCount('totalStaffCount', 24, 350);
-            animateCount('totalClientCount', 38, 500);
-            animateCount('todayCount', 7, 650);
-            animateCount('totalRecords', 62, 800);
-            document.getElementById('staffBadge').textContent = 5;
-            document.getElementById('clientBadge').textContent = 5;
-            initDonut(38, 62);
-
-            // Fallback chart data
-            apiChartData = {
-                labels: ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                staff: [4, 6, 8, 5, 10, 14, 8, 12, 10, 18, 22, 30],
-                clients: [8, 10, 12, 9, 16, 20, 14, 18, 22, 28, 32, 46]
-            };
-            buildBarChart('6m');
-
-            const demoStaff = [
-                { fullName: 'Ahmed Raza', staffId: 'ST-001', role: 'Manager', createdAt: new Date() },
-                { fullName: 'Sara Khan', staffId: 'ST-002', role: 'HR', createdAt: new Date() },
-                { fullName: 'Bilal Tariq', staffId: 'ST-003', role: 'Accountant', createdAt: new Date() },
-                { fullName: 'Nadia Malik', staffId: 'ST-004', role: 'Developer', createdAt: new Date() },
-                { fullName: 'Usman Ali', staffId: 'ST-005', role: 'Support', createdAt: new Date() },
-            ];
-            const demoClients = [
-                { fullName: 'Fatima Zahra', clientId: 'CL-101', assignStaff: 'ST-001', createdAt: new Date() },
-                { fullName: 'Hassan Mirza', clientId: 'CL-102', assignStaff: 'ST-002', createdAt: new Date() },
-                { fullName: 'Ayesha Siddiqui', clientId: 'CL-103', assignStaff: 'ST-001', createdAt: new Date() },
-                { fullName: 'Zain Abbas', clientId: 'CL-104', assignStaff: 'ST-003', createdAt: new Date() },
-                { fullName: 'Maryam Qureshi', clientId: 'CL-105', assignStaff: 'ST-002', createdAt: new Date() },
-            ];
-
-            document.getElementById('recentStaffTable').innerHTML = demoStaff.map(s => `
-        <tr>
-            <td><div class="d-flex align-items-center"><div class="av-circle av-purple">${s.fullName[0]}</div><span>${s.fullName}</span></div></td>
-            <td><code style="color:#534AB7;font-size:12px">${s.staffId}</code></td>
-            <td><span class="role-pill">${s.role}</span></td>
-            <td style="color:#a0aec0;font-size:12px">${formatDate(s.createdAt)}</td>
-        </tr>
-    `).join('');
-
-            document.getElementById('recentClientsTable').innerHTML = demoClients.map(c => `
-        <tr>
-            <td><div class="d-flex align-items-center"><div class="av-circle av-teal">${c.fullName[0]}</div><span>${c.fullName}</span></div></td>
-            <td><code style="color:#0f6e56;font-size:12px">${c.clientId}</code></td>
-            <td style="font-size:12px;color:#6c757d">${c.assignStaff || '—'}</td>
-            <td style="color:#a0aec0;font-size:12px">${formatDate(c.createdAt)}</td>
-        </tr>
-    `).join('');
-
-            animateRows('recentStaffTable');
-            animateRows('recentClientsTable');
-        }
-
-        function reloadDashboard() { location.reload(); }
-
-        /* ============================================
-           INIT
-        ============================================ */
-        document.addEventListener('DOMContentLoaded', () => {
-            // buildBarChart yahan nahi — API ke baad chalega
-            animateBars();
-            loadDashboardStats();
-            if (typeof feather !== 'undefined') feather.replace();
-        });
-
-        const hamburgerBtn = document.querySelector('.button-menu-mobile');
-
-        if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', function () {
-                const isMobile = window.innerWidth <= 767;
-
-                if (isMobile) {
-                    document.body.classList.toggle('mobile-menu-open');
-                } else {
-                    document.body.classList.toggle('enlarge-menu');
-                }
-            });
-        }
-
-        // Mobile par bahar click se sidebar band
-        document.addEventListener('click', function (e) {
-            if (window.innerWidth > 767) return;
-
-            const sidebar = document.querySelector('.left-sidenav');
-            const hamburger = document.querySelector('.button-menu-mobile');
-
-            if (sidebar && hamburger &&
-                !sidebar.contains(e.target) &&
-                !hamburger.contains(e.target)
-            ) {
-                document.body.classList.remove('mobile-menu-open');
-            }
-        });
-
-
-    </script> -->
 
     <script>
 
     /* ============================================
-       HELPER: Show Toast Notification
+       HELPER: Toast Notification
     ============================================ */
     function showToast(type, message, duration) {
         let toast = document.getElementById("toastNotification");
-
         if (!toast) {
             toast = document.createElement("div");
             toast.id = "toastNotification";
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 99999;
-                min-width: 300px;
-                max-width: 420px;
-                padding: 14px 20px;
-                border-radius: 6px;
-                font-size: 14px;
-                font-weight: 500;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                display: none;
-                transition: opacity 0.3s ease;
-            `;
+            toast.style.cssText = `position:fixed;top:20px;right:20px;z-index:99999;min-width:300px;max-width:420px;padding:14px 20px;border-radius:6px;font-size:14px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:none;transition:opacity 0.3s ease;`;
             document.body.appendChild(toast);
         }
-
         const styles = {
             success: { background: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" },
             danger:  { background: "#f8d7da", color: "#721c24", border: "1px solid #f5c6cb" },
             warning: { background: "#fff3cd", color: "#856404", border: "1px solid #ffeeba" },
             info:    { background: "#d1ecf1", color: "#0c5460", border: "1px solid #bee5eb" }
         };
-
         const style = styles[type] || styles.info;
         toast.style.background = style.background;
         toast.style.color      = style.color;
         toast.style.border     = style.border;
-
         const icons = { success: "✅", danger: "❌", warning: "⚠️", info: "ℹ️" };
         toast.innerHTML     = `${icons[type] || "ℹ️"} ${message}`;
         toast.style.display = "block";
         toast.style.opacity = "1";
-
         clearTimeout(toast._hideTimer);
         toast._hideTimer = setTimeout(() => {
             toast.style.opacity = "0";
@@ -1357,39 +415,36 @@
     }
 
     /* ============================================
-       HELPER: HTTP Status → User Message
+       HELPER: Mensaje de Error por Estado HTTP
     ============================================ */
     function getErrorMessage(status, serverMessage) {
         if (serverMessage) return serverMessage;
         switch (status) {
-            case 400: return "Invalid request. Please refresh and try again.";
-            case 401: return "Session expired. Redirecting to login...";
-            case 403: return "You do not have permission to view this page.";
-            case 404: return "Dashboard data not found on server.";
-            case 429: return "Too many requests. Please wait a moment and try again.";
-            case 500: return "Server error. Please try again in a few minutes.";
-            case 503: return "Service unavailable. Server may be under maintenance.";
-            default:  return `Unable to load dashboard (Error ${status}). Please refresh.`;
+            case 400: return "Solicitud inválida. Por favor actualice e intente de nuevo.";
+            case 401: return "Sesión expirada. Redirigiendo al inicio de sesión...";
+            case 403: return "No tiene permiso para ver esta página.";
+            case 404: return "Datos del panel no encontrados en el servidor.";
+            case 429: return "Demasiadas solicitudes. Por favor espere un momento e intente de nuevo.";
+            case 500: return "Error del servidor. Por favor intente de nuevo en unos minutos.";
+            case 503: return "Servicio no disponible. El servidor puede estar en mantenimiento.";
+            default:  return `No se pudo cargar el panel (Error ${status}). Por favor actualice.`;
         }
     }
 
     /* ============================================
-       HELPER: Show Error in Stat Cards
+       HELPER: Mostrar Error en Tarjetas de Estadísticas
     ============================================ */
     function showDashboardError(message) {
         ['totalStaffCount', 'totalClientCount', 'todayCount', 'totalRecords'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = '—';
         });
-
-        // Table mein error row dikhao
         const errRow = `
             <tr style="opacity:1">
                 <td colspan="4" class="text-center text-danger py-3">
                     <i class="fas fa-exclamation-circle mr-1"></i> ${message}
                 </td>
-            </tr>
-        `;
+            </tr>`;
         const st = document.getElementById('recentStaffTable');
         const ct = document.getElementById('recentClientsTable');
         if (st) st.innerHTML = errRow;
@@ -1397,16 +452,16 @@
     }
 
     /* ============================================
-       DATE
+       FECHA
     ============================================ */
-    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days   = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const now    = new Date();
     document.getElementById('dashDate').textContent =
         `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
     /* ============================================
-       COUNT-UP ANIMATION
+       ANIMACIÓN DE CONTADOR
     ============================================ */
     function animateCount(id, target, delay) {
         const el = document.getElementById(id);
@@ -1425,9 +480,6 @@
         }, delay || 0);
     }
 
-    /* ============================================
-       BOTTOM BAR ANIMATION
-    ============================================ */
     function animateBars() {
         setTimeout(() => {
             ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
@@ -1437,9 +489,6 @@
         }, 600);
     }
 
-    /* ============================================
-       DONUT CHART
-    ============================================ */
     function initDonut(staffPct, clientPct) {
         const circ = 2 * Math.PI * 50;
         const cl   = Math.round(circ * clientPct / 100);
@@ -1456,54 +505,37 @@
         }, 850);
     }
 
-    /* ============================================
-       BAR CHART
-    ============================================ */
     let barChartInstance = null;
     let apiChartData     = null;
 
     function buildBarChart(period) {
         if (!apiChartData) return;
-
         let labels, staff, clients;
-
         if (period === '1y') {
-            labels  = apiChartData.labels;
-            staff   = apiChartData.staff;
-            clients = apiChartData.clients;
+            labels = apiChartData.labels; staff = apiChartData.staff; clients = apiChartData.clients;
         } else {
-            labels  = apiChartData.labels.slice(-6);
-            staff   = apiChartData.staff.slice(-6);
-            clients = apiChartData.clients.slice(-6);
+            labels = apiChartData.labels.slice(-6); staff = apiChartData.staff.slice(-6); clients = apiChartData.clients.slice(-6);
         }
-
         if (barChartInstance) barChartInstance.destroy();
-
         barChartInstance = new Chart(document.getElementById('barChart'), {
             type: 'bar',
             data: {
                 labels,
                 datasets: [
-                    { label: 'Staff',   data: staff,   backgroundColor: '#534AB7', borderRadius: 5, borderSkipped: false },
-                    { label: 'Clients', data: clients, backgroundColor: '#0F6E56', borderRadius: 5, borderSkipped: false }
+                    { label: 'Personal', data: staff,   backgroundColor: '#534AB7', borderRadius: 5, borderSkipped: false },
+                    { label: 'Clientes', data: clients, backgroundColor: '#0F6E56', borderRadius: 5, borderSkipped: false }
                 ]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 animation: { duration: 1100, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 55 },
                 plugins: {
                     legend: { display: false },
-                    tooltip: { callbacks: { title: l => `Month: ${l[0].label}` } }
+                    tooltip: { callbacks: { title: l => `Mes: ${l[0].label}` } }
                 },
                 scales: {
                     x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 11 } }, border: { display: false } },
-                    y: {
-                        grid: { color: 'rgba(0,0,0,0.05)' },
-                        ticks: { color: '#a0aec0', font: { size: 11 }, stepSize: 1, callback: val => Number.isInteger(val) ? val : '' },
-                        border: { display: false },
-                        beginAtZero: true
-                    }
+                    y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 11 }, stepSize: 1, callback: val => Number.isInteger(val) ? val : '' }, border: { display: false }, beginAtZero: true }
                 }
             }
         });
@@ -1515,9 +547,6 @@
         buildBarChart(period);
     }
 
-    /* ============================================
-       TABLE ROW ANIMATION
-    ============================================ */
     function animateRows(tbodyId) {
         const rows = document.querySelectorAll(`#${tbodyId} tr`);
         rows.forEach((tr, i) => {
@@ -1526,20 +555,15 @@
         });
     }
 
-    /* ============================================
-       FORMAT DATE
-    ============================================ */
     function formatDate(dateStr) {
         if (!dateStr) return '—';
-        return new Date(dateStr).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' });
+        return new Date(dateStr).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
     /* ============================================
-       LOAD DASHBOARD DATA FROM API
+       CARGAR DATOS DEL PANEL DESDE API
     ============================================ */
     async function loadDashboardStats() {
-
-        // Loading state — cards mein spinner
         ['totalStaffCount', 'totalClientCount', 'todayCount', 'totalRecords'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:14px"></i>';
@@ -1548,33 +572,28 @@
         try {
             const token    = localStorage.getItem('adminToken');
             const response = await fetch('/dashboard', {
-                method:  'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type':  'application/json'
-                }
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
-            // 401 — Session expire
             if (response.status === 401) {
-                showToast("warning", "⚠️ Session expired. Redirecting to login...", 3000);
+                showToast("warning", "⚠️ Sesión expirada. Redirigiendo al inicio de sesión...", 3000);
                 setTimeout(() => { window.location.href = '/login'; }, 2500);
                 return;
             }
 
-            // Other HTTP errors
             if (!response.ok) {
                 const result = await response.json().catch(() => ({}));
                 const msg    = getErrorMessage(response.status, result.message);
                 showToast("danger", msg, 6000);
-                showDashboardError("Could not load data. " + msg);
+                showDashboardError("No se pudieron cargar los datos. " + msg);
                 return;
             }
 
             const result = await response.json();
 
             if (!result.success) {
-                const msg = result.message || "Dashboard data could not be loaded. Please refresh.";
+                const msg = result.message || "Los datos del panel no pudieron cargarse. Por favor actualice.";
                 showToast("warning", "⚠️ " + msg);
                 showDashboardError(msg);
                 return;
@@ -1582,111 +601,76 @@
 
             const { totalStaff, totalClients, recentStaff, recentClients, monthlyChart } = result.data;
 
-            // ── Stat Cards ──────────────────────────────────────────────
-            animateCount('totalStaffCount',  totalStaff,                  350);
-            animateCount('totalClientCount', totalClients,                500);
-            animateCount('todayCount',       0,                           650);
-            animateCount('totalRecords',     totalStaff + totalClients,   800);
+            animateCount('totalStaffCount',  totalStaff,                350);
+            animateCount('totalClientCount', totalClients,              500);
+            animateCount('todayCount',       0,                         650);
+            animateCount('totalRecords',     totalStaff + totalClients, 800);
 
-            // ── Badges ──────────────────────────────────────────────────
             document.getElementById('staffBadge').textContent  = recentStaff.length;
             document.getElementById('clientBadge').textContent = recentClients.length;
 
-            // ── Donut Chart ──────────────────────────────────────────────
             const total = totalStaff + totalClients || 1;
             const sp    = Math.round(totalStaff   / total * 100);
             const cp    = Math.round(totalClients / total * 100);
-            document.getElementById('staffPct').textContent        = sp + '%';
-            document.getElementById('clientPct').textContent       = cp + '%';
-            document.getElementById('donut-main-pct').textContent  = cp + '%';
-            document.getElementById('pf-staff').style.width        = sp + '%';
-            document.getElementById('pf-clients').style.width      = cp + '%';
+            document.getElementById('staffPct').textContent       = sp + '%';
+            document.getElementById('clientPct').textContent      = cp + '%';
+            document.getElementById('donut-main-pct').textContent = cp + '%';
+            document.getElementById('pf-staff').style.width       = sp + '%';
+            document.getElementById('pf-clients').style.width     = cp + '%';
             initDonut(sp, cp);
 
-            // ── Bar Chart ────────────────────────────────────────────────
             if (monthlyChart) {
-                apiChartData = {
-                    labels:  monthlyChart.labels,
-                    staff:   monthlyChart.staff,
-                    clients: monthlyChart.clients
-                };
+                apiChartData = { labels: monthlyChart.labels, staff: monthlyChart.staff, clients: monthlyChart.clients };
                 buildBarChart('6m');
             } else {
-                showToast("info", "ℹ️ Monthly chart data is not available.");
+                showToast("info", "ℹ️ Los datos del gráfico mensual no están disponibles.");
             }
 
-            // ── Staff Table ──────────────────────────────────────────────
             const staffTbody = document.getElementById('recentStaffTable');
             if (!recentStaff || recentStaff.length === 0) {
-                staffTbody.innerHTML = `
-                    <tr style="opacity:1">
-                        <td colspan="4" class="text-center text-muted py-3">
-                            <i class="fas fa-inbox mr-1"></i> No staff added yet
-                        </td>
-                    </tr>`;
+                staffTbody.innerHTML = `<tr style="opacity:1"><td colspan="4" class="text-center text-muted py-3"><i class="fas fa-inbox mr-1"></i> Aún no se ha agregado personal</td></tr>`;
             } else {
                 staffTbody.innerHTML = recentStaff.map(s => `
                     <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="av-circle av-purple">${s.fullName.charAt(0).toUpperCase()}</div>
-                                <span>${s.fullName}</span>
-                            </div>
-                        </td>
+                        <td><div class="d-flex align-items-center"><div class="av-circle av-purple">${s.fullName.charAt(0).toUpperCase()}</div><span>${s.fullName}</span></div></td>
                         <td><code style="color:#534AB7;font-size:12px">${s.staffId}</code></td>
-                        <td><span class="role-pill">${s.role || 'Staff'}</span></td>
+                        <td><span class="role-pill">${s.role || 'Personal'}</span></td>
                         <td style="color:#a0aec0;font-size:12px">${formatDate(s.createdAt)}</td>
-                    </tr>
-                `).join('');
+                    </tr>`).join('');
                 animateRows('recentStaffTable');
             }
 
-            // ── Clients Table ────────────────────────────────────────────
             const clientsTbody = document.getElementById('recentClientsTable');
             if (!recentClients || recentClients.length === 0) {
-                clientsTbody.innerHTML = `
-                    <tr style="opacity:1">
-                        <td colspan="4" class="text-center text-muted py-3">
-                            <i class="fas fa-inbox mr-1"></i> No clients added yet
-                        </td>
-                    </tr>`;
+                clientsTbody.innerHTML = `<tr style="opacity:1"><td colspan="4" class="text-center text-muted py-3"><i class="fas fa-inbox mr-1"></i> Aún no se han agregado clientes</td></tr>`;
             } else {
                 clientsTbody.innerHTML = recentClients.map(c => `
                     <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="av-circle av-teal">${c.fullName.charAt(0).toUpperCase()}</div>
-                                <span>${c.fullName}</span>
-                            </div>
-                        </td>
+                        <td><div class="d-flex align-items-center"><div class="av-circle av-teal">${c.fullName.charAt(0).toUpperCase()}</div><span>${c.fullName}</span></div></td>
                         <td><code style="color:#0f6e56;font-size:12px">${c.clientId}</code></td>
                         <td style="font-size:12px;color:#6c757d">${c.assignStaff || '—'}</td>
                         <td style="color:#a0aec0;font-size:12px">${formatDate(c.createdAt)}</td>
-                    </tr>
-                `).join('');
+                    </tr>`).join('');
                 animateRows('recentClientsTable');
             }
 
         } catch (err) {
-
-            // Network error — internet ya server down
-            console.error('Dashboard error:', err);
-
+            console.error('Error del panel:', err);
             if (!navigator.onLine) {
-                showToast("danger", "❌ No internet connection. Please check your network.", 7000);
-                showDashboardError("No internet connection. Please check your network and refresh.");
+                showToast("danger", "❌ Sin conexión a internet. Por favor verifique su red.", 7000);
+                showDashboardError("Sin conexión a internet. Por favor verifique su red y actualice.");
             } else {
-                showToast("danger", "❌ Could not connect to server. Loading demo data...", 5000);
+                showToast("danger", "❌ No se pudo conectar al servidor. Cargando datos de demostración...", 5000);
                 showFallback();
             }
         }
     }
 
     /* ============================================
-       FALLBACK — Demo data with toast notice
+       DATOS DE DEMOSTRACIÓN (FALLBACK)
     ============================================ */
     function showFallback() {
-        showToast("warning", "⚠️ Live data unavailable. Showing demo data.", 5000);
+        showToast("warning", "⚠️ Datos en vivo no disponibles. Mostrando datos de demostración.", 5000);
 
         animateCount('totalStaffCount',  24, 350);
         animateCount('totalClientCount', 38, 500);
@@ -1697,18 +681,18 @@
         initDonut(38, 62);
 
         apiChartData = {
-            labels:  ['Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May'],
+            labels:  ['Jun','Jul','Ago','Sep','Oct','Nov','Dic','Ene','Feb','Mar','Abr','May'],
             staff:   [4, 6, 8, 5, 10, 14,  8, 12, 10, 18, 22, 30],
             clients: [8,10,12, 9, 16, 20, 14, 18, 22, 28, 32, 46]
         };
         buildBarChart('6m');
 
         const demoStaff = [
-            { fullName: 'Ahmed Raza',   staffId: 'ST-001', role: 'Manager',    createdAt: new Date() },
-            { fullName: 'Sara Khan',    staffId: 'ST-002', role: 'HR',         createdAt: new Date() },
-            { fullName: 'Bilal Tariq',  staffId: 'ST-003', role: 'Accountant', createdAt: new Date() },
-            { fullName: 'Nadia Malik',  staffId: 'ST-004', role: 'Developer',  createdAt: new Date() },
-            { fullName: 'Usman Ali',    staffId: 'ST-005', role: 'Support',    createdAt: new Date() },
+            { fullName: 'Ahmed Raza',  staffId: 'ST-001', role: 'Gerente',    createdAt: new Date() },
+            { fullName: 'Sara Khan',   staffId: 'ST-002', role: 'RRHH',       createdAt: new Date() },
+            { fullName: 'Bilal Tariq', staffId: 'ST-003', role: 'Contador',   createdAt: new Date() },
+            { fullName: 'Nadia Malik', staffId: 'ST-004', role: 'Desarrolladora', createdAt: new Date() },
+            { fullName: 'Usman Ali',   staffId: 'ST-005', role: 'Soporte',    createdAt: new Date() },
         ];
         const demoClients = [
             { fullName: 'Fatima Zahra',    clientId: 'CL-101', assignStaff: 'ST-001', createdAt: new Date() },
@@ -1724,8 +708,7 @@
                 <td><code style="color:#534AB7;font-size:12px">${s.staffId}</code></td>
                 <td><span class="role-pill">${s.role}</span></td>
                 <td style="color:#a0aec0;font-size:12px">${formatDate(s.createdAt)}</td>
-            </tr>
-        `).join('');
+            </tr>`).join('');
 
         document.getElementById('recentClientsTable').innerHTML = demoClients.map(c => `
             <tr>
@@ -1733,8 +716,7 @@
                 <td><code style="color:#0f6e56;font-size:12px">${c.clientId}</code></td>
                 <td style="font-size:12px;color:#6c757d">${c.assignStaff || '—'}</td>
                 <td style="color:#a0aec0;font-size:12px">${formatDate(c.createdAt)}</td>
-            </tr>
-        `).join('');
+            </tr>`).join('');
 
         animateRows('recentStaffTable');
         animateRows('recentClientsTable');
@@ -1742,9 +724,6 @@
 
     function reloadDashboard() { location.reload(); }
 
-    /* ============================================
-       INIT
-    ============================================ */
     document.addEventListener('DOMContentLoaded', () => {
         animateBars();
         loadDashboardStats();
@@ -1752,15 +731,11 @@
     });
 
     const hamburgerBtn = document.querySelector('.button-menu-mobile');
-
     if (hamburgerBtn) {
         hamburgerBtn.addEventListener('click', function () {
             const isMobile = window.innerWidth <= 767;
-            if (isMobile) {
-                document.body.classList.toggle('mobile-menu-open');
-            } else {
-                document.body.classList.toggle('enlarge-menu');
-            }
+            if (isMobile) { document.body.classList.toggle('mobile-menu-open'); }
+            else { document.body.classList.toggle('enlarge-menu'); }
         });
     }
 
@@ -1768,16 +743,12 @@
         if (window.innerWidth > 767) return;
         const sidebar   = document.querySelector('.left-sidenav');
         const hamburger = document.querySelector('.button-menu-mobile');
-        if (sidebar && hamburger &&
-            !sidebar.contains(e.target) &&
-            !hamburger.contains(e.target)
-        ) {
+        if (sidebar && hamburger && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
             document.body.classList.remove('mobile-menu-open');
         }
     });
 
-</script>
+    </script>
 
 </body>
-
 </html>

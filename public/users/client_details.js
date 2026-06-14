@@ -1705,12 +1705,56 @@ function appendUserMsg(text) {
   scrollChat();
 }
 
+// function appendBotMsg(text, isError = false) {
+//   const safeText = text || "⚠️ No response received.";
+//   const time = nowTime();
+//   const el = document.createElement("div");
+//   el.className = "cd-msg bot";
+//   el.innerHTML = `<div class="cd-msg-avatar">🤖</div><div><div class="cd-bubble ${isError ? "error" : ""}">${fmtBotText(safeText)}</div><div class="cd-msg-time">${time}</div></div>`;
+//   document.getElementById("cdMessages").appendChild(el);
+//   scrollChat();
+// }
+
 function appendBotMsg(text, isError = false) {
   const safeText = text || "⚠️ No response received.";
   const time = nowTime();
   const el = document.createElement("div");
   el.className = "cd-msg bot";
-  el.innerHTML = `<div class="cd-msg-avatar">🤖</div><div><div class="cd-bubble ${isError ? "error" : ""}">${fmtBotText(safeText)}</div><div class="cd-msg-time">${time}</div></div>`;
+
+  // Unique ID for speak button
+  const speakId = "speak_" + Date.now();
+
+  el.innerHTML = `
+    <div class="cd-msg-avatar">🤖</div>
+    <div>
+      <div class="cd-bubble ${isError ? "error" : ""}">${fmtBotText(safeText)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
+        <div class="cd-msg-time">${time}</div>
+        ${!isError ? `
+        <button 
+          id="${speakId}"
+          class="cd-speak-btn"
+          onclick="speakText(${JSON.stringify(safeText)})"
+          title="Listen to this message"
+          style="
+            background:none;
+            border:none;
+            color:#0d6efd;
+            cursor:pointer;
+            font-size:13px;
+            padding:2px 6px;
+            border-radius:4px;
+            opacity:0.7;
+            transition:opacity 0.2s;
+          "
+          onmouseover="this.style.opacity='1'"
+          onmouseout="this.style.opacity='0.7'"
+        >
+          <i class="bi bi-volume-up-fill"></i>
+        </button>` : ""}
+      </div>
+    </div>`;
+
   document.getElementById("cdMessages").appendChild(el);
   scrollChat();
 }
@@ -1784,6 +1828,180 @@ function fmtBotText(t) {
       '<span style="display:block;padding-left:12px;">• $1</span>',
     )
     .replace(/\n/g, "<br>");
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  VOICE FEATURE
+// ═══════════════════════════════════════════════════════════════════
+let mediaRecorder = null;
+let audioChunks = [];
+let isRecording = false;
+let currentAudio = null;
+
+async function startRecording() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      await sendAudioToWhisper();
+    };
+
+    mediaRecorder.start();
+    isRecording = true;
+
+    const btn = document.getElementById("voiceMicBtn");
+    if (btn) {
+      btn.classList.add("recording");
+      btn.title = "Recording... click to stop";
+      btn.innerHTML = `<i class="bi bi-stop-fill"></i>`;
+    }
+  } catch (err) {
+    alert("Microphone access denied. Please allow mic permission.");
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    isRecording = false;
+    const btn = document.getElementById("voiceMicBtn");
+    if (btn) {
+      btn.classList.remove("recording");
+      btn.title = "Click to speak";
+      btn.innerHTML = `<i class="bi bi-mic-fill"></i>`;
+    }
+  }
+}
+
+function toggleRecording() {
+  if (isRecording) stopRecording();
+  else startRecording();
+}
+
+async function sendAudioToWhisper() {
+  if (audioChunks.length === 0) return;
+
+  const btn = document.getElementById("voiceMicBtn");
+  if (btn) btn.innerHTML = `<i class="bi bi-hourglass-split"></i>`;
+
+  try {
+    const blob = new Blob(audioChunks, { type: "audio/webm" });
+    const formData = new FormData();
+    formData.append("audio", blob, "audio.webm");
+
+    const token = localStorage.getItem("jwt") || "";
+    const res = await fetch("/speech_to_text", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (data.success && data.text) {
+      document.getElementById("cdInput").value = data.text;
+      autoResizeCdTextarea(document.getElementById("cdInput"));
+      sendChatMessage();
+    } else {
+      setCdStatus("⚠ Could not understand audio, please try again");
+    }
+  } catch (err) {
+    setCdStatus("⚠ Voice error: " + err.message);
+  } finally {
+    if (btn) btn.innerHTML = `<i class="bi bi-mic-fill"></i>`;
+  }
+}
+
+async function speakText(text) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+    updateAllSpeakBtns(false);
+    return;
+  }
+
+  // ✅ Pehle ek silent audio se browser ko "unlock" karo
+  try {
+    const unlock = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAA"
+      + "EAAQARTsAAIAQAAEABAAEACAAIABAAAAAAAAAAAAAAAAAAAAAA==");
+    unlock.volume = 0;
+    await unlock.play().catch(() => {});
+  } catch(e) {}
+
+  const allBtns = document.querySelectorAll(".cd-speak-btn");
+  allBtns.forEach(b => b.innerHTML = `<i class="bi bi-hourglass-split"></i>`);
+
+  try {
+    const clean = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/#{1,3}\s/g, "")
+      .replace(/`(.*?)`/g, "$1")
+      .replace(/<[^>]*>/g, "")
+      .slice(0, 4000);
+
+    const token = localStorage.getItem("jwt") || "";
+    const res = await fetch("/text_to_speech", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text: clean }),
+    });
+
+    if (!res.ok) throw new Error("TTS request failed");
+
+    const blob = await res.blob();
+    if (blob.size === 0) throw new Error("Empty audio");
+
+    const audioBlob = new Blob([blob], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(audioBlob);
+    currentAudio = new Audio(url);
+
+    currentAudio.onended = () => {
+      currentAudio = null;
+      updateAllSpeakBtns(false);
+      URL.revokeObjectURL(url);
+    };
+
+    currentAudio.onerror = () => {
+      currentAudio = null;
+      updateAllSpeakBtns(false);
+      setCdStatus("⚠ Audio playback failed");
+    };
+
+    updateAllSpeakBtns(true);
+
+    // ✅ User interaction ke andar directly play karo
+    await currentAudio.play();
+
+  } catch (err) {
+    console.error("TTS error:", err.message);
+    updateAllSpeakBtns(false);
+
+    // ✅ Agar autoplay block hua toh user ko batao
+    if (err.name === "NotAllowedError") {
+      setCdStatus("⚠ Click anywhere on page first, then try again");
+      alert("Browser ne audio block kiya! Page pe kuch aur click karo pehle, phir dobara try karo.");
+    } else {
+      setCdStatus("⚠ Audio error: " + err.message);
+    }
+  }
+}
+
+function updateAllSpeakBtns(playing) {
+  document.querySelectorAll(".cd-speak-btn").forEach((btn) => {
+    btn.innerHTML = playing
+      ? `<i class="bi bi-stop-fill"></i>`
+      : `<i class="bi bi-volume-up-fill"></i>`;
+  });
 }
 
 function updateLogoByTheme() {

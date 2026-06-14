@@ -10,6 +10,9 @@
     showTable,
     deleteSheetData,
     AI_chat,
+    speech_to_text,
+    
+    text_to_speech,
     uploadExcell,
     liveSheetGraphs,
     previousSheetGraphs
@@ -34,7 +37,8 @@ AssignedClients
   
   app.post("/importExcelFile", importExcelFile);
   app.post("/AI_chat", AI_chat);
-  
+  app.post("/speech_to_text", speech_to_text);
+  app.post("/text_to_speech", text_to_speech);
   // web prehandler
   app.get("/LiveSheetData",{ preHandler: [app.webauthenticate] },  LiveSheetData);
   app.get("/getLatestSheetResult", getLatestSheetResult);

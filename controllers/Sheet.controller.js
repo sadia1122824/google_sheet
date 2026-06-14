@@ -285,47 +285,6 @@ const importExcelFile = async (request, reply) => {
 
 //  ******************************** Live data in google sheet and show data in table  **************************************
 
-// const getLatestSheetResult = async (req, reply) => {
-//   try {
-//     const latest = await ClientCredentials.findOne().sort({ createdAt: -1 });
-
-//     if (!latest) {
-//       return reply.send({ success: false, error: "No spreadsheet found" });
-//     }
-
-//     const response = await axios.get(process.env.WEB_APP_URL, {
-//       params: {
-//         token: process.env.TOKEN,
-//         action: "getSheetData",
-//         spreadsheetId: latest.newSpreadsheetId,
-//         sheetName: "Explotacion comparativa",
-//       },
-//     });
-
-//     if (response.data.success) {
-//       const sheetData = response.data.data;
-
-//       // ✅ class method ki tarah call karo
-//       const saveResult = await sheetService.saveSheetDataToDB(
-//         sheetData,
-//         "explotacion_comparativa"
-//       );
-
-//       console.log("✅ Saved to DB:", saveResult);
-
-//       return reply.send({
-//         success: true,
-//         saved: saveResult,
-//         data: sheetData,
-//       });
-//     } else {
-//       return reply.send({ success: false, error: response.data.error });
-//     }
-//   } catch (err) {
-//     console.error("❌ ERROR:", err.message);
-//     return reply.status(500).send({ success: false, error: err.message });
-//   }
-// };
 
 // *********************************previous sheet data show in table  ***********************************
 
@@ -753,6 +712,79 @@ function buildAnswerFromJs(jsResult, question, metric = null) {
   return "Please ask about a specific period or metric.";
 }
 
+// ── SPEECH TO TEXT (Whisper) ─────────────────────────────────
+const speech_to_text = async (req, reply) => {
+  try {
+    const data = await req.file(); // multipart/form-data
+    const audioBuffer = await data.toBuffer();
+    
+    const formData = new FormData();
+    const blob = new Blob([audioBuffer], { type: data.mimetype });
+    formData.append("file", blob, "audio.webm");
+    formData.append("model", "whisper-1");
+    formData.append("language", "en"); // en, ur, es — auto detect bhi karta hai
+
+    const res = await fetch("https://api.openai.com/v1/audio/transcriptions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
+      body: formData,
+    });
+
+    const result = await res.json();
+    if (result.error) throw new Error(result.error.message);
+
+    return reply.send({ success: true, text: result.text });
+  } catch (err) {
+    console.error("Whisper error:", err.message);
+    return reply.send({ success: false, error: err.message });
+  }
+};
+
+// ── TEXT TO SPEECH ───────────────────────────────────────────
+const text_to_speech = async (req, reply) => {
+  try {
+    const { text } = req.body;
+    if (!text) return reply.send({ success: false, error: "No text" });
+
+    // Markdown clean karo — TTS ke liye
+    const clean = text
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/#{1,3}\s/g, "")
+      .replace(/`(.*?)`/g, "$1")
+      .slice(0, 4000); // TTS limit
+
+    const res = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "tts-1",
+        input: clean,
+        voice: "nova", // alloy, echo, fable, onyx, nova, shimmer
+        response_format: "mp3",
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || "TTS failed");
+    }
+
+    const audioBuffer = await res.arrayBuffer();
+    reply.header("Content-Type", "audio/mpeg");
+    return reply.send(Buffer.from(audioBuffer));
+
+  } catch (err) {
+    console.error("TTS error:", err.message);
+    return reply.send({ success: false, error: err.message });
+  }
+};
+
+
+
 const liveSheetGraphs = async (req, reply) => {
   return reply.sendFile("users/liveSheet_graphs.html");
 };
@@ -772,6 +804,8 @@ module.exports = {
   showTable,
   deleteSheetData,
   AI_chat,
+  speech_to_text,
+  text_to_speech,
   uploadExcell,
   liveSheetGraphs,
   previousSheetGraphs,

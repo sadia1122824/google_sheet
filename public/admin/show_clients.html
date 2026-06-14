@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="utf-8" />
-    <title>Google Sheet Upload</title>
+    <title>Subir a Google Sheets</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Plantilla Premium de Panel de Administración" name="description" />
     <meta content="" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- App favicon -->
+    <!-- Favicon de la aplicación -->
     <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
 
     <link href="../plugins/dropify/css/dropify.min.css" rel="stylesheet">
 
-    <!-- App css -->
+    <!-- CSS de la aplicación -->
     <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
@@ -24,7 +24,7 @@
 
     <style>
         /* =========================
-   MOBILE RESPONSIVE FIXES
+   CORRECCIONES RESPONSIVAS MÓVIL
    ========================= */
 
         @media (max-width: 767px) {
@@ -46,12 +46,12 @@
 
         @media (max-width: 767px) {
 
-            /* Page wrapper padding */
+            /* Relleno del contenedor de página */
             .page-content {
                 padding: 12px !important;
             }
 
-            /* Cards spacing */
+            /* Espaciado de tarjetas */
             .card {
                 margin-bottom: 15px;
             }
@@ -64,12 +64,12 @@
                 padding: 12px !important;
             }
 
-            /* Card titles */
+            /* Títulos de tarjeta */
             .card-title {
                 font-size: 1rem;
             }
 
-            /* File upload input group stack */
+            /* Grupo de entrada de archivo apilado */
             .input-group {
                 flex-direction: column;
             }
@@ -87,14 +87,14 @@
                 width: 100%;
             }
 
-            /* Custom file label wrap */
+            /* Etiqueta de archivo personalizado */
             .custom-file-label {
                 white-space: normal;
                 text-overflow: unset;
                 overflow: visible;
             }
 
-            /* Progress row stack */
+            /* Fila de progreso apilada */
             #progressSection .d-flex {
                 flex-direction: column;
                 align-items: flex-start !important;
@@ -104,18 +104,18 @@
                 margin-top: 5px;
             }
 
-            /* Result section grid fix */
+            /* Corrección de cuadrícula en sección de resultados */
             #resultsSection .row>div {
                 width: 100%;
                 margin-bottom: 10px;
             }
 
-            /* Topbar user name hide */
+            /* Ocultar nombre de usuario en barra superior */
             .nav-user span {
                 display: none !important;
             }
 
-            /* Sidebar overlay behavior */
+            /* Comportamiento de superposición de barra lateral */
             body.enlarge-menu .left-sidenav {
                 transform: translateX(0);
             }
@@ -131,18 +131,17 @@
                 transform: translateX(0);
             }
 
-            /* Prevent horizontal scroll */
+            /* Evitar desplazamiento horizontal */
             body {
                 overflow-x: hidden;
             }
         }
 
-        /* Form styling inside Dastone card */
+        /* Estilo del formulario dentro de la tarjeta Dastone */
         #addForm {
             display: flex;
             flex-direction: column;
             gap: 15px;
-            /* space between inputs */
             width: 100%;
             margin: 20px auto;
         }
@@ -169,7 +168,7 @@
             background-color: #0056b3;
         }
 
-        /* Existing rows list */
+        /* Lista de filas existentes */
         #rowsList {
             list-style: none;
             padding: 0;
@@ -186,19 +185,19 @@
             font-size: 16px;
         }
 
-        /* Headings */
+        /* Encabezados */
         h1,
         h2 {
             text-align: center;
             color: #343a40;
         }
 
-        /* dynamic data field */
+        /* campo de datos dinámico */
 
 
-        /* Custom styling for dynamic form inside Dastone card */
+        /* Estilo personalizado para formulario dinámico dentro de tarjeta Dastone */
 
-        /* Main heading */
+        /* Encabezado principal */
         h2 {
             color: #343a40;
             border-bottom: 1px solid #e9ecef;
@@ -218,7 +217,7 @@
             float: right;
         }
 
-        /* Alert messages */
+        /* Mensajes de alerta */
         .alert {
             border-radius: 0.25rem;
             padding: 1rem;
@@ -239,7 +238,7 @@
             border-color: #f5c6cb;
         }
 
-        /* Form groups */
+        /* Grupos de formulario */
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -270,7 +269,7 @@
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
 
-        /* Input grid */
+        /* Cuadrícula de entrada */
         .input-grid {
             display: grid;
             grid-template-columns: 2fr 1fr auto;
@@ -319,7 +318,7 @@
             margin-right: 5px;
         }
 
-        /* Entries list */
+        /* Lista de entradas */
         .entries-list {
             background-color: #f8f9fa;
             border-radius: 0.25rem;
@@ -338,7 +337,7 @@
             font-size: 0.875rem;
         }
 
-        /* Entry item */
+        /* Elemento de entrada */
         .entry-item {
             background-color: white;
             padding: 1rem;
@@ -397,7 +396,7 @@
             background-color: #c82333;
         }
 
-        /* Submit button */
+        /* Botón de enviar */
         .submit-btn {
             background-color: #007bff;
             color: white;
@@ -424,7 +423,7 @@
             cursor: not-allowed;
         }
 
-        /* Loading spinner */
+        /* Indicador de carga */
         .loading {
             display: inline-block;
             width: 16px;
@@ -441,15 +440,12 @@
             }
         }
 
-        /* Make sure card content has proper padding */
+        /* Asegurar relleno adecuado en contenido de tarjeta */
         .card-body {
             padding: 1.5rem !important;
         }
 
-        /* uses toast */
-
-
-        /* Confirmation Modal Styles */
+        /* Estilos de Modal de Confirmación */
         .modal {
             display: none;
             position: fixed;
@@ -502,7 +498,7 @@
             text-align: right;
         }
 
-        /* Toast Styles */
+        /* Estilos de Toast */
         .toast {
             background-color: white;
             border-radius: 0.25rem;
@@ -534,7 +530,7 @@
             }
         }
 
-        /* Alert Styles */
+        /* Estilos de Alerta */
         .alert {
             padding: 0.75rem 1.25rem;
             margin-bottom: 1rem;
@@ -573,7 +569,7 @@
             }
         }
 
-        /* Entry List Styles */
+        /* Estilos de Lista de Entradas */
         .entries-list {
             max-height: 300px;
             overflow-y: auto;
@@ -626,7 +622,7 @@
             float: right;
         }
 
-        /* Sidebar Links */
+        /* Enlaces de Barra Lateral */
         .left-sidenav-menu a {
             display: flex;
             align-items: center;
@@ -642,19 +638,19 @@
             position: relative;
         }
 
-        /* Hover Effect */
+        /* Efecto al pasar el cursor */
         .left-sidenav-menu a:hover {
             transform: translateX(5px);
             color: #2563eb;
         }
 
-        /* Active Link */
+        /* Enlace activo */
         .left-sidenav-menu a.active {
             color: #2563eb;
             font-weight: 600;
         }
 
-        /* Icon Styling */
+        /* Estilo de ícono */
         .left-sidenav-menu .menu-icon {
             width: 18px;
             height: 18px;
@@ -662,12 +658,12 @@
             transition: all 0.25s ease;
         }
 
-        /* Icon Hover Animation */
+        /* Animación de ícono al pasar el cursor */
         .left-sidenav-menu a:hover .menu-icon {
             transform: scale(1.1);
         }
 
-        /* Modern Left Border Indicator */
+        /* Indicador de borde izquierdo moderno */
         .left-sidenav-menu a::before {
             content: "";
             position: absolute;
@@ -686,7 +682,7 @@
             height: 70%;
         }
 
-        /* Menu Label */
+        /* Etiqueta del menú */
         .menu-label {
             font-size: 11px;
             text-transform: uppercase;
@@ -705,9 +701,9 @@
 
 
     <div class="page-wrapper">
-        <!-- Top Bar Start -->
+        <!-- Barra Superior Inicio -->
         <div class="topbar">
-            <!-- Navbar -->
+            <!-- Barra de navegación -->
             <nav class="navbar-custom">
                 <ul class="list-unstyled topbar-nav float-right mb-0">
 
@@ -719,31 +715,28 @@
                                 Nick
                             </span>
 
-                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="usuario-perfil"
                                 class="rounded-circle thumb-sm border" />
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
 
-
-
                             <div class="dropdown-divider"></div>
 
                             <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
                                 <i data-feather="power" class="icon-xs mr-2"></i>
-                                <span>Logout</span>
+                                <span>Cerrar sesión</span>
                             </a>
 
                             <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
                                 <i data-feather="settings" class="icon-xs mr-2"></i>
-                                <span>Settings</span>
+                                <span>Configuración</span>
                             </a>
-
 
                         </div>
                     </li>
 
-                </ul><!--end topbar-nav-->
+                </ul><!--fin topbar-nav-->
 
                 <ul class="list-unstyled topbar-nav mb-0">
                     <li>
@@ -753,54 +746,48 @@
                     </li>
                 </ul>
             </nav>
-            <!-- end navbar-->
+            <!-- fin barra de navegación -->
         </div>
-        <!-- Top Bar End -->
+        <!-- Barra Superior Fin -->
 
-        <!-- Page Content-->
+        <!-- Contenido de Página -->
         <div class="page-content">
             <div class="container-fluid">
-                <!-- Page-Title -->
+                <!-- Título de Página -->
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
 
-                        </div><!--end page-title-box-->
-                    </div><!--end col-->
-                </div><!--end row-->
-                <!-- end page title end breadcrumb -->
+                        </div><!--fin page-title-box-->
+                    </div><!--fin col-->
+                </div><!--fin row-->
+                <!-- fin título de página y migas de pan -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <!-- Card Header mein yeh dropdown add karein (line ~200 ke paas) -->
+                            <!-- Encabezado de tarjeta -->
                             <div class="card-header">
-                                <h4 class="card-title">Import Data to Google Sheets</h4>
-                                <p class="text-muted mb-0">Upload Excel file to import data directly</p>
+                                <h4 class="card-title">Importar Datos a Google Sheets</h4>
+                                <p class="text-muted mb-0">Suba un archivo Excel para importar datos directamente</p>
 
-                                <!-- Year Selector Dropdown -->
+                                <!-- Selector de Año -->
 
                             </div>
 
                             <div class="card">
 
-
-
-
-
-                                <!-- Staff Management Card -->
-                                <!-- Staff Table Card -->
-                                <!-- Clients Table Card -->
+                                <!-- Tarjeta de Lista de Clientes -->
                                 <div class="card mt-4">
 
                                     <div class="card-header d-flex justify-content-between align-items-center">
 
                                         <h4 class="mb-0">
-                                            Clients List
+                                            Lista de Clientes
                                         </h4>
 
                                         <button class="btn btn-primary btn-sm" onclick="loadClients()">
                                             <i class="fas fa-sync-alt"></i>
-                                            Refresh
+                                            Actualizar
                                         </button>
 
                                     </div>
@@ -815,13 +802,13 @@
 
                                                     <tr>
                                                         <th>#</th>
-                                                        <th>Client Name</th>
-                                                        <th>Email</th>
-                                                        <th>Phone</th>
-                                                        <th>Client ID</th>
-                                                        <th>Assigned Staff</th>
-                                                        <th>Created At</th>
-                                                        <th>Action</th>
+                                                        <th>Nombre del Cliente</th>
+                                                        <th>Correo Electrónico</th>
+                                                        <th>Teléfono</th>
+                                                        <th>ID de Cliente</th>
+                                                        <th>Personal Asignado</th>
+                                                        <th>Creado el</th>
+                                                        <th>Acciones</th>
                                                     </tr>
 
                                                 </thead>
@@ -830,7 +817,7 @@
 
                                                     <tr>
                                                         <td colspan="8" class="text-center">
-                                                            Loading...
+                                                            Cargando...
                                                         </td>
                                                     </tr>
 
@@ -844,27 +831,20 @@
 
                                 </div>
 
-                            </div><!--end card-->
+                            </div><!--fin tarjeta-->
 
 
 
-                        </div><!--end card-->
-                    </div><!--end col-->
+                        </div><!--fin tarjeta-->
+                    </div><!--fin col-->
                 </div>
 
-
-
-
-
-            </div><!-- container -->
-
-
-
+            </div><!-- contenedor -->
 
         </div>
-        <!-- end page content -->
+        <!-- fin contenido de página -->
     </div>
-    <!-- end page-wrapper -->
+    <!-- fin page-wrapper -->
 
     <div id="updateClientModal" class="modal"
         style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1050;">
@@ -874,7 +854,7 @@
 
                 <div class="modal-header"
                     style="background:#f8f9fa; border-bottom:1px solid #dee2e6; padding:1rem 1.5rem; border-radius:8px 8px 0 0;">
-                    <h5 style="margin:0; font-weight:600;">Update Client</h5>
+                    <h5 style="margin:0; font-weight:600;">Actualizar Cliente</h5>
                     <button onclick="closeUpdateClientModal()"
                         style="background:none; border:none; font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
                 </div>
@@ -883,20 +863,20 @@
                     <input type="hidden" id="updateClientId" />
 
                     <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="updateClientFullName" class="form-control" placeholder="Full Name" />
+                        <label>Nombre Completo</label>
+                        <input type="text" id="updateClientFullName" class="form-control" placeholder="Nombre Completo" />
                     </div>
 
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="updateClientEmail" class="form-control" placeholder="Email" />
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="updateClientEmail" class="form-control" placeholder="Correo Electrónico" />
                     </div>
 
                     <div class="form-group">
-                        <label>New Password <small class="text-muted">(leave empty to keep current)</small></label>
+                        <label>Nueva Contraseña <small class="text-muted">(dejar vacío para mantener la actual)</small></label>
                         <div style="position:relative;">
                             <input type="password" id="updateClientPassword" class="form-control"
-                                placeholder="Enter new password (optional)" />
+                                placeholder="Ingrese nueva contraseña (opcional)" />
                             <span onclick="toggleClientPasswordVisibility()"
                                 style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#6c757d;">
                                 <i id="clientPasswordEyeIcon" class="fas fa-eye"></i>
@@ -905,26 +885,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Phone</label>
-                        <input type="text" id="updateClientPhone" class="form-control" placeholder="Phone" />
+                        <label>Teléfono</label>
+                        <input type="text" id="updateClientPhone" class="form-control" placeholder="Teléfono" />
                     </div>
 
                     <div class="form-group">
-                        <label>Client ID</label>
-                        <input type="text" id="updateClientIdField" class="form-control" placeholder="Client ID" />
+                        <label>ID de Cliente</label>
+                        <input type="text" id="updateClientIdField" class="form-control" placeholder="ID de Cliente" />
                     </div>
 
                     <div class="form-group">
-                        <label>Assign Staff</label>
-                        <input type="text" id="updateAssignStaff" class="form-control" placeholder="Staff ID" />
+                        <label>Asignar Personal</label>
+                        <input type="text" id="updateAssignStaff" class="form-control" placeholder="ID de Personal" />
                     </div>
                 </div>
 
                 <div class="modal-footer"
                     style="padding:1rem 1.5rem; border-top:1px solid #dee2e6; display:flex; justify-content:flex-end; gap:10px;">
-                    <button onclick="closeUpdateClientModal()" class="btn btn-secondary">Cancel</button>
+                    <button onclick="closeUpdateClientModal()" class="btn btn-secondary">Cancelar</button>
                     <button onclick="submitClientUpdate()" class="btn btn-primary" id="updateClientBtn">
-                        <i class="fas fa-save"></i> Save Changes
+                        <i class="fas fa-save"></i> Guardar Cambios
                     </button>
                 </div>
 
@@ -946,311 +926,12 @@
 
     <script src="../plugins/dropify/js/dropify.min.js"></script>
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
-    <!-- App js -->
-    <!-- <script src="side_navbar.js"></script> -->
-
-
-
-    <!-- <script>
-
-        // =========================
-        // LOAD CLIENTS
-        // =========================
-        async function loadClients() {
-
-            try {
-
-                const response = await fetch("/getClients");
-
-                const result = await response.json();
-
-                const tableBody = document.getElementById("clientTableBody");
-
-                tableBody.innerHTML = "";
-
-                // No Data
-                if (!result.data || result.data.length === 0) {
-
-                    tableBody.innerHTML = `
-                <tr>
-                    <td colspan="8" class="text-center text-danger">
-                        No Clients Found
-                    </td>
-                </tr>
-            `;
-
-                    console.log("No Clients Found");
-
-                    return;
-                }
-
-                // Loop Clients
-                result.data.forEach((client, index) => {
-
-                    tableBody.innerHTML += `
-
-                <tr>
-
-                    <td>${index + 1}</td>
-
-                    <td>${client.fullName}</td>
-
-                    <td>${client.email}</td>
-
-                    <td>${client.phone}</td>
-
-                    <td>${client.clientId}</td>
-
-                    <td>
-                        <span class="badge badge-primary">
-                            ${client.assignStaff}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${new Date(client.createdAt).toLocaleDateString()}
-                    </td>
-
-                    <td>
-
-                        <button 
-                          class="btn btn-warning btn-sm mr-1"
-                           onclick="openUpdateClientModal('${client._id}', '${client.fullName}', '${client.email}', '${client.phone}', '${client.clientId}', '${client.assignStaff}')"
-                      >
-                           <i class="fas fa-edit"></i> 
-                        </button>
-
-                        <button 
-                            class="btn btn-danger btn-sm"
-                            onclick="deleteClient('${client._id}')"
-                        >
-                            <i class="fas fa-trash"></i>
-                            
-                        </button>
-
-                    </td>
-
-                </tr>
-            `;
-                });
-
-                console.log("Clients Loaded Successfully");
-
-            } catch (error) {
-
-                console.log("Load Clients Error:", error);
-            }
-        }
-
-        // =========================
-        // DELETE CLIENT
-        // =========================
-        async function deleteClient(id) {
-
-
-
-            try {
-
-                const response = await fetch(`/deleteClient/${id}`, {
-                    method: "DELETE"
-                });
-
-                const result = await response.json();
-
-                console.log(result.message);
-
-                loadClients();
-
-            } catch (error) {
-
-                console.log("Delete Failed:", error);
-            }
-        }
-
-
-        // Modal Open
-        function openUpdateClientModal(id, fullName, email, phone, clientId, assignStaff) {
-
-            document.getElementById('updateClientId').value = id;
-            document.getElementById('updateClientFullName').value = fullName;
-            document.getElementById('updateClientEmail').value = email;
-            document.getElementById('updateClientPhone').value = phone;
-            document.getElementById('updateClientIdField').value = clientId;
-            document.getElementById('updateAssignStaff').value = assignStaff;
-
-            document.getElementById('updateClientModal').style.display = 'block';
-
-            console.log("Update Modal Opened");
-        }
-
-        // Modal Close
-        function closeUpdateClientModal() {
-
-            document.getElementById('updateClientModal').style.display = 'none';
-
-            document.getElementById('updateClientPassword').value = '';
-
-            document.getElementById('updateClientPassword').type = 'password';
-
-            document.getElementById('clientPasswordEyeIcon')
-                .classList.replace('fa-eye-slash', 'fa-eye');
-
-            console.log("Update Modal Closed");
-        }
-
-        // Background click se close
-        document.getElementById('updateClientModal')
-            .addEventListener('click', function (e) {
-
-                if (e.target === this) {
-
-                    closeUpdateClientModal();
-                }
-            });
-
-        // Password Toggle
-        function toggleClientPasswordVisibility() {
-
-            const input = document.getElementById('updateClientPassword');
-
-            const icon = document.getElementById('clientPasswordEyeIcon');
-
-            if (input.type === 'password') {
-
-                input.type = 'text';
-
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-
-                console.log("Password Visible");
-
-            } else {
-
-                input.type = 'password';
-
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-
-                console.log("Password Hidden");
-            }
-        }
-
-        // Submit Update
-        async function submitClientUpdate() {
-
-            const id = document.getElementById('updateClientId').value;
-
-            const fullName = document.getElementById('updateClientFullName').value.trim();
-
-            const email = document.getElementById('updateClientEmail').value.trim();
-
-            const phone = document.getElementById('updateClientPhone').value.trim();
-
-            const clientId = document.getElementById('updateClientIdField').value.trim();
-
-            const assignStaff = document.getElementById('updateAssignStaff').value.trim();
-
-            const password = document.getElementById('updateClientPassword').value.trim();
-
-            if (!fullName || !email || !phone || !clientId) {
-
-                console.log("Please fill all required fields");
-
-                return;
-            }
-
-            const btn = document.getElementById('updateClientBtn');
-
-            btn.disabled = true;
-
-            btn.innerHTML = '<span class="loading"></span> Saving...';
-
-            const payload = {
-                fullName,
-                email,
-                phone,
-                clientId,
-                assignStaff
-            };
-
-            if (password !== "") {
-
-                payload.password = password;
-            }
-
-            try {
-
-                const response = await fetch(`/updateClient/${id}`, {
-
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                console.log(result.message || "Updated Successfully");
-
-                closeUpdateClientModal();
-
-                loadClients();
-
-            } catch (error) {
-
-                console.log("Update Failed:", error);
-
-            } finally {
-
-                btn.disabled = false;
-
-                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
-            }
-        }
-
-        // =========================
-        // AUTO LOAD
-        // =========================
-        loadClients();
-
-        const hamburgerBtn = document.querySelector('.button-menu-mobile');
-
-        if (hamburgerBtn) {
-            hamburgerBtn.addEventListener('click', function () {
-                const isMobile = window.innerWidth <= 767;
-
-                if (isMobile) {
-                    document.body.classList.toggle('mobile-menu-open');
-                } else {
-                    document.body.classList.toggle('enlarge-menu');
-                }
-            });
-        }
-
-        // Mobile par bahar click se sidebar band
-        document.addEventListener('click', function (e) {
-            if (window.innerWidth > 767) return;
-
-            const sidebar = document.querySelector('.left-sidenav');
-            const hamburger = document.querySelector('.button-menu-mobile');
-
-            if (sidebar && hamburger &&
-                !sidebar.contains(e.target) &&
-                !hamburger.contains(e.target)
-            ) {
-                document.body.classList.remove('mobile-menu-open');
-            }
-        });
-
-
-
-    </script> -->
+    <!-- JS de la aplicación -->
 
     <script>
 
     // =========================
-    // HELPER: Show Toast Notification
+    // HELPER: Mostrar Notificación Toast
     // =========================
     function showToast(type, message) {
         let toast = document.getElementById("toastNotification");
@@ -1301,26 +982,26 @@
     }
 
     // =========================
-    // HELPER: HTTP Status → Message
+    // HELPER: Estado HTTP → Mensaje
     // =========================
     function getErrorMessage(status, serverMessage) {
         if (serverMessage) return serverMessage;
         switch (status) {
-            case 400: return "Invalid request. Please check your input and try again.";
-            case 401: return "Session expired. Please log in again.";
-            case 403: return "You do not have permission to perform this action.";
-            case 404: return "Record not found. It may have already been deleted.";
-            case 409: return "A client with this ID or email already exists.";
-            case 422: return "Some fields have invalid values. Please review and try again.";
-            case 429: return "Too many requests. Please wait a moment and try again.";
-            case 500: return "Server error. Please try again later.";
-            case 503: return "Service unavailable. Please try again shortly.";
-            default:  return `Unexpected error (${status}). Please try again.`;
+            case 400: return "Solicitud inválida. Por favor verifique su entrada e intente de nuevo.";
+            case 401: return "Sesión expirada. Por favor inicie sesión de nuevo.";
+            case 403: return "No tiene permiso para realizar esta acción.";
+            case 404: return "Registro no encontrado. Es posible que ya haya sido eliminado.";
+            case 409: return "Ya existe un cliente con este ID o correo electrónico.";
+            case 422: return "Algunos campos tienen valores inválidos. Por favor revise e intente de nuevo.";
+            case 429: return "Demasiadas solicitudes. Por favor espere un momento e intente de nuevo.";
+            case 500: return "Error del servidor. Por favor intente de nuevo más tarde.";
+            case 503: return "Servicio no disponible. Por favor intente de nuevo en breve.";
+            default:  return `Error inesperado (${status}). Por favor intente de nuevo.`;
         }
     }
 
     // =========================
-    // HELPER: Safe JSON Parse
+    // HELPER: Parseo JSON Seguro
     // =========================
     async function safeParseJSON(response) {
         try {
@@ -1331,7 +1012,7 @@
     }
 
     // =========================
-    // LOAD CLIENTS
+    // CARGAR CLIENTES
     // =========================
     async function loadClients() {
 
@@ -1340,7 +1021,7 @@
         tableBody.innerHTML = `
             <tr>
                 <td colspan="8" class="text-center text-muted">
-                    <i class="fas fa-spinner fa-spin"></i> Loading client records...
+                    <i class="fas fa-spinner fa-spin"></i> Cargando registros de clientes...
                 </td>
             </tr>
         `;
@@ -1367,7 +1048,7 @@
             if (!result.data || result.data.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="text-center text-warning">⚠️ No client records found.</td>
+                        <td colspan="8" class="text-center text-warning">⚠️ No se encontraron registros de clientes.</td>
                     </tr>
                 `;
                 return;
@@ -1405,15 +1086,15 @@
                 `;
             });
 
-            console.log("Clients Loaded Successfully");
+            console.log("Clientes Cargados Exitosamente");
 
         } catch (error) {
 
-            console.error("Load Clients Error:", error);
+            console.error("Error al Cargar Clientes:", error);
             tableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="text-center text-danger">
-                        ❌ Network error. Please check your connection and refresh the page.
+                        ❌ Error de red. Por favor verifique su conexión y actualice la página.
                     </td>
                 </tr>
             `;
@@ -1421,7 +1102,7 @@
     }
 
     // =========================
-    // DELETE CLIENT
+    // ELIMINAR CLIENTE
     // =========================
     async function deleteClient(id, btn) {
 
@@ -1439,7 +1120,7 @@
             const result = await safeParseJSON(response);
 
             if (response.ok) {
-                showToast("success", result.message || "✅ Client deleted successfully.");
+                showToast("success", result.message || "✅ Cliente eliminado exitosamente.");
                 loadClients();
             } else {
                 const msg = getErrorMessage(response.status, result.message);
@@ -1452,8 +1133,8 @@
 
         } catch (error) {
 
-            console.error("Delete Failed:", error);
-            showToast("danger", "Network error. Could not delete client. Please try again.");
+            console.error("Eliminación Fallida:", error);
+            showToast("danger", "Error de red. No se pudo eliminar el cliente. Por favor intente de nuevo.");
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-trash"></i>';
@@ -1462,7 +1143,7 @@
     }
 
     // =========================
-    // OPEN UPDATE MODAL
+    // ABRIR MODAL DE ACTUALIZACIÓN
     // =========================
     function openUpdateClientModal(id, fullName, email, phone, clientId, assignStaff) {
 
@@ -1478,11 +1159,11 @@
 
         document.getElementById('updateClientModal').style.display = 'block';
 
-        console.log("Update Modal Opened");
+        console.log("Modal de Actualización Abierto");
     }
 
     // =========================
-    // CLOSE UPDATE MODAL
+    // CERRAR MODAL DE ACTUALIZACIÓN
     // =========================
     function closeUpdateClientModal() {
 
@@ -1496,11 +1177,11 @@
         const modalAlert = document.getElementById("updateClientModalAlert");
         if (modalAlert) modalAlert.style.display = "none";
 
-        console.log("Update Modal Closed");
+        console.log("Modal de Actualización Cerrado");
     }
 
     // =========================
-    // HELPER: Show Alert Inside Modal
+    // HELPER: Mostrar Alerta Dentro del Modal
     // =========================
     function showClientModalAlert(type, message) {
         let alertBox = document.getElementById("updateClientModalAlert");
@@ -1518,7 +1199,7 @@
     }
 
     // =========================
-    // BACKGROUND CLICK CLOSE
+    // CERRAR AL HACER CLIC EN EL FONDO
     // =========================
     document.getElementById('updateClientModal')
         .addEventListener('click', function (e) {
@@ -1526,7 +1207,7 @@
         });
 
     // =========================
-    // PASSWORD TOGGLE
+    // ALTERNAR VISIBILIDAD DE CONTRASEÑA
     // =========================
     function toggleClientPasswordVisibility() {
 
@@ -1543,7 +1224,7 @@
     }
 
     // =========================
-    // SUBMIT CLIENT UPDATE
+    // ENVIAR ACTUALIZACIÓN DE CLIENTE
     // =========================
     async function submitClientUpdate() {
 
@@ -1559,24 +1240,24 @@
         const phoneRegex = /^[0-9]{10,15}$/;
 
         if (!fullName) {
-            showClientModalAlert("danger", "Full name is required."); return;
+            showClientModalAlert("danger", "El nombre completo es obligatorio."); return;
         }
         if (!emailRegex.test(email)) {
-            showClientModalAlert("danger", "Please enter a valid email address."); return;
+            showClientModalAlert("danger", "Por favor ingrese un correo electrónico válido."); return;
         }
         if (!phoneRegex.test(phone)) {
-            showClientModalAlert("danger", "Please enter a valid phone number (10–15 digits)."); return;
+            showClientModalAlert("danger", "Por favor ingrese un número de teléfono válido (10–15 dígitos)."); return;
         }
         if (!clientId) {
-            showClientModalAlert("danger", "Client ID is required."); return;
+            showClientModalAlert("danger", "El ID de cliente es obligatorio."); return;
         }
         if (password !== "" && password.length < 6) {
-            showClientModalAlert("danger", "New password must be at least 6 characters."); return;
+            showClientModalAlert("danger", "La nueva contraseña debe tener al menos 6 caracteres."); return;
         }
 
         const btn = document.getElementById('updateClientBtn');
         btn.disabled  = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
 
         const payload = { fullName, email, phone, clientId, assignStaff };
         if (password !== "") payload.password = password;
@@ -1593,7 +1274,7 @@
 
             if (response.ok) {
                 closeUpdateClientModal();
-                showToast("success", result.message || "Client updated successfully.");
+                showToast("success", result.message || "Cliente actualizado exitosamente.");
                 loadClients();
             } else {
                 const msg = getErrorMessage(response.status, result.message);
@@ -1602,18 +1283,18 @@
 
         } catch (error) {
 
-            console.error("Update Failed:", error);
-            showClientModalAlert("danger", "Network error. Could not update client. Please try again.");
+            console.error("Actualización Fallida:", error);
+            showClientModalAlert("danger", "Error de red. No se pudo actualizar el cliente. Por favor intente de nuevo.");
 
         } finally {
 
             btn.disabled  = false;
-            btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            btn.innerHTML = '<i class="fas fa-save"></i> Guardar Cambios';
         }
     }
 
     // =========================
-    // AUTO LOAD
+    // CARGA AUTOMÁTICA
     // =========================
     loadClients();
 
