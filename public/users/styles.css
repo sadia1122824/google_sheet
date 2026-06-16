@@ -1276,7 +1276,11 @@ body {
   --month-col-bg: #90caf9;    /* Light Blue */
   /* --year-col-bg: #e0e0e0;     Light Gray */
   
-  --year-col-bg: #d1c4e9;
+  /* --year-col-bg: #d1c4e9; */
+  /* --year-col-bg: #f8bbd0; */
+  /* --year-col-bg: #fce4ec; */
+  --year-col-bg: #f48fb1;
+
 
 }
 

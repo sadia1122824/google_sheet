@@ -435,20 +435,25 @@
     <div class="cd-header">
       <div class="cd-avatar">🤖</div>
       <div class="cd-header-info">
-        <p class="cd-title" data-i18n="ai_sheet_assistant">Asistente IA de Hoja</p>
+        <p class="cd-title" data-i18n="chat_title">Asistente IA de hoja</p>
       </div>
       <div class="cd-header-actions">
-        <button class="cd-icon-btn" onclick="clearChat()" data-i18n-title="clear_chat" title="Borrar chat">🗑</button>
-        <button class="cd-icon-btn" onclick="closeChatDrawer()" data-i18n-title="close" title="Cerrar">✕</button>
+        <button class="cd-icon-btn" onclick="clearChat()" data-i18n-title="chat_clear" title="Limpiar chat">🗑</button>
+        <button class="cd-icon-btn" onclick="closeChatDrawer()" data-i18n-title="chat_close" title="Cerrar">✕</button>
       </div>
     </div>
     <div class="cd-messages" id="cdMessages"></div>
 
     <div class="cd-input-area">
       <div class="cd-input-row">
-        <textarea class="cd-textarea" id="cdInput" data-i18n-placeholder="chat_input_placeholder" placeholder="Por favor ingrese el mensaje..." rows="1"
-          onkeydown="handleChatKey(event)" oninput="autoResizeCdTextarea(this)"></textarea>
+        <textarea class="cd-textarea" id="cdInput" data-i18n-placeholder="chat_placeholder"
+          placeholder="Ingrese el mensaje aquí..." rows="1" onkeydown="handleChatKey(event)"
+          oninput="autoResizeCdTextarea(this)"></textarea>
         <button class="cd-send-btn" id="cdSendBtn" onclick="sendChatMessage()">➤</button>
+        <button id="voiceMicBtn" onclick="toggleRecording()" data-i18n-title="mic_btn" title="Haga clic para hablar"
+          style="width:38px;height:38px;border-radius:50%;border:none;background:#e8f0fe;color:#0d6efd;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;">
+          <i class="bi bi-mic-fill"></i>
+        </button>
       </div>
     </div>
   </div>

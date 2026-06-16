@@ -1198,12 +1198,20 @@ function renderTable() {
     table.style.minWidth = "100%";
   }
 
+  // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
+  const NUMBERED_LABEL_RE = /^\d+\.\s*\S+/;
+  function isNumberedLabel(val) {
+    return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
+  }
+
   const colCount = visHeaders.length || 1;
   let html = "";
-  infoRows.forEach((row) => {
+ infoRows.forEach((row) => {
     const text = row.filter((c) => c !== "").join(" ");
-    html += `<tr class="info-row"><td colspan="${colCount}" style="text-align:left;">${text}</td></tr>`;
-  });
+    if (!text.trim()) return;   // ← yeh line add karein: blank row ko skip karo
+    const isLabel = isNumberedLabel(text);
+    html += `<tr class="info-row"><td colspan="${colCount}" style="text-align:left;font-weight:${isLabel ? "600" : "400"};">${text}</td></tr>`;
+});
   html += `<tr class="header-row">${visHeaders.map((h) => `<th title="${h}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.3;vertical-align:middle;">${h}</th>`).join("")}</tr>`;
 
   const start = (currentPage - 1) * rowsPerPage;
@@ -1212,17 +1220,10 @@ function renderTable() {
 
   const CODE_COL = findCodeColIndex();
 
-  // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
-  const NUMBERED_LABEL_RE = /^\d+\.\s*\S+/;
-  function isNumberedLabel(val) {
-    return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
-  }
-
   if (pageRows.length === 0) {
     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
   } else {
     pageRows.forEach((row) => {
-      // check if any visible cell in this row matches the numbered-label pattern
       const isLabelRow = row.some((val) => isNumberedLabel(val));
 
       html +=
@@ -1328,10 +1329,11 @@ function openFullscreenTable() {
 
   // Build body: info rows first
   let bodyHtml = "";
-  infoRows.forEach((row) => {
+infoRows.forEach((row) => {
     const text = row.filter((c) => c !== "").join(" ");
+    if (!text.trim()) return;   // ← yahan bhi add karein
     bodyHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="text-align:left;">${text}</td></tr>`;
-  });
+});
 
   // All data rows (no pagination limit)
   let dataRowCount = 0;
