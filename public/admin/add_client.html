@@ -17,6 +17,9 @@
     <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         @media (max-width: 767px) {
             .left-sidenav {
@@ -55,10 +58,6 @@
             body { overflow-x: hidden; }
         }
 
-        /* ===== TOAST NOTIFICATION ===== */
-
-      
-
         /* ===== FORM STYLES ===== */
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { font-weight: 600; color: #495057; margin-bottom: 0.5rem; display: block; font-size: 0.875rem; }
@@ -86,8 +85,6 @@
 </head>
 
 <body>
-    <!-- Toast — body ke andar, sab se upar -->
-   
 
     <div id="side-navbar"></div>
 
@@ -227,53 +224,26 @@
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
 
     <script>
+    // Login form jesa hi SweetAlert toast style (top-end, auto close, koi confirm button nahi)
     function showToast(type, message) {
-    let toast = document.getElementById("toastNotification");
+        const iconMap = {
+            success: 'success',
+            danger:  'error',
+            warning: 'warning',
+            info:    'info'
+        };
 
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "toastNotification";
-        toast.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 99999;
-            min-width: 300px;
-            max-width: 420px;
-            padding: 14px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none;
-            transition: opacity 0.3s ease;
-        `;
-        document.body.appendChild(toast);
+        Swal.fire({
+            icon: iconMap[type] || 'info',
+            title: message,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
     }
 
-    const styles = {
-        success: { background: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" },
-        danger:  { background: "#f8d7da", color: "#721c24", border: "1px solid #f5c6cb" },
-        warning: { background: "#fff3cd", color: "#856404", border: "1px solid #ffeeba" },
-        info:    { background: "#d1ecf1", color: "#0c5460", border: "1px solid #bee5eb" }
-    };
-
-    const style = styles[type] || styles.info;
-    toast.style.background = style.background;
-    toast.style.color      = style.color;
-    toast.style.border     = style.border;
-
-    const icons = { success: "✅", danger: "❌", warning: "⚠️", info: "ℹ️" };
-    toast.innerHTML     = `${icons[type] || "ℹ️"} ${message}`;
-    toast.style.display = "block";
-    toast.style.opacity = "1";
-
-    clearTimeout(toast._hideTimer);
-    toast._hideTimer = setTimeout(() => {
-        toast.style.opacity = "0";
-        setTimeout(() => { toast.style.display = "none"; }, 300);
-    }, 4000);
-}
         document.addEventListener("DOMContentLoaded", async function () {
 
             // Hamburger menu

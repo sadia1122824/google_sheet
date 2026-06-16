@@ -17,6 +17,9 @@
     <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         @media (max-width: 767px) {
             .left-sidenav { position: fixed !important; z-index: 1051 !important; transform: translateX(-100%) !important; transition: transform 0.3s ease !important; top: 0 !important; left: 0 !important; height: 100vh !important; width: 260px !important; }
@@ -169,9 +172,6 @@
                                 <div class="card mb-4">
                                     <div class="card-body">
 
-                                        <!-- Alerta -->
-                                        <div id="staffAlert" class="alert" style="display:none;"></div>
-
                                         <!-- Formulario de Personal -->
                                         <form id="staffForm">
                                             <div class="row">
@@ -290,15 +290,24 @@
             }
         });
 
+        // Login form jesa hi SweetAlert toast style (top-end, auto close, koi confirm button nahi)
         function showAlert(type, message) {
-            const alertBox = document.getElementById("staffAlert");
-            if (!alertBox) return;
-            alertBox.className = `alert alert-${type}`;
-            alertBox.innerText = message;
-            alertBox.style.display = "block";
-            if (type === "success") {
-                setTimeout(() => { alertBox.style.display = "none"; }, 4000);
-            }
+            const iconMap = {
+                success: 'success',
+                danger:  'error',
+                warning: 'warning',
+                info:    'info'
+            };
+
+            Swal.fire({
+                icon: iconMap[type] || 'info',
+                title: message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
         }
 
         function getErrorMessage(status, serverMessage) {
