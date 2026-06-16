@@ -6,6 +6,7 @@ const sidebarHTML = `
         <img
           src="/users/icons/image1.png"
           alt="logo"
+          data-i18n-alt="logo_alt"
           class="theme-logo top-bar-logo"
           onerror="this.style.display='none'"
         >
@@ -15,22 +16,22 @@ const sidebarHTML = `
     <div class="sidebar-body">
 
       <div class="sidebar-section-title">
-        <i class="bi bi-compass"></i> Navigation
+        <i class="bi bi-compass"></i> <span data-i18n="navigation">Navegación</span>
       </div>
 
-      <!-- Graphs Dropdown -->
+      <!-- Menú desplegable de Gráficos -->
       <div class="sb-dropdown">
 
         <div class="sb-nav-link dropdown-toggle" onclick="toggleDropdown('graphsDropdown')">
           <div style="display:flex; align-items:center; gap:10px;">
             <i class="bi bi-bar-chart-line"></i>
-            <span>Graphs</span>
+            <span data-i18n="graphs">Gráficos</span>
           </div>
 
           <i class="bi bi-chevron-down dropdown-icon"></i>
         </div>
 
-        <!-- Dropdown Items -->
+        <!-- Elementos del menú -->
         <div
           class="sb-dropdown-menu"
           id="graphsDropdown"
@@ -38,30 +39,30 @@ const sidebarHTML = `
         >
           <a class="sb-nav-link" href="/liveSheetGraphs">
             <i class="bi bi-dot"></i>
-            <span>Live Graphs</span>
+            <span data-i18n="live_graphs">Gráficos en Vivo</span>
           </a>
 
           <a class="sb-nav-link" href="/previousSheetGraphs">
             <i class="bi bi-dot"></i>
-            <span>Previous Graphs</span>
+            <span data-i18n="previous_graphs">Gráficos Anteriores</span>
           </a>
         </div>
 
       </div>
 
-      <!-- Google Sheet Dropdown -->
+      <!-- Menú desplegable de Google Sheet -->
       <div class="sb-dropdown">
 
         <div class="sb-nav-link dropdown-toggle" onclick="toggleDropdown('sheetDropdown')">
           <div style="display:flex; align-items:center; gap:10px;">
             <i class="bi bi-table"></i>
-            <span>Google Sheet</span>
+            <span data-i18n="google_sheet">Hoja de Google</span>
           </div>
 
           <i class="bi bi-chevron-down dropdown-icon"></i>
         </div>
 
-        <!-- Dropdown Items -->
+        <!-- Elementos del menú -->
         <div
           class="sb-dropdown-menu"
           id="sheetDropdown"
@@ -69,12 +70,12 @@ const sidebarHTML = `
         >
           <a class="sb-nav-link" href="/LiveSheetData">
             <i class="bi bi-dot"></i>
-            <span>Live Sheet</span>
+            <span data-i18n="live_sheet">Hoja en Vivo</span>
           </a>
 
           <a class="sb-nav-link" href="/previousSheetData">
             <i class="bi bi-dot"></i>
-            <span>Previous Sheet</span>
+            <span data-i18n="previous_sheet">Hoja Anterior</span>
           </a>
         </div>
 
@@ -85,10 +86,22 @@ const sidebarHTML = `
   </div>
 `;
 
-// Render Sidebar
+// Renderizar barra lateral
 document.getElementById("app").innerHTML = sidebarHTML;
 
-// Toggle Dropdown
+// Apply translations to the newly injected sidebar markup, if i18n is already loaded
+if (typeof applyTranslations === "function" && typeof _translations !== "undefined") {
+  applyTranslations(_translations);
+}
+
+// Re-apply translations whenever the language changes, since the sidebar is injected once at load
+document.addEventListener("langchange", (e) => {
+  if (typeof applyTranslations === "function") {
+    applyTranslations(e.detail.translations);
+  }
+});
+
+// Alternar menú desplegable
 function toggleDropdown(dropdownId) {
 
   const dropdown = document.getElementById(dropdownId);

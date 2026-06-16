@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>google Sheet Dashboard</title>
+  <title data-i18n="dashboard_page_title">Panel de Google Sheets</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -28,46 +28,75 @@
     <div class="main-content" id="mainContent">
 
       <!-- Top Bar — identical to your table page -->
-      <div class="top-bar">
-        <button class="hamburger-btn" onclick="toggleSidebar()">
-          <i class="bi bi-list"></i>
-        </button>
-        <a href="/liveSheetGraphs">
-          <img src="/users/icons/image1.png" alt="logo" class="theme-logo top-bar-logo"
-            onerror="this.style.display='none'">
-        </a>
-        <span class="top-bar-title"></span>
-        <!-- onclick hata do, sirf id add karo -->
-        <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle theme">
-          <span class="icon-dark">🌙</span>
-          <span class="icon-light">☀️</span>
-        </button>
-        <span class="badge-status">
-          <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
-          <span class="live-text"> Live Data</span>
-        </span>
-      </div>
+       <div class="top-bar">
+  <button class="hamburger-btn" onclick="toggleSidebar()" data-i18n-title="toggle_sidebar" title="Alternar barra lateral">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <a href="/LiveSheetData">
+    <img src="/users/icons/image1.png" alt="logotipo" data-i18n-alt="logo_alt" class="theme-logo top-bar-logo"
+      onerror="this.style.display='none'">
+  </a>
+
+  <span class="top-bar-title" data-i18n="top_bar_title"></span>
+
+  <!-- Language Button ONLY — modal neeche body level pe hai -->
+  <button class="lang-btn" id="langBtn" onclick="openLangModal()" aria-haspopup="dialog">
+    <span class="lang-flag" id="activeFlag" data-i18n="select_languages">Select languages</span>
+   
+    
+  </button>
+
+  <button class="theme-toggle-btn" onclick="toggleTheme()" data-i18n-title="theme_toggle" title="Cambiar tema">
+    <span class="icon-dark">🌙</span>
+    <span class="icon-light">☀️</span>
+  </button>
+
+  <span class="badge-status">
+    <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
+    <span class="live-text" data-i18n="live_data"> Datos en vivo</span>
+  </span>
+</div>
+
+<!-- ✅ Modal body ke end mein, top-bar ke BAHAR -->
+<div class="lang-modal-overlay" id="langModalOverlay">
+  <div class="lang-modal-box" onclick="event.stopPropagation()">
+    <div class="lang-modal-header">
+      <span class="lang-modal-title" data-i18n="select_language">Select Language</span>
+      <button class="lang-modal-close" onclick="closeLangModal()" data-i18n-title="close" title="Close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="lang-modal-list" id="langList"></div>
+    <div class="lang-modal-footer">
+      <button class="lang-modal-btn-cancel" onclick="closeLangModal()" data-i18n="cancel">Cancel</button>
+      <button class="lang-modal-btn-apply" onclick="applyLangModal()" data-i18n="apply">Apply</button>
+    </div>
+  </div>
+</div>
 
       <!-- Filter bar + period toggle (replaces table page's filter-open button row) -->
       <div class="dash-filter-bar">
         <span
-          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;">Period</span>
+          data-i18n="period"
+          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;">Período</span>
         <div class="period-tabs">
-          <button class="period-tab active" onclick="setPeriod('monthly',this)">Monthly</button>
-          <button class="period-tab" onclick="setPeriod('yearly',this)">Yearly</button>
+          <button class="period-tab active" onclick="setPeriod('monthly',this)" data-i18n="monthly">Mensual</button>
+          <button class="period-tab" onclick="setPeriod('yearly',this)" data-i18n="yearly">Anual</button>
         </div>
 
         <span
-          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-left:4px;">Code</span>
+          data-i18n="code"
+          style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-left:4px;">Código</span>
         <select class="dash-select" id="selDashCode" onchange="buildDashboard()">
-          <option value="all">All Codes</option>
+          <option value="all" data-i18n="all_codes">Todos los códigos</option>
         </select>
 
         <div style="margin-left:auto;display:flex;gap:6px;">
-          <button class="chart-dl-btn" onclick="refreshData()" title="Refresh">
+          <button class="chart-dl-btn" onclick="refreshData()" data-i18n-title="refresh" title="Actualizar">
             <i class="bi bi-arrow-clockwise"></i>
           </button>
-          <button class="chart-dl-btn" onclick="exportCSV()" title="Export CSV">
+          <button class="chart-dl-btn" onclick="exportCSV()" data-i18n-title="export_csv" title="Exportar CSV">
             <i class="bi bi-download"></i>
           </button>
         </div>
@@ -79,7 +108,7 @@
         <!-- Loader (same skeleton style as table page) -->
         <div id="dashLoader" class="dash-loader">
           <div class="spin"></div>
-          <span>Loading financial data…</span>
+          <span data-i18n="loading_financial_data">Cargando datos financieros…</span>
         </div>
 
         <!-- Dashboard content (hidden until data ready) -->
@@ -88,22 +117,22 @@
           <!-- KPI Strip -->
           <div class="kpi-strip">
             <div class="kpi-card" style="--kpi-accent:#00c97a">
-              <div class="kpi-label">Total Income</div>
+              <div class="kpi-label" data-i18n="total_income">Ingresos totales</div>
               <div class="kpi-value" id="kpiIncome">—</div>
               <div class="kpi-trend" id="kpiIncomeTrend"></div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#ff4d6d">
-              <div class="kpi-label">Total Expense</div>
+              <div class="kpi-label" data-i18n="total_expenses">Gastos totales</div>
               <div class="kpi-value" id="kpiExpense">—</div>
               <div class="kpi-trend" id="kpiExpenseTrend"></div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#5b9cf6">
-              <div class="kpi-label">Net Profit / Loss</div>
+              <div class="kpi-label" data-i18n="net_profit_loss">Ganancia / Pérdida neta</div>
               <div class="kpi-value" id="kpiProfit">—</div>
               <div class="kpi-trend" id="kpiProfitTrend"></div>
             </div>
             <div class="kpi-card" style="--kpi-accent:#ffc75f">
-              <div class="kpi-label">Profit Margin</div>
+              <div class="kpi-label" data-i18n="profit_margin">Margen de ganancia</div>
               <div class="kpi-value" id="kpiMargin">—</div>
               <div class="kpi-trend" id="kpiMarginSub" style="font-size:10px;"></div>
             </div>
@@ -115,23 +144,23 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#00c97a">
-                    <div class="stripe"></div> Income vs Expense
+                    <div class="stripe"></div> <span data-i18n="income_vs_expense">Ingresos vs Gastos</span>
                   </div>
-                  <div class="chart-card-desc">Side-by-side per period</div>
+                  <div class="chart-card-desc" data-i18n="comparison_by_period">Comparación por período</div>
                 </div>
                 <div style="display:flex;gap:6px;align-items:center;">
                   <div class="chart-type-btns">
-                    <button class="chart-type-btn active" onclick="toggleIEType('bar',this)">Bar</button>
-                    <button class="chart-type-btn" onclick="toggleIEType('line',this)">Line</button>
+                    <button class="chart-type-btn active" onclick="toggleIEType('bar',this)" data-i18n="bars">Barras</button>
+                    <button class="chart-type-btn" onclick="toggleIEType('line',this)" data-i18n="line">Línea</button>
                   </div>
-                  <button class="chart-dl-btn" onclick="dlChart('chartIE','income-vs-expense')"><i
+                  <button class="chart-dl-btn" onclick="dlChart('chartIE','ingresos-vs-gastos')" data-i18n-title="download_chart" title="Download chart"><i
                       class="bi bi-download"></i></button>
                 </div>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartIE" height="240"></canvas></div>
               <div class="legend-row">
-                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span>Income</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Expense</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span><span data-i18n="income">Ingresos</span></span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span><span data-i18n="expense">Gastos</span></span>
               </div>
             </div>
 
@@ -139,17 +168,17 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
-                    <div class="stripe"></div> Net Profit / Loss
+                    <div class="stripe"></div> <span data-i18n="net_profit_loss">Ganancia / Pérdida neta</span>
                   </div>
-                  <div class="chart-card-desc">Positive = profit · Negative = loss</div>
+                  <div class="chart-card-desc" data-i18n="positive_profit_negative_loss">Positivo = ganancia · Negativo = pérdida</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartPL','profit-loss')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartPL','ganancia-perdida')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartPL" height="240"></canvas></div>
               <div class="legend-row">
-                <span class="legend-item"><span class="legend-dot" style="background:#5b9cf6"></span>Profit</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Loss</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#5b9cf6"></span><span data-i18n="profit">Ganancia</span></span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span><span data-i18n="loss">Pérdida</span></span>
               </div>
             </div>
           </div>
@@ -160,11 +189,11 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#00c97a">
-                    <div class="stripe"></div> Revenue Trend
+                    <div class="stripe"></div> <span data-i18n="revenue_trend">Tendencia de ingresos</span>
                   </div>
-                  <div class="chart-card-desc">Running income over time</div>
+                  <div class="chart-card-desc" data-i18n="cumulative_income_over_time">Ingresos acumulados en el tiempo</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartTrend','revenue-trend')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartTrend','tendencia-ingresos')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartTrend" height="220"></canvas></div>
@@ -174,22 +203,22 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#ff4d6d">
-                    <div class="stripe"></div> Expense Breakdown
+                    <div class="stripe"></div> <span data-i18n="expense_breakdown">Desglose de gastos</span>
                   </div>
-                  <div class="chart-card-desc">Pure expense codes 4–13 by period</div>
+                  <div class="chart-card-desc" data-i18n="pure_expense_codes_by_period">Códigos de gasto puros 4–13 por período</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartDonut','expense-breakdown')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartDonut','desglose-gastos')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap" style="max-height:240px;">
                 <!-- <canvas id="chartDonut" height="240"></canvas> -->
                 <div style="position:relative; width:100%; height:220px;">
-                  <canvas id="chartDonut" role="img" aria-label="Expense breakdown donut chart"></canvas>
+                  <canvas id="chartDonut" role="img" data-i18n-aria-label="donut_aria_label" aria-label="Gráfico de dona de desglose de gastos"></canvas>
                   <div
                     style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;">
                     <div id="donutCenterVal" style="font-size:18px;font-weight:500;color:var(--color-text-primary);">—
                     </div>
-                    <div id="donutCenterSub" style="font-size:11px;color:var(--color-text-secondary);">total</div>
+                    <div id="donutCenterSub" data-i18n="total_lowercase" style="font-size:11px;color:var(--color-text-secondary);">total</div>
                   </div>
                 </div>
               </div>
@@ -202,11 +231,11 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#ffc75f">
-                    <div class="stripe"></div> Profit Margin %
+                    <div class="stripe"></div> <span data-i18n="profit_margin_pct">Margen de ganancia %</span>
                   </div>
-                  <div class="chart-card-desc">Net profit ÷ income per period</div>
+                  <div class="chart-card-desc" data-i18n="net_profit_div_income_by_period">Ganancia neta ÷ ingresos por período</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartMargin','profit-margin')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartMargin','margen-ganancia')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartMargin" height="220"></canvas></div>
@@ -216,11 +245,11 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
-                    <div class="stripe"></div> Cumulative P&amp;L
+                    <div class="stripe"></div> <span data-i18n="cumulative_profit_loss">Ganancias y pérdidas acumuladas</span>
                   </div>
-                  <div class="chart-card-desc">Running total profit / loss</div>
+                  <div class="chart-card-desc" data-i18n="cumulative_total_profit_loss">Total acumulado de ganancias / pérdidas</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartCumul','cumulative-pl')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartCumul','ganancias-perdidas-acumuladas')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartCumul" height="220"></canvas></div>
@@ -233,28 +262,28 @@
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#00c97a">
-                    <div class="stripe"></div> Yearly Income vs Expense
+                    <div class="stripe"></div> <span data-i18n="yearly_income_vs_expense">Ingresos vs Gastos anuales</span>
                   </div>
-                  <div class="chart-card-desc">Annual comparison</div>
+                  <div class="chart-card-desc" data-i18n="yearly_comparison">Comparación anual</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartYearIE','yearly-ie')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartYearIE','ie-anual')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartYearIE" height="240"></canvas></div>
               <div class="legend-row">
-                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span>Income</span>
-                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span>Expense</span>
+                <span class="legend-item"><span class="legend-dot" style="background:#00c97a"></span><span data-i18n="income">Ingresos</span></span>
+                <span class="legend-item"><span class="legend-dot" style="background:#ff4d6d"></span><span data-i18n="expense">Gastos</span></span>
               </div>
             </div>
             <div class="chart-card">
               <div class="chart-card-header">
                 <div>
                   <div class="chart-card-title" style="--stripe-clr:#5b9cf6">
-                    <div class="stripe"></div> Yearly Net Profit / Loss
+                    <div class="stripe"></div> <span data-i18n="yearly_net_profit_loss">Ganancia / Pérdida neta anual</span>
                   </div>
-                  <div class="chart-card-desc">Annual profit or loss</div>
+                  <div class="chart-card-desc" data-i18n="yearly_profit_or_loss">Ganancia o pérdida anual</div>
                 </div>
-                <button class="chart-dl-btn" onclick="dlChart('chartYearPL','yearly-pl')"><i
+                <button class="chart-dl-btn" onclick="dlChart('chartYearPL','ganancias-perdidas-anual')" data-i18n-title="download_chart" title="Download chart"><i
                     class="bi bi-download"></i></button>
               </div>
               <div class="chart-canvas-wrap"><canvas id="chartYearPL" height="240"></canvas></div>
@@ -273,12 +302,12 @@
       <div id="fsHeader">
         <div id="fsHeaderTitle">
           <i class="bi bi-fullscreen" style="font-size:16px;"></i>
-          All Columns View
+          <span data-i18n="all_columns_view">Vista de todas las columnas</span>
           <span
             style="background:rgba(255,255,255,0.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-left:4px;"
             id="fsColCount"></span>
         </div>
-        <button id="fsCloseBtn" onclick="closeFullscreenTable()" title="Close (Esc)">&#x2715;</button>
+        <button id="fsCloseBtn" onclick="closeFullscreenTable()" data-i18n-title="close_esc" title="Cerrar (Esc)">&#x2715;</button>
       </div>
       <div id="fsTableWrapper">
         <table id="fullscreenTable">
@@ -287,7 +316,7 @@
         </table>
       </div>
       <div id="fsFooter">
-        <span id="fsRowCount"></span>&nbsp;|&nbsp;Press <strong>Esc</strong> to close
+        <span id="fsRowCount"></span>&nbsp;|&nbsp;<span data-i18n="press">Presione</span> <strong>Esc</strong> <span data-i18n="to_close">para cerrar</span>
       </div>
     </div>
   </div>
@@ -300,6 +329,7 @@
   ════════════════════════════════════════════ -->
   <script src="/users/Livegraphs.js"></script>
   <script src="/users/sidebar.js"></script>
+  <script src="/users/languageTranslater.js"></script>
 
   <!-- ════════════════════════════════════════════
        DASHBOARD JS

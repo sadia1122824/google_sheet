@@ -2057,6 +2057,90 @@ body {
 }
 
 /* ── Top bar ── */
+
+/* ── Language Dropdown ── */
+.lang-dropdown-wrap {
+  position: relative;
+}
+
+.lang-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 8px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: inherit;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.lang-btn:hover { background: rgba(0,0,0,0.06); }
+
+.lang-flag { font-size: 16px; line-height: 1; }
+.lang-code { font-size: 11px; opacity: 0.6; }
+.lang-chevron {
+  font-size: 11px;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+.lang-btn.open .lang-chevron { transform: rotate(180deg); }
+
+.lang-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  min-width: 160px;
+  z-index: 9999;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+.lang-menu.show { display: block; }
+
+.lang-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.lang-menu-item:hover { background: #f5f5f5; }
+.lang-menu-item.active {
+  background: #eef5ff;
+  color: #1a6fd4;
+  font-weight: 500;
+}
+.lm-flag { font-size: 18px; }
+.lm-name { flex: 1; }
+.lm-check { color: #1a6fd4; font-size: 14px; }
+
+/* Dark mode support */
+[data-theme="dark"] .lang-btn {
+  border-color: rgba(255,255,255,0.2);
+}
+[data-theme="dark"] .lang-btn:hover { background: rgba(255,255,255,0.08); }
+[data-theme="dark"] .lang-menu {
+  background: #1e1e1e;
+  border-color: rgba(255,255,255,0.1);
+}
+[data-theme="dark"] .lang-menu-item:hover { background: rgba(255,255,255,0.07); }
+[data-theme="dark"] .lang-menu-item.active { background: rgba(26,111,212,0.2); }
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .lang-label { display: none; }
+  .lang-btn { padding: 5px 8px; gap: 4px; }
+  .live-text { display: none; }
+}
 .top-bar { animation: fadeSlideDown 0.5s cubic-bezier(.4,0,.2,1) both; }
 
 /* ── Sidebar links stagger ── */

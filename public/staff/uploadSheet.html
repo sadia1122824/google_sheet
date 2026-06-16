@@ -718,10 +718,8 @@
 <body>
     <div id="side-navbar"></div>
 
-
-
     <div class="page-wrapper">
-        <!-- Top Bar Start -->
+        <!-- Inicio Barra Superior -->
         <div class="topbar">
             <!-- Navbar -->
             <nav class="navbar-custom">
@@ -735,31 +733,28 @@
                                 Nick
                             </span>
 
-                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="foto-perfil"
                                 class="rounded-circle thumb-sm border" />
                         </a>
 
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
 
-
-
                             <div class="dropdown-divider"></div>
 
                             <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
                                 <i data-feather="power" class="icon-xs mr-2"></i>
-                                <span>Logout</span>
+                                <span>Cerrar sesión</span>
                             </a>
 
                             <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
                                 <i data-feather="settings" class="icon-xs mr-2"></i>
-                                <span>Settings</span>
+                                <span>Configuración</span>
                             </a>
-
 
                         </div>
                     </li>
 
-                </ul><!--end topbar-nav-->
+                </ul><!--fin topbar-nav-->
 
                 <ul class="list-unstyled topbar-nav mb-0">
                     <li>
@@ -769,63 +764,47 @@
                     </li>
                 </ul>
             </nav>
-            <!-- end navbar-->
+            <!-- fin navbar-->
         </div>
-        <!-- Top Bar End -->
+        <!-- Fin Barra Superior -->
 
-        <!-- Page Content-->
+        <!-- Contenido de Página -->
         <div class="page-content">
             <div class="container-fluid">
-                <!-- Page-Title -->
+                <!-- Título de Página -->
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="page-title-box">
+                        </div><!--fin page-title-box-->
+                    </div><!--fin col-->
+                </div><!--fin row-->
+                <!-- fin título de página -->
 
-                        </div><!--end page-title-box-->
-                    </div><!--end col-->
-                </div><!--end row-->
-                <!-- end page title end breadcrumb -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <!-- Card Header mein yeh dropdown add karein (line ~200 ke paas) -->
                             <div class="card-header">
-                                <h4 class="card-title">Import Data to Google Sheets</h4>
-                                <p class="text-muted mb-0">Upload Excel file to import data directly</p>
+                                <h4 class="card-title">Importar Datos a Google Sheets</h4>
+                                <p class="text-muted mb-0">Sube un archivo Excel para importar datos directamente</p>
 
-                                <!-- Year Selector Dropdown -->
-                                <!-- <div class="mt-2">
-                                    <label for="yearSelect" class="font-weight-bold">Select Year:</label>
-                                    <select id="yearSelect" class="form-control"
-                                        style="max-width: 200px; display: inline-block; margin-left: 10px;">
-                                        <option value="latest">Latest Year</option>
-                                        <option value="previous">Previous Year</option>
-                                    </select>
-                                       <label for="clientSelect" class="font-weight-bold">Select Client:</label>
-                                    <select id="clientSelect" class="form-control"
-                                        style="max-width: 200px; display: inline-block; margin-left: 10px;">
-                                        <option value=""></option>
-
-                                    </select>
-                                </div> -->
                                 <div class="mt-2 row g-2 align-items-center">
 
                                     <div class="col-12 col-md-auto">
                                         <label for="yearSelect" class="font-weight-bold">
-                                            Select Year:
+                                            Seleccionar Año:
                                         </label>
                                     </div>
 
                                     <div class="col-12 col-md-3">
                                         <select id="yearSelect" class="form-control">
-                                            <option value="latest">Latest Year</option>
-                                            <option value="previous">Previous Year</option>
+                                            <option value="latest">Año Más Reciente</option>
+                                            <option value="previous">Año Anterior</option>
                                         </select>
                                     </div>
 
                                     <div class="col-12 col-md-auto">
                                         <label for="clientSelect" class="font-weight-bold">
-                                            Select Client:
+                                            Seleccionar Cliente:
                                         </label>
                                     </div>
 
@@ -840,46 +819,42 @@
                             </div>
 
                             <div class="card">
-
-
                                 <div class="card">
-
-
                                     <div class="card-body">
-                                        <!-- Simple Notification -->
+                                        <!-- Notificación Simple -->
                                         <div id="notificationAlert" class="alert" style="display: none;"></div>
 
-                                        <!-- File Upload Section - Simple -->
+                                        <!-- Sección de Carga de Archivo -->
                                         <div class="form-group">
                                             <label for="fileUpload">
                                                 <i class="fas fa-file-excel mr-2 text-success"></i>
-                                                Select Excel File
+                                                Seleccionar Archivo Excel
                                             </label>
                                             <div class="input-group">
                                                 <div class="custom-file">
                                                     <input type="file" class="custom-file-input" id="fileUpload"
                                                         accept=".csv,.xlsx,.xls" required>
                                                     <label class="custom-file-label" for="fileUpload" id="fileLabel">
-                                                        <span class="text-muted">Click to choose file...</span>
+                                                        <span class="text-muted">Haz clic para elegir un archivo...</span>
                                                     </label>
                                                 </div>
                                                 <div class="input-group-append">
                                                     <button class="btn btn-outline-secondary" type="button"
                                                         id="uploadBtn" disabled>
-                                                        <i class="fas fa-upload mr-1"></i> Upload
+                                                        <i class="fas fa-upload mr-1"></i> Subir
                                                     </button>
                                                 </div>
                                             </div>
                                             <small class="text-muted mt-2 d-block">
                                                 <i class="fas fa-info-circle mr-1"></i>
-                                                Supported: Excell File
+                                                Compatible: Archivo Excel
                                             </small>
                                         </div>
 
-                                        <!-- Progress Section (Hidden by default) -->
+                                        <!-- Sección de Progreso (oculta por defecto) -->
                                         <div id="progressSection" class="mt-3" style="display: none;">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <span id="progressStatus">Processing...</span>
+                                                <span id="progressStatus">Procesando...</span>
                                                 <span id="progressPercent">0%</span>
                                             </div>
                                             <div class="progress" style="height: 8px;">
@@ -890,56 +865,43 @@
                                             <div class="text-center mt-2">
                                                 <button class="btn btn-sm btn-outline-danger" id="cancelBtn"
                                                     style="display: none;">
-                                                    <i class="fas fa-times mr-1"></i> Cancel
+                                                    <i class="fas fa-times mr-1"></i> Cancelar
                                                 </button>
                                             </div>
                                         </div>
 
-                                        <!-- Results Section (Hidden by default) -->
+                                        <!-- Sección de Resultados (oculta por defecto) -->
                                         <div id="resultsSection" class="mt-3" style="display: none;">
                                             <div class="alert alert-success">
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-check-circle fa-2x mr-3"></i>
                                                     <div>
-                                                        <h5 class="mb-1">Import Successful!</h5>
+                                                        <h5 class="mb-1">¡Importación Exitosa!</h5>
                                                         <div id="resultsDetails" class="small"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="text-center mt-2">
                                                 <button class="btn btn-sm btn-outline-primary" id="uploadAnotherBtn">
-                                                    <i class="fas fa-plus mr-1"></i> Upload Another File
+                                                    <i class="fas fa-plus mr-1"></i> Subir Otro Archivo
                                                 </button>
                                             </div>
                                         </div>
-                                    </div><!--end card-body-->
-                                </div><!--end card-->
-                            </div><!--end card-->
+                                    </div><!--fin card-body-->
+                                </div><!--fin card-->
+                            </div><!--fin card-->
 
-
-
-                        </div><!--end card-->
-                    </div><!--end col-->
+                        </div><!--fin card-->
+                    </div><!--fin col-->
                 </div>
-
-
-
-
 
             </div><!-- container -->
 
-
-
-
         </div>
-        <!-- end page content -->
+        <!-- fin contenido de página -->
     </div>
-    <!-- end page-wrapper -->
+    <!-- fin page-wrapper -->
 
-
-
-
-    <!-- jQuery  -->
     <script src="../staff/side_nav.js"></script>
     <script src="../admin/assets/js/jquery.min.js"></script>
     <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
@@ -949,16 +911,11 @@
     <script src="../admin/assets/js/simplebar.min.js"></script>
     <script src="../admin/assets/js/moment.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>
-
     <script src="../plugins/dropify/js/dropify.min.js"></script>
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
-    <!-- App js -->
-    <!-- <script src="side_navbar.js"></script> -->
-
-
 
     <script>
-        // DOM elements
+        // Elementos DOM
         const fileUpload = document.getElementById('fileUpload');
         const fileLabel = document.getElementById('fileLabel');
         const uploadBtn = document.getElementById('uploadBtn');
@@ -975,7 +932,7 @@
         let isUploading = false;
         let abortController = null;
 
-        // Show notification
+        // Mostrar notificación
         function showNotification(message, type = 'success') {
             notificationAlert.innerHTML = `
             <div class="d-flex align-items-center">
@@ -996,72 +953,66 @@
             }
         }
 
-        // Update progress
+        // Actualizar progreso
         function updateProgress(percent, status) {
             progressBar.style.width = `${percent}%`;
             progressPercent.textContent = `${percent}%`;
             progressStatus.textContent = status;
         }
 
-        // Reset form
+        // Resetear formulario
         function resetForm() {
             fileUpload.value = '';
-            fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+            fileLabel.innerHTML = '<span class="text-muted">Haz clic para elegir un archivo...</span>';
             uploadBtn.disabled = true;
             progressSection.style.display = 'none';
             resultsSection.style.display = 'none';
             isUploading = false;
         }
 
-        // ✅ UPDATED: Upload file with clientId + clientName
+        // Subir archivo
         async function uploadFile() {
             const file = fileUpload.files[0];
             if (!file || isUploading) return;
 
-            // ✅ Get client info from dropdown
             const dropdown = document.getElementById('clientSelect');
             const clientId = dropdown.value;
             const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || "";
             const selectedYear = document.getElementById('yearSelect').value;
 
-            // ✅ Client validation
             if (!clientId) {
-                showNotification('❌ Please select a client first.', 'danger');
+                showNotification('❌ Por favor seleccione un cliente primero.', 'danger');
                 return;
             }
 
             isUploading = true;
             abortController = new AbortController();
 
-            // Show progress
             progressSection.style.display = 'block';
             resultsSection.style.display = 'none';
             uploadBtn.disabled = true;
             cancelBtn.style.display = 'inline-block';
 
             try {
-                updateProgress(10, 'Validating file...');
+                updateProgress(10, 'Validando archivo...');
 
-                // Check file size (max 10MB)
                 if (file.size > 10 * 1024 * 1024) {
-                    throw new Error('File size must be less than 10MB');
+                    throw new Error('El tamaño del archivo debe ser menor a 10MB');
                 }
 
-                // Check file type
                 const validExtensions = ['.csv', '.xlsx', '.xls'];
                 const fileName = file.name.toLowerCase();
                 if (!validExtensions.some(ext => fileName.endsWith(ext))) {
-                    throw new Error('Please upload CSV or Excel files only');
+                    throw new Error('Por favor suba solo archivos CSV o Excel');
                 }
 
-                updateProgress(30, 'Uploading to server...');
+                updateProgress(30, 'Subiendo al servidor...');
 
-                // ✅ FormData with clientId + clientName
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('year', selectedYear);
-                formData.append('clientId', clientId);    // ✅ NEW
-                formData.append('clientName', clientName);  // ✅ NEW
+                formData.append('clientId', clientId);
+                formData.append('clientName', clientName);
                 formData.append('staffId', localStorage.getItem('staffId') || '');
 
                 const response = await fetch('/importExcelFile', {
@@ -1071,40 +1022,40 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Server error: ${response.status}`);
+                    throw new Error(`Error del servidor: ${response.status}`);
                 }
 
-                updateProgress(70, 'Processing data...');
+                updateProgress(70, 'Procesando datos...');
 
                 const result = await response.json();
 
                 if (result.success) {
-                    updateProgress(100, 'Import complete!');
+                    updateProgress(100, '¡Importación completa!');
 
                     setTimeout(() => {
                         showResults(result);
                         showNotification(
-                            `✅ Data imported successfully for <strong>${clientName}</strong>!`,
+                            `✅ ¡Datos importados exitosamente para <strong>${clientName}</strong>!`,
                             'success'
                         );
                     }, 500);
 
                 } else {
-                    throw new Error(result.error || 'Import failed');
+                    throw new Error(result.error || 'Importación fallida');
                 }
 
             } catch (error) {
                 if (error.name === 'AbortError') {
-                    showNotification('Upload cancelled', 'info');
+                    showNotification('Subida cancelada', 'info');
                 } else {
                     showNotification(`❌ Error: ${error.message}`, 'danger');
-                    console.error('Upload error:', error);
+                    console.error('Error de subida:', error);
                 }
                 resetForm();
             }
         }
 
-        // ✅ UPDATED: Show results with client name + sheet name
+        // Mostrar resultados
         function showResults(result) {
             const imported = result.importedRows || 0;
             const failed = result.failedRows || 0;
@@ -1116,14 +1067,14 @@
                 <div class="col-6">
                     <div class="text-success">
                         <i class="fas fa-check mr-1"></i>
-                        <strong>${imported}</strong> rows imported
+                        <strong>${imported}</strong> filas importadas
                     </div>
                 </div>
                 ${failed > 0 ? `
                 <div class="col-6">
                     <div class="text-warning">
                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                        <strong>${failed}</strong> rows failed
+                        <strong>${failed}</strong> filas fallidas
                     </div>
                 </div>
                 ` : ''}
@@ -1132,21 +1083,21 @@
             ${clientName ? `
             <div class="mt-2">
                 <i class="fas fa-user mr-1 text-primary"></i>
-                <small><strong>Client:</strong> ${clientName}</small>
+                <small><strong>Cliente:</strong> ${clientName}</small>
             </div>
             ` : ''}
 
             ${sheetName ? `
             <div class="mt-1">
                 <i class="fas fa-table mr-1 text-success"></i>
-                <small><strong>Sheet:</strong> ${sheetName}</small>
+                <small><strong>Hoja:</strong> ${sheetName}</small>
             </div>
             ` : ''}
 
             ${result.googleSheets?.sheetUrl ? `
             <div class="mt-1">
                 <a href="${result.googleSheets.sheetUrl}" target="_blank" class="btn btn-sm btn-outline-success mt-1">
-                    <i class="fas fa-external-link-alt mr-1"></i> Open Google Sheet
+                    <i class="fas fa-external-link-alt mr-1"></i> Abrir Hoja de Google
                 </a>
             </div>
             ` : ''}
@@ -1163,7 +1114,7 @@
             resultsSection.style.display = 'block';
         }
 
-        // Format currency
+        // Formatear moneda
         function formatCurrency(amount) {
             return new Intl.NumberFormat('en-US', {
                 style: 'currency',
@@ -1172,11 +1123,11 @@
             }).format(amount);
         }
 
-        // Cancel upload
+        // Cancelar subida
         function cancelUpload() {
             if (abortController) abortController.abort();
             resetForm();
-            showNotification('Upload cancelled', 'info');
+            showNotification('Subida cancelada', 'info');
         }
 
         // ── Event Listeners ──────────────────────────────────────────────────
@@ -1194,12 +1145,11 @@
             }
         });
 
-        // ✅ Single uploadBtn listener — uploadFile() handles everything
         uploadBtn.addEventListener('click', uploadFile);
         cancelBtn.addEventListener('click', cancelUpload);
         uploadAnotherBtn.addEventListener('click', resetForm);
 
-        // Drag and drop
+        // Arrastrar y soltar
         const cardBody = document.querySelector('.card-body');
         cardBody.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -1219,25 +1169,25 @@
             }
         });
 
-        // ── Logout ───────────────────────────────────────────────────────────
+        // ── Cerrar sesión ───────────────────────────────────────────────────
         function logout() {
             fetch('/logout', { method: 'POST', credentials: 'include' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
                         Swal.fire({
-                            icon: "success", title: "Logged out",
+                            icon: "success", title: "Sesión cerrada",
                             text: data.message, timer: 1200, showConfirmButton: false
                         });
                         setTimeout(() => { window.location.href = "/login"; }, 1200);
                     } else {
-                        Swal.fire("Error", data.message || "Logout failed", "error");
+                        Swal.fire("Error", data.message || "Error al cerrar sesión", "error");
                     }
                 })
-                .catch(() => Swal.fire("Error", "Server error", "error"));
+                .catch(() => Swal.fire("Error", "Error del servidor", "error"));
         }
 
-        // ── Mobile Menu ──────────────────────────────────────────────────────
+        // ── Menú Móvil ──────────────────────────────────────────────────────
         function initMobileMenu() {
             const menuBtn = document.querySelector(".button-menu-mobile");
             if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
@@ -1261,7 +1211,7 @@
             }
         }
 
-        // ── DOMContentLoaded — single listener for all init ─────────────────
+        // ── DOMContentLoaded ─────────────────────────────────────────────────
         document.addEventListener("DOMContentLoaded", async function () {
 
             initMobileMenu();
@@ -1271,25 +1221,23 @@
             });
             observer.observe(document.body, { childList: true, subtree: true });
 
-            // ✅ staffName localStorage se lo
             const staffName = localStorage.getItem("staffName");
 
             if (!staffName || staffName === "null" || staffName === "undefined") {
-                console.log("❌ No staffName in localStorage");
+                console.log("❌ No staffName en localStorage");
                 return;
             }
 
             console.log("✅ staffName:", staffName);
 
             try {
-                // ✅ encodeURIComponent — space ko URL safe banata hai
                 const response = await fetch(`/AssignedClients/${encodeURIComponent(staffName)}`);
                 const result = await response.json();
 
-                console.log("✅ API result:", result);
+                console.log("✅ Resultado API:", result);
 
                 const dropdown = document.getElementById("clientSelect");
-                dropdown.innerHTML = `<option value="">Select Client</option>`;
+                dropdown.innerHTML = `<option value="">Seleccionar Cliente</option>`;
 
                 dropdown.addEventListener("change", function () {
                     const selectedOption = dropdown.options[dropdown.selectedIndex];
@@ -1310,19 +1258,18 @@
                         option.dataset.fullName = client.fullName;
                         dropdown.appendChild(option);
                     });
-                    console.log("✅ Clients loaded:", result.data.length);
+                    console.log("✅ Clientes cargados:", result.data.length);
                 } else {
-                    console.log("⚠️ No clients found for staffName:", staffName);
+                    console.log("⚠️ Sin clientes para staffName:", staffName);
                 }
 
             } catch (error) {
-                console.error("❌ Client load error:", error);
+                console.error("❌ Error al cargar clientes:", error);
             }
         });
 
-        console.log("Upload form initialized");
+        console.log("Formulario de subida inicializado");
     </script>
-
 
 </body>
 

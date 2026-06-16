@@ -833,7 +833,7 @@
     <div id="side-navbar"></div>
 
     <div class="page-wrapper">
-        <!-- Top Bar -->
+        <!-- Barra Superior -->
         <div class="topbar">
             <nav class="navbar-custom">
                 <ul class="list-unstyled topbar-nav float-right mb-0">
@@ -847,10 +847,10 @@
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
-                                <i data-feather="power" class="icon-xs mr-2"></i><span>Logout</span>
+                                <i data-feather="power" class="icon-xs mr-2"></i><span>Cerrar sesión</span>
                             </a>
                             <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
-                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Settings</span>
+                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Configuración</span>
                             </a>
                         </div>
                     </li>
@@ -864,48 +864,48 @@
                 </ul>
             </nav>
         </div>
-        <!-- End Top Bar -->
+        <!-- Fin Barra Superior -->
 
         <div class="page-content">
             <div class="container-fluid">
 
-                <!-- ====================== STAFF DASHBOARD ====================== -->
+                <!-- ====================== PANEL DEL PERSONAL ====================== -->
                 <div class="dash">
 
                     <div class="dash-title">
                         <div>
-                            <h4>Staff Activity Dashboard</h4>
-                            <p id="dashDate">Loading date...</p>
+                            <h4>Panel de Actividad del Personal</h4>
+                            <p id="dashDate">Cargando fecha...</p>
                         </div>
-                        <span class="live-pill"><span class="live-dot"></span>Live</span>
+                        <span class="live-pill"><span class="live-dot"></span>En vivo</span>
                     </div>
 
                     <div class="stats-grid">
                         <div class="stat-card sc1">
-                            <div class="sc-label">Total Files Uploaded</div>
+                            <div class="sc-label">Total de Archivos Subidos</div>
                             <div class="sc-value" id="v1">0</div>
-                            <div class="sc-trend">↑ 12% this week</div>
+                            <div class="sc-trend">↑ 12% esta semana</div>
                             <div class="sc-icon">📁</div>
                             <div class="sc-bar" id="bar1"></div>
                         </div>
                         <div class="stat-card sc2">
-                            <div class="sc-label">My Clients</div>
+                            <div class="sc-label">Mis Clientes</div>
                             <div class="sc-value" id="v2">0</div>
-                            <div class="sc-trend">↑ 2 new this month</div>
+                            <div class="sc-trend">↑ 2 nuevos este mes</div>
                             <div class="sc-icon">👥</div>
                             <div class="sc-bar" id="bar2"></div>
                         </div>
                         <div class="stat-card sc3">
-                            <div class="sc-label">Successful Imports</div>
+                            <div class="sc-label">Importaciones Exitosas</div>
                             <div class="sc-value" id="v3">0</div>
-                            <div class="sc-trend">↑ 95% success rate</div>
+                            <div class="sc-trend">↑ 95% tasa de éxito</div>
                             <div class="sc-icon">✅</div>
                             <div class="sc-bar" id="bar3"></div>
                         </div>
                         <div class="stat-card sc4">
-                            <div class="sc-label">Uploads Today</div>
+                            <div class="sc-label">Subidas Hoy</div>
                             <div class="sc-value" id="v4">0</div>
-                            <div class="sc-trend">→ On track</div>
+                            <div class="sc-trend">→ En curso</div>
                             <div class="sc-icon">📅</div>
                             <div class="sc-bar" id="bar4"></div>
                         </div>
@@ -915,15 +915,15 @@
                         <div class="chart-card">
                             <div class="chart-card-head">
                                 <div>
-                                    <h6>Weekly Upload Activity</h6>
-                                    <p>Files uploaded per day this week</p>
+                                    <h6>Actividad Semanal de Subidas</h6>
+                                    <p>Archivos subidos por día esta semana</p>
                                 </div>
                                 <div class="period-tabs">
                                     <button class="ptab active" onclick="switchPeriod(this,'7d')">7D</button>
                                     <button class="ptab" onclick="switchPeriod(this,'30d')">30D</button>
                                 </div>
                             </div>
-                            <div class="chart-legend"><span><i style="background:#534AB7"></i>Files Uploaded</span>
+                            <div class="chart-legend"><span><i style="background:#534AB7"></i>Archivos Subidos</span>
                             </div>
                             <div style="position:relative;height:200px"><canvas id="barChart"></canvas></div>
                         </div>
@@ -931,8 +931,8 @@
                         <div class="chart-card cc2">
                             <div class="chart-card-head">
                                 <div>
-                                    <h6>Uploads by Client</h6>
-                                    <p>Distribution across clients</p>
+                                    <h6>Subidas por Cliente</h6>
+                                    <p>Distribución entre clientes</p>
                                 </div>
                             </div>
                             <div class="donut-wrap">
@@ -951,15 +951,15 @@
                     <div class="two-col">
                         <div class="section-card">
                             <div class="section-head">
-                                <h6>Uploads Per Client</h6>
-                                <span class="hdr-badge purple">8 clients</span>
+                                <h6>Subidas por Cliente</h6>
+                                <span class="hdr-badge purple">8 clientes</span>
                             </div>
                             <div id="clientProgress"></div>
                         </div>
                         <div class="section-card sc-tc2">
                             <div class="section-head">
-                                <h6>Recent Activity</h6>
-                                <span class="hdr-badge teal">Live</span>
+                                <h6>Actividad Reciente</h6>
+                                <span class="hdr-badge teal">En vivo</span>
                             </div>
                             <div id="timeline"></div>
                         </div>
@@ -967,19 +967,19 @@
 
                     <div class="table-card">
                         <div class="table-card-head">
-                            <h6>Recent Upload History</h6>
-                            <button class="view-btn">View All →</button>
+                            <h6>Historial Reciente de Subidas</h6>
+                            <button class="view-btn">Ver Todo →</button>
                         </div>
                         <div style="overflow-x:auto">
                             <table class="dash-table">
                                 <thead>
                                     <tr>
-                                        <th>Client</th>
-                                        <th>File Name</th>
-                                        <th>Rows Imported</th>
-                                        <th>Year</th>
-                                        <th>Uploaded At</th>
-                                        <th>Status</th>
+                                        <th>Cliente</th>
+                                        <th>Nombre de Archivo</th>
+                                        <th>Filas Importadas</th>
+                                        <th>Año</th>
+                                        <th>Subido en</th>
+                                        <th>Estado</th>
                                     </tr>
                                 </thead>
                                 <tbody id="uploadsTbody"></tbody>
@@ -988,18 +988,15 @@
                     </div>
 
                 </div>
-
-                <!-- ====================== END DASHBOARD ====================== -->
+                <!-- ====================== FIN PANEL ====================== -->
 
                 <div class="dash-divider"></div>
 
-
-
             </div><!-- container -->
         </div>
-        <!-- end page content -->
+        <!-- fin page-content -->
     </div>
-    <!-- end page-wrapper -->
+    <!-- fin page-wrapper -->
 
     <script src="../staff/side_nav.js"></script>
     <script src="../admin/assets/js/jquery.min.js"></script>
@@ -1012,584 +1009,29 @@
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>
     <script src="../plugins/dropify/js/dropify.min.js"></script>
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-   
- <!-- <script>
-        // ── Date ────────────────────────────────────────────────────────────
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const n = new Date();
-        document.getElementById('dashDate').textContent =
-            `${days[n.getDay()]}, ${n.getDate()} ${mons[n.getMonth()]} ${n.getFullYear()}`;
 
-        // ── Globals ──────────────────────────────────────────────────────────
-        const COLORS = ['#534AB7', '#0F6E56', '#b8670a', '#a32d2d', '#993556', '#185fa5', '#639922', '#BA7517'];
-        const AV_CLASSES = ['av-purple', 'av-teal', 'av-amber', 'av-red', 'av-pink', 'av-blue', 'av-purple', 'av-teal'];
-        const STATUS_MAP = {
-            success: ['s-success', 'Imported'],
-            pending: ['s-pending', 'Processing'],
-            error: ['s-error', 'Failed']
-        };
-        let barInst = null;
-        let data7d = [0, 0, 0, 0, 0, 0, 0];
-        let data30d = new Array(30).fill(0);
-
-        // ── Animate count ────────────────────────────────────────────────────
-        function animateCount(id, target, delay) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            let start = null;
-            const dur = 1300;
-            setTimeout(() => {
-                requestAnimationFrame(function step(ts) {
-                    if (!start) start = ts;
-                    const p = Math.min((ts - start) / dur, 1);
-                    const ease = 1 - Math.pow(1 - p, 4);
-                    el.textContent = Math.round(ease * target);
-                    if (p < 1) requestAnimationFrame(step);
-                    else el.textContent = target;
-                });
-            }, delay || 0);
-        }
-
-        // ── Bar chart ────────────────────────────────────────────────────────
-        function buildBar(period) {
-            const is30 = period === '30d';
-            const raw = is30 ? data30d : data7d;
-            const labels = is30
-                ? Array.from({ length: 30 }, (_, i) => String(i + 1))
-                : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-            if (barInst) barInst.destroy();
-            barInst = new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [{
-                        label: 'Files',
-                        data: raw,
-                        backgroundColor: raw.map((_, i) =>
-                            i === raw.length - 2 ? 'rgba(83,74,183,0.9)' : 'rgba(83,74,183,0.25)'
-                        ),
-                        borderColor: '#534AB7', borderWidth: 2, borderRadius: 6, borderSkipped: false
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 900, easing: 'easeOutQuart', delay: ctx => ctx.dataIndex * 40 },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: '#1e293b', titleColor: '#f8fafc', bodyColor: '#cbd5e1', padding: 10, cornerRadius: 8 }
-                    },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#a0aec0', font: { size: 10 }, maxTicksLimit: is30 ? 10 : 7 }, border: { display: false } },
-                        y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#a0aec0', font: { size: 10 }, stepSize: 1, callback: v => Number.isInteger(v) ? v : '' }, beginAtZero: true, border: { display: false } }
-                    }
-                }
-            });
-        }
-
-        function switchPeriod(el, p) {
-            document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-            buildBar(p);
-        }
-
-        // ── Donut chart ──────────────────────────────────────────────────────
-        function buildDonut(uploadsPerClient) {
-            const circ = 2 * Math.PI * 50;
-            const active = uploadsPerClient.filter(c => c.uploadCount > 0);
-            const totalUp = active.reduce((a, c) => a + c.uploadCount, 0);
-
-            document.querySelector('.donut-center .dpct').textContent = totalUp;
-
-            const svg = document.getElementById('donutSvg');
-            svg.querySelectorAll('circle.dyn').forEach(c => c.remove());
-
-            document.getElementById('donutLegend').innerHTML = active.map((c, i) => `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <span style="width:10px;height:10px;border-radius:3px;background:${COLORS[i % COLORS.length]};flex-shrink:0"></span>
-      <span style="font-size:12px;color:var(--color-text-secondary);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.fullName}</span>
-      <span style="font-size:12px;font-weight:700;color:var(--color-text-primary);font-family:'Space Mono',monospace">${c.uploadCount}</span>
-    </div>
-  `).join('');
-
-            if (totalUp === 0) return;
-
-            setTimeout(() => {
-                let offset = 0;
-                active.forEach((c, i) => {
-                    const pct = c.uploadCount / totalUp;
-                    const len = Math.round(circ * pct);
-                    const gap = Math.round(circ - len);
-                    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                    circle.classList.add('dyn');
-                    circle.setAttribute('cx', '65'); circle.setAttribute('cy', '65'); circle.setAttribute('r', '50');
-                    circle.setAttribute('fill', 'none');
-                    circle.setAttribute('stroke', COLORS[i % COLORS.length]);
-                    circle.setAttribute('stroke-width', '14');
-                    circle.setAttribute('stroke-dasharray', `0 ${Math.round(circ)}`);
-                    circle.setAttribute('stroke-linecap', 'round');
-                    circle.setAttribute('transform', 'rotate(-90 65 65)');
-                    circle.style.strokeDashoffset = -offset;
-                    circle.style.transition = `stroke-dasharray 1.2s cubic-bezier(.22,1,.36,1) ${0.8 + i * 0.12}s`;
-                    svg.appendChild(circle);
-                    setTimeout(() => circle.setAttribute('stroke-dasharray', `${len} ${gap}`), 50);
-                    offset += len;
-                });
-            }, 400);
-        }
-
-        // ── Client progress bars ─────────────────────────────────────────────
-        function buildClientProgress(uploadsPerClient) {
-            const maxUp = Math.max(...uploadsPerClient.map(c => c.uploadCount), 1);
-            document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clients`;
-
-            document.getElementById('clientProgress').innerHTML = uploadsPerClient.map((c, i) => {
-                const initials = c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const pct = ((c.uploadCount / maxUp) * 100).toFixed(0);
-                return `
-      <div class="cp-item">
-        <div class="av-circle ${AV_CLASSES[i % AV_CLASSES.length]}">${initials}</div>
-        <div class="cp-info">
-          <div class="cp-name">${c.fullName}</div>
-          <div class="cp-bar-bg">
-            <div class="cp-bar-fill" style="background:${COLORS[i % COLORS.length]};width:${pct}%"></div>
-          </div>
-          <div class="cp-sub">${c.uploadCount} files</div>
-        </div>
-        <div class="cp-val" style="color:${COLORS[i % COLORS.length]}">${c.uploadCount}</div>
-      </div>`;
-            }).join('');
-
-            setTimeout(() => {
-                document.querySelectorAll('.cp-bar-fill').forEach(b => b.style.transform = 'scaleX(1)');
-            }, 500);
-        }
-
-        // ── Timeline ─────────────────────────────────────────────────────────
-        function buildTimeline(timeline) {
-            if (!timeline || timeline.length === 0) {
-                document.getElementById('timeline').innerHTML =
-                    `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">No recent activity</p>`;
-                return;
-            }
-            document.getElementById('timeline').innerHTML = timeline.map(t => {
-                const isSuccess = t.status === 'success';
-                const isError = t.status === 'error';
-                const icon = isSuccess ? '✅' : isError ? '❌' : '📁';
-                const cls = isSuccess ? 'tl-success' : isError ? 'tl-upload' : 'tl-client';
-                return `
-      <div class="tl-item">
-        <div class="tl-dot ${cls}">${icon}</div>
-        <div class="tl-content">
-          <div class="tl-title">${t.fileName} — ${t.clientName}</div>
-          <div class="tl-time">${t.importedRows} rows · ${formatTimeAgo(t.createdAt)}</div>
-        </div>
-      </div>`;
-            }).join('');
-        }
-
-        // ── Uploads table ────────────────────────────────────────────────────
-        function buildTable(recentUploads) {
-            if (!recentUploads || recentUploads.length === 0) {
-                document.getElementById('uploadsTbody').innerHTML =
-                    `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">No uploads yet</td></tr>`;
-                return;
-            }
-            document.getElementById('uploadsTbody').innerHTML = recentUploads.map((r, i) => {
-                const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending', 'Unknown'];
-                const initials = (r.clientName || 'UN').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-                const avCls = AV_CLASSES[i % AV_CLASSES.length];
-                return `
-      <tr style="opacity:0;animation:fadeInRight .4s ease ${1.3 + i * 0.1}s forwards">
-        <td>
-          <div style="display:flex;align-items:center;gap:9px">
-            <div class="av-circle ${avCls}" style="width:30px;height:30px;font-size:11px">${initials}</div>
-            <span style="font-weight:600">${r.clientName || '—'}</span>
-          </div>
-        </td>
-        <td style="color:var(--color-text-secondary)">${r.fileName || '—'}</td>
-        <td style="font-family:'Space Mono',monospace;font-weight:600">
-          ${r.importedRows > 0 ? r.importedRows.toLocaleString() : '—'}
-        </td>
-        <td><span class="year-tag">${r.year || '—'}</span></td>
-        <td style="white-space:nowrap;font-size:12px;color:var(--color-text-secondary)">
-          ${formatTimeAgo(r.createdAt)}
-        </td>
-        <td><span class="status-badge ${cls}">${lbl}</span></td>
-      </tr>`;
-            }).join('');
-        }
-
-        // ── Time ago ─────────────────────────────────────────────────────────
-        function formatTimeAgo(dateStr) {
-            if (!dateStr) return '—';
-            const diff = Date.now() - new Date(dateStr).getTime();
-            const mins = Math.floor(diff / 60000);
-            if (mins < 1) return 'Just now';
-            if (mins < 60) return `${mins}m ago`;
-            const hrs = Math.floor(mins / 60);
-            if (hrs < 24) return `${hrs}h ago`;
-            const d = new Date(dateStr);
-            return `${d.getDate()} ${mons[d.getMonth()]}, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-        }
-
-        // ── MAIN: Load dashboard from API ────────────────────────────────────
-        async function loadDashboard(staffName) {
-            try {
-                // ✅ params route: /getStaffDashboard/:staffId
-                const res = await fetch(`/getStaffDashboard/${staffName}`);
-                const result = await res.json();
-
-                console.log('📊 Dashboard API response:', result);
-
-                if (!result.success) {
-                    console.error('Dashboard error:', result.error);
-                    return;
-                }
-
-                const { stats, uploadsPerClient, weeklyActivity, recentUploads, timeline } = result.data;
-
-                // Stats
-                animateCount('v1', stats.totalUploads, 350);
-                animateCount('v2', stats.totalClients, 500);
-                animateCount('v3', stats.successfulImports, 650);
-                animateCount('v4', stats.todayUploads, 800);
-
-                setTimeout(() => {
-                    ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el) el.style.transform = 'scaleX(1)';
-                    });
-                }, 600);
-
-                // Store for switchPeriod
-                data7d = weeklyActivity || [0, 0, 0, 0, 0, 0, 0];
-
-                // Build all sections
-                buildBar('7d');
-                buildDonut(uploadsPerClient || []);
-                buildClientProgress(uploadsPerClient || []);
-                buildTimeline(timeline || []);
-                buildTable(recentUploads || []);
-
-            } catch (err) {
-                console.error('Dashboard load error:', err);
-            }
-        }
-
-        // ── Load clients dropdown ─────────────────────────────────────────────
-        async function loadClients(staffName) {
-            try {
-                const res = await fetch(`/AssignedClients/${staffName}`);
-                const result = await res.json();
-
-                const dropdown = document.getElementById('clientSelect');
-                if (!dropdown) return;
-
-                dropdown.innerHTML = `<option value="">Select Client</option>`;
-
-                dropdown.addEventListener('change', function () {
-                    const opt = dropdown.options[dropdown.selectedIndex];
-                    if (dropdown.value) {
-                        localStorage.setItem('clientId', dropdown.value);
-                        localStorage.setItem('clientName', opt.dataset.fullName || opt.textContent);
-                    } else {
-                        localStorage.removeItem('clientId');
-                        localStorage.removeItem('clientName');
-                    }
-                });
-
-                if (result.success && result.data.length > 0) {
-                    result.data.forEach(client => {
-                        const opt = document.createElement('option');
-                        opt.value = client.clientId;
-                        opt.textContent = client.fullName;
-                        opt.dataset.fullName = client.fullName;
-                        dropdown.appendChild(opt);
-                    });
-                } else {
-                    console.log('No clients for staffName:', staffName);
-                }
-            } catch (err) {
-                console.error('Client load error:', err);
-            }
-        }
-
-        // ── Upload file ───────────────────────────────────────────────────────
-        const fileUpload = document.getElementById('fileUpload');
-        const fileLabel = document.getElementById('fileLabel');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const notificationAlert = document.getElementById('notificationAlert');
-        const progressSection = document.getElementById('progressSection');
-        const progressBar = document.getElementById('progressBar');
-        const progressStatus = document.getElementById('progressStatus');
-        const progressPercent = document.getElementById('progressPercent');
-        const resultsSection = document.getElementById('resultsSection');
-        const resultsDetails = document.getElementById('resultsDetails');
-        const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
-
-        let isUploading = false;
-        let abortController = null;
-
-        function showNotification(message, type = 'success') {
-            notificationAlert.innerHTML = `
-    <div class="d-flex align-items-center">
-      <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} mr-2"></i>
-      <span>${message}</span>
-      <button type="button" class="close ml-auto"
-        onclick="this.parentElement.parentElement.style.display='none'">
-        <span>&times;</span>
-      </button>
-    </div>`;
-            notificationAlert.className = `alert alert-${type} alert-dismissible`;
-            notificationAlert.style.display = 'block';
-            if (type === 'success') setTimeout(() => { notificationAlert.style.display = 'none'; }, 5000);
-        }
-
-        function updateProgress(percent, status) {
-            progressBar.style.width = `${percent}%`;
-            progressPercent.textContent = `${percent}%`;
-            progressStatus.textContent = status;
-        }
-
-        function resetForm() {
-            fileUpload.value = '';
-            fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
-            uploadBtn.disabled = true;
-            progressSection.style.display = 'none';
-            resultsSection.style.display = 'none';
-            isUploading = false;
-        }
-
-        async function uploadFile() {
-            const file = fileUpload.files[0];
-            if (!file || isUploading) return;
-
-            const dropdown = document.getElementById('clientSelect');
-            const clientId = dropdown.value;
-            const clientName = dropdown.options[dropdown.selectedIndex]?.dataset?.fullName || '';
-            const selectedYear = document.getElementById('yearSelect').value;
-            const staffName = localStorage.getItem('staffName');
-
-            if (!clientId) {
-                showNotification('❌ Please select a client first.', 'danger');
-                return;
-            }
-
-            isUploading = true;
-            abortController = new AbortController();
-            progressSection.style.display = 'block';
-            resultsSection.style.display = 'none';
-            uploadBtn.disabled = true;
-            cancelBtn.style.display = 'inline-block';
-
-            try {
-                updateProgress(10, 'Validating file...');
-
-                if (file.size > 10 * 1024 * 1024) throw new Error('File size must be less than 10MB');
-                const validExts = ['.csv', '.xlsx', '.xls'];
-                if (!validExts.some(ext => file.name.toLowerCase().endsWith(ext)))
-                    throw new Error('Please upload CSV or Excel files only');
-
-                updateProgress(30, 'Uploading to server...');
-
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('year', selectedYear);
-                formData.append('clientId', clientId);
-                formData.append('clientName', clientName);
-                formData.append('staffName', staffName || '');   // ✅ staffName bhejo
-
-                const response = await fetch('/importExcelFile', {
-                    method: 'POST',
-                    body: formData,
-                    signal: abortController.signal
-                });
-
-                if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
-                updateProgress(70, 'Processing data...');
-                const result = await response.json();
-
-                if (result.success) {
-                    updateProgress(100, 'Import complete!');
-                    setTimeout(async () => {
-                        showResults(result);
-                        showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
-                        // ✅ Dashboard live refresh
-                        if (staffName) await loadDashboard(staffName);
-                    }, 500);
-                } else {
-                    throw new Error(result.error || 'Import failed');
-                }
-
-            } catch (error) {
-                if (error.name === 'AbortError') showNotification('Upload cancelled', 'info');
-                else showNotification(`❌ Error: ${error.message}`, 'danger');
-                resetForm();
-            }
-        }
-
-        function showResults(result) {
-            const imported = result.importedRows || 0;
-            const failed = result.failedRows || 0;
-            const sheetName = result.sheetName || '';
-            const clientName = result.clientName || '';
-
-            resultsDetails.innerHTML = `
-    <div class="row">
-      <div class="col-6">
-        <div class="text-success">
-          <i class="fas fa-check mr-1"></i><strong>${imported}</strong> rows imported
-        </div>
-      </div>
-      ${failed > 0 ? `
-      <div class="col-6">
-        <div class="text-warning">
-          <i class="fas fa-exclamation-triangle mr-1"></i><strong>${failed}</strong> rows failed
-        </div>
-      </div>` : ''}
-    </div>
-    ${clientName ? `<div class="mt-2"><i class="fas fa-user mr-1 text-primary"></i><small><strong>Client:</strong> ${clientName}</small></div>` : ''}
-    ${sheetName ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Sheet:</strong> ${sheetName}</small></div>` : ''}
-    ${result.googleSheets?.sheetUrl ? `
-    <div class="mt-1">
-      <a href="${result.googleSheets.sheetUrl}" target="_blank" class="btn btn-sm btn-outline-success mt-1">
-        <i class="fas fa-external-link-alt mr-1"></i> Open Google Sheet
-      </a>
-    </div>` : ''}`;
-
-            progressSection.style.display = 'none';
-            resultsSection.style.display = 'block';
-        }
-
-        function cancelUpload() {
-            if (abortController) abortController.abort();
-            resetForm();
-            showNotification('Upload cancelled', 'info');
-        }
-
-        // ── Event listeners ───────────────────────────────────────────────────
-        if (fileUpload) {
-            fileUpload.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (file) {
-                    fileLabel.innerHTML = `
-        <i class="fas fa-file-excel mr-2 text-success"></i>
-        <strong>${file.name}</strong>
-        <small class="text-muted ml-2">(${(file.size / 1024).toFixed(2)} KB)</small>`;
-                    uploadBtn.disabled = false;
-                } else {
-                    resetForm();
-                }
-            });
-        }
-        if (uploadBtn) uploadBtn.addEventListener('click', uploadFile);
-        if (cancelBtn) cancelBtn.addEventListener('click', cancelUpload);
-        if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetForm);
-
-        const cardBody = document.querySelector('.card-body');
-        if (cardBody) {
-            cardBody.addEventListener('dragover', e => { e.preventDefault(); cardBody.style.backgroundColor = '#f8f9fa'; });
-            cardBody.addEventListener('dragleave', e => { e.preventDefault(); cardBody.style.backgroundColor = ''; });
-            cardBody.addEventListener('drop', e => {
-                e.preventDefault();
-                cardBody.style.backgroundColor = '';
-                if (e.dataTransfer.files.length > 0) {
-                    fileUpload.files = e.dataTransfer.files;
-                    fileUpload.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-            });
-        }
-
-        // ── Logout ────────────────────────────────────────────────────────────
-        function logout() {
-            fetch('/logout', { method: 'POST', credentials: 'include' })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'Logged out', text: data.message, timer: 1200, showConfirmButton: false });
-                        setTimeout(() => { window.location.href = '/login'; }, 1200);
-                    } else {
-                        Swal.fire('Error', data.message || 'Logout failed', 'error');
-                    }
-                })
-                .catch(() => Swal.fire('Error', 'Server error', 'error'));
-        }
-
-        // ── Mobile menu ───────────────────────────────────────────────────────
-        function initMobileMenu() {
-            const menuBtn = document.querySelector(".button-menu-mobile");
-            if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
-                menuBtn.dataset.mobileListenerAttached = "true";
-                menuBtn.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    if (window.innerWidth <= 767) {
-                        document.body.classList.toggle("mobile-menu-open");
-                    } else {
-                        document.body.classList.toggle("enlarge-menu");
-                    }
-                });
-                document.addEventListener("click", function (e) {
-                    if (window.innerWidth <= 767) {
-                        const sidebar = document.querySelector(".left-sidenav");
-                        if (sidebar && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-                            document.body.classList.remove("mobile-menu-open");
-                        }
-                    }
-                });
-            }
-        }
-        // ── DOMContentLoaded ──────────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', async function () {
-            initMobileMenu();
-
-            const observer = new MutationObserver(() => {
-                const menuBtn = document.querySelector('.button-menu-mobile');
-                if (menuBtn && !menuBtn.dataset.mobileListenerAttached) initMobileMenu();
-            });
-            observer.observe(document.body, { childList: true, subtree: true });
-
-            const staffName = localStorage.getItem('staffName');
-
-            if (!staffName || staffName === 'null') {
-                console.warn('No staffName — redirecting to login');
-                window.location.href = '/login';
-                return;
-            }
-
-            // ✅ Dashboard + dropdown parallel load
-            await Promise.all([
-                loadDashboard(staffName),
-                loadClients(staffName)
-            ]);
-        });
-    </script> -->
 <script>
-    // ── Date ────────────────────────────────────────────────────────────
-const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const mons = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // ── Fecha ────────────────────────────────────────────────────────────
+const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const mons = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 const n = new Date();
 document.getElementById('dashDate').textContent =
     `${days[n.getDay()]}, ${n.getDate()} ${mons[n.getMonth()]} ${n.getFullYear()}`;
 
-// ── Globals ──────────────────────────────────────────────────────────
+// ── Globales ──────────────────────────────────────────────────────────
 const COLORS = ['#534AB7', '#0F6E56', '#b8670a', '#a32d2d', '#993556', '#185fa5', '#639922', '#BA7517'];
 const AV_CLASSES = ['av-purple', 'av-teal', 'av-amber', 'av-red', 'av-pink', 'av-blue', 'av-purple', 'av-teal'];
 const STATUS_MAP = {
-    success: ['s-success', 'Imported'],
-    pending: ['s-pending', 'Processing'],
-    error: ['s-error', 'Failed']
+    success: ['s-success', 'Importado'],
+    pending: ['s-pending', 'Procesando'],
+    error: ['s-error', 'Fallido']
 };
 let barInst = null;
 let data7d = [0, 0, 0, 0, 0, 0, 0];
 let data30d = new Array(30).fill(0);
 
-// ── Animate count ────────────────────────────────────────────────────
+// ── Animación de conteo ────────────────────────────────────────────────────
 function animateCount(id, target, delay) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1607,13 +1049,13 @@ function animateCount(id, target, delay) {
     }, delay || 0);
 }
 
-// ── Bar chart ────────────────────────────────────────────────────────
+// ── Gráfico de barras ────────────────────────────────────────────────────────
 function buildBar(period) {
     const is30 = period === '30d';
     const raw = is30 ? data30d : data7d;
     const labels = is30
         ? Array.from({ length: 30 }, (_, i) => String(i + 1))
-        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        : ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
 
     if (barInst) barInst.destroy();
     barInst = new Chart(document.getElementById('barChart'), {
@@ -1621,7 +1063,7 @@ function buildBar(period) {
         data: {
             labels,
             datasets: [{
-                label: 'Files',
+                label: 'Archivos',
                 data: raw,
                 backgroundColor: raw.map((_, i) =>
                     i === raw.length - 2 ? 'rgba(83,74,183,0.9)' : 'rgba(83,74,183,0.25)'
@@ -1664,7 +1106,7 @@ function switchPeriod(el, p) {
     buildBar(p);
 }
 
-// ── Donut chart ──────────────────────────────────────────────────────
+// ── Gráfico donut ──────────────────────────────────────────────────────
 function buildDonut(uploadsPerClient) {
     const circ = 2 * Math.PI * 50;
     const active = uploadsPerClient.filter(c => c.uploadCount > 0);
@@ -1709,10 +1151,10 @@ function buildDonut(uploadsPerClient) {
     }, 400);
 }
 
-// ── Client progress bars ─────────────────────────────────────────────
+// ── Barras de progreso de clientes ─────────────────────────────────────────────
 function buildClientProgress(uploadsPerClient) {
     const maxUp = Math.max(...uploadsPerClient.map(c => c.uploadCount), 1);
-    document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clients`;
+    document.querySelector('.hdr-badge.purple').textContent = `${uploadsPerClient.length} clientes`;
 
     document.getElementById('clientProgress').innerHTML = uploadsPerClient.map((c, i) => {
         const initials = c.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -1725,7 +1167,7 @@ function buildClientProgress(uploadsPerClient) {
                 <div class="cp-bar-bg">
                     <div class="cp-bar-fill" style="background:${COLORS[i % COLORS.length]};width:${pct}%"></div>
                 </div>
-                <div class="cp-sub">${c.uploadCount} files</div>
+                <div class="cp-sub">${c.uploadCount} archivos</div>
             </div>
             <div class="cp-val" style="color:${COLORS[i % COLORS.length]}">${c.uploadCount}</div>
         </div>`;
@@ -1736,11 +1178,11 @@ function buildClientProgress(uploadsPerClient) {
     }, 500);
 }
 
-// ── Timeline ─────────────────────────────────────────────────────────
+// ── Línea de tiempo ─────────────────────────────────────────────────────────
 function buildTimeline(timeline) {
     if (!timeline || timeline.length === 0) {
         document.getElementById('timeline').innerHTML =
-            `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">No recent activity</p>`;
+            `<p style="font-size:13px;color:var(--color-text-secondary);text-align:center;padding:20px 0">Sin actividad reciente</p>`;
         return;
     }
     document.getElementById('timeline').innerHTML = timeline.map(t => {
@@ -1753,21 +1195,21 @@ function buildTimeline(timeline) {
             <div class="tl-dot ${cls}">${icon}</div>
             <div class="tl-content">
                 <div class="tl-title">${t.fileName} — ${t.clientName}</div>
-                <div class="tl-time">${t.importedRows} rows · ${formatTimeAgo(t.createdAt)}</div>
+                <div class="tl-time">${t.importedRows} filas · ${formatTimeAgo(t.createdAt)}</div>
             </div>
         </div>`;
     }).join('');
 }
 
-// ── Uploads table ────────────────────────────────────────────────────
+// ── Tabla de subidas ────────────────────────────────────────────────────────
 function buildTable(recentUploads) {
     if (!recentUploads || recentUploads.length === 0) {
         document.getElementById('uploadsTbody').innerHTML =
-            `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">No uploads yet</td></tr>`;
+            `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--color-text-secondary)">Sin subidas aún</td></tr>`;
         return;
     }
     document.getElementById('uploadsTbody').innerHTML = recentUploads.map((r, i) => {
-        const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending', 'Unknown'];
+        const [cls, lbl] = STATUS_MAP[r.status] || ['s-pending', 'Desconocido'];
         const initials = (r.clientName || 'UN').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
         const avCls = AV_CLASSES[i % AV_CLASSES.length];
         return `
@@ -1791,50 +1233,48 @@ function buildTable(recentUploads) {
     }).join('');
 }
 
-// ── Time ago ─────────────────────────────────────────────────────────
+// ── Tiempo transcurrido ─────────────────────────────────────────────────────
 function formatTimeAgo(dateStr) {
     if (!dateStr) return '—';
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1) return 'Ahora mismo';
+    if (mins < 60) return `hace ${mins}m`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
+    if (hrs < 24) return `hace ${hrs}h`;
     const d = new Date(dateStr);
     return `${d.getDate()} ${mons[d.getMonth()]}, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-// ── MAIN: Load dashboard from API ────────────────────────────────────
+// ── PRINCIPAL: Cargar panel desde API ────────────────────────────────────
 async function loadDashboard(staffName) {
-    console.log('📡 loadDashboard called — staffName:', staffName);
+    console.log('📡 loadDashboard llamado — staffName:', staffName);
     try {
         const res = await fetch(`/getStaffDashboard/${staffName}`, {
-            cache: 'no-store'  // ✅ Browser cache bypass — fresh data har baar
+            cache: 'no-store'
         });
-        console.log('📡 API status:', res.status);
+        console.log('📡 Estado API:', res.status);
 
         if (!res.ok) {
-            console.error('❌ API HTTP error:', res.status);
+            console.error('❌ Error HTTP de API:', res.status);
             return;
         }
 
         const result = await res.json();
-        console.log('📊 Dashboard API response:', result);
+        console.log('📊 Respuesta API del panel:', result);
 
         if (!result.success) {
-            console.error('❌ Dashboard API error:', result.error);
+            console.error('❌ Error API del panel:', result.error);
             return;
         }
 
         const { stats, uploadsPerClient, weeklyActivity, recentUploads, timeline } = result.data;
 
-        // ── Stats counters
         animateCount('v1', stats.totalUploads || 0, 350);
         animateCount('v2', stats.totalClients || 0, 500);
         animateCount('v3', stats.successfulImports || 0, 650);
         animateCount('v4', stats.todayUploads || 0, 800);
 
-        // ── Progress bars on stat cards
         setTimeout(() => {
             ['bar1', 'bar2', 'bar3', 'bar4'].forEach(id => {
                 const el = document.getElementById(id);
@@ -1842,26 +1282,24 @@ async function loadDashboard(staffName) {
             });
         }, 600);
 
-        // ── Store chart data globally for period switching
         data7d = (weeklyActivity && weeklyActivity.length === 7)
             ? weeklyActivity
             : [0, 0, 0, 0, 0, 0, 0];
 
-        // ── Build all sections
         buildBar('7d');
         buildDonut(uploadsPerClient || []);
         buildClientProgress(uploadsPerClient || []);
         buildTimeline(timeline || []);
         buildTable(recentUploads || []);
 
-        console.log('✅ Dashboard updated successfully');
+        console.log('✅ Panel actualizado correctamente');
 
     } catch (err) {
-        console.error('❌ Dashboard load error:', err);
+        console.error('❌ Error al cargar el panel:', err);
     }
 }
 
-// ── Load clients dropdown ─────────────────────────────────────────────
+// ── Cargar dropdown de clientes ─────────────────────────────────────────────
 async function loadClients(staffName) {
     try {
         const res = await fetch(`/AssignedClients/${staffName}`);
@@ -1870,9 +1308,8 @@ async function loadClients(staffName) {
         const dropdown = document.getElementById('clientSelect');
         if (!dropdown) return;
 
-        dropdown.innerHTML = `<option value="">Select Client</option>`;
+        dropdown.innerHTML = `<option value="">Seleccionar Cliente</option>`;
 
-        // Remove old listener by cloning
         const newDropdown = dropdown.cloneNode(true);
         dropdown.parentNode.replaceChild(newDropdown, dropdown);
 
@@ -1896,14 +1333,14 @@ async function loadClients(staffName) {
                 newDropdown.appendChild(opt);
             });
         } else {
-            console.log('No clients for staffName:', staffName);
+            console.log('Sin clientes para staffName:', staffName);
         }
     } catch (err) {
-        console.error('Client load error:', err);
+        console.error('Error al cargar clientes:', err);
     }
 }
 
-// ── DOM refs ──────────────────────────────────────────────────────────
+// ── Referencias DOM ──────────────────────────────────────────────────────────
 const fileUpload       = document.getElementById('fileUpload');
 const fileLabel        = document.getElementById('fileLabel');
 const uploadBtn        = document.getElementById('uploadBtn');
@@ -1920,7 +1357,7 @@ const uploadAnotherBtn = document.getElementById('uploadAnotherBtn');
 let isUploading = false;
 let abortController = null;
 
-// ── Notification ──────────────────────────────────────────────────────
+// ── Notificación ──────────────────────────────────────────────────────
 function showNotification(message, type = 'success') {
     if (!notificationAlert) return;
     notificationAlert.innerHTML = `
@@ -1937,24 +1374,24 @@ function showNotification(message, type = 'success') {
     if (type === 'success') setTimeout(() => { notificationAlert.style.display = 'none'; }, 5000);
 }
 
-// ── Progress ──────────────────────────────────────────────────────────
+// ── Progreso ──────────────────────────────────────────────────────────
 function updateProgress(percent, status) {
     if (progressBar)     progressBar.style.width       = `${percent}%`;
     if (progressPercent) progressPercent.textContent   = `${percent}%`;
     if (progressStatus)  progressStatus.textContent    = status;
 }
 
-// ── Reset form ────────────────────────────────────────────────────────
+// ── Resetear formulario ────────────────────────────────────────────────────────
 function resetForm() {
     if (fileUpload)      fileUpload.value = '';
-    if (fileLabel)       fileLabel.innerHTML = '<span class="text-muted">Click to choose file...</span>';
+    if (fileLabel)       fileLabel.innerHTML = '<span class="text-muted">Haz clic para elegir un archivo...</span>';
     if (uploadBtn)       uploadBtn.disabled = true;
     if (progressSection) progressSection.style.display = 'none';
     if (resultsSection)  resultsSection.style.display  = 'none';
     isUploading = false;
 }
 
-// ── Upload file ───────────────────────────────────────────────────────
+// ── Subir archivo ───────────────────────────────────────────────────────
 async function uploadFile() {
     const file = fileUpload ? fileUpload.files[0] : null;
     if (!file || isUploading) return;
@@ -1966,15 +1403,15 @@ async function uploadFile() {
         : '';
     const yearSelect   = document.getElementById('yearSelect');
     const selectedYear = yearSelect ? yearSelect.value : '';
-    const staffName    = localStorage.getItem('staffName');  // ✅ Fresh read every time
+    const staffName    = localStorage.getItem('staffName');
 
     if (!clientId) {
-        showNotification('❌ Please select a client first.', 'danger');
+        showNotification('❌ Por favor seleccione un cliente primero.', 'danger');
         return;
     }
 
     if (!staffName || staffName === 'null') {
-        showNotification('❌ Session expired. Please login again.', 'danger');
+        showNotification('❌ Sesión expirada. Por favor inicie sesión nuevamente.', 'danger');
         setTimeout(() => { window.location.href = '/login'; }, 1500);
         return;
     }
@@ -1987,16 +1424,16 @@ async function uploadFile() {
     if (cancelBtn)       cancelBtn.style.display        = 'inline-block';
 
     try {
-        updateProgress(10, 'Validating file...');
+        updateProgress(10, 'Validando archivo...');
 
         if (file.size > 10 * 1024 * 1024)
-            throw new Error('File size must be less than 10MB');
+            throw new Error('El tamaño del archivo debe ser menor a 10MB');
 
         const validExts = ['.csv', '.xlsx', '.xls'];
         if (!validExts.some(ext => file.name.toLowerCase().endsWith(ext)))
-            throw new Error('Please upload CSV or Excel files only');
+            throw new Error('Por favor suba solo archivos CSV o Excel');
 
-        updateProgress(30, 'Uploading to server...');
+        updateProgress(30, 'Subiendo al servidor...');
 
         const formData = new FormData();
         formData.append('file',       file);
@@ -2011,49 +1448,47 @@ async function uploadFile() {
             signal: abortController.signal
         });
 
-        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
 
-        updateProgress(70, 'Processing data...');
+        updateProgress(70, 'Procesando datos...');
         const result = await response.json();
 
         if (result.success) {
-            updateProgress(100, 'Import complete!');
+            updateProgress(100, '¡Importación completa!');
 
-            // ✅ Wait briefly so progress bar is visible at 100%
             await new Promise(resolve => setTimeout(resolve, 600));
 
             showResults(result);
-            showNotification(`✅ Data imported for <strong>${clientName}</strong>!`, 'success');
+            showNotification(`✅ Datos importados para <strong>${clientName}</strong>!`, 'success');
 
-            // ✅ Refresh dashboard with fresh staffName
             const freshStaffName = localStorage.getItem('staffName');
-            console.log('🔄 Refreshing dashboard for staffName:', freshStaffName);
+            console.log('🔄 Actualizando panel para staffName:', freshStaffName);
 
             if (freshStaffName && freshStaffName !== 'null') {
                 await loadDashboard(freshStaffName);
-                console.log('✅ Dashboard refreshed after upload');
+                console.log('✅ Panel actualizado tras la subida');
             } else {
-                console.warn('❌ staffName not found in localStorage after upload');
+                console.warn('❌ staffName no encontrado en localStorage tras la subida');
             }
 
-            isUploading = false;  // ✅ Reset only after everything is done
+            isUploading = false;
 
         } else {
-            throw new Error(result.error || 'Import failed');
+            throw new Error(result.error || 'Importación fallida');
         }
 
     } catch (error) {
         if (error.name === 'AbortError') {
-            showNotification('Upload cancelled', 'info');
+            showNotification('Subida cancelada', 'info');
         } else {
-            console.error('Upload error:', error);
+            console.error('Error de subida:', error);
             showNotification(`❌ Error: ${error.message}`, 'danger');
         }
         resetForm();
     }
 }
 
-// ── Show results ──────────────────────────────────────────────────────
+// ── Mostrar resultados ──────────────────────────────────────────────────────
 function showResults(result) {
     if (!resultsDetails) return;
 
@@ -2066,22 +1501,22 @@ function showResults(result) {
     <div class="row">
         <div class="col-6">
             <div class="text-success">
-                <i class="fas fa-check mr-1"></i><strong>${imported}</strong> rows imported
+                <i class="fas fa-check mr-1"></i><strong>${imported}</strong> filas importadas
             </div>
         </div>
         ${failed > 0 ? `
         <div class="col-6">
             <div class="text-warning">
-                <i class="fas fa-exclamation-triangle mr-1"></i><strong>${failed}</strong> rows failed
+                <i class="fas fa-exclamation-triangle mr-1"></i><strong>${failed}</strong> filas fallidas
             </div>
         </div>` : ''}
     </div>
-    ${clientName ? `<div class="mt-2"><i class="fas fa-user mr-1 text-primary"></i><small><strong>Client:</strong> ${clientName}</small></div>` : ''}
-    ${sheetName  ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Sheet:</strong> ${sheetName}</small></div>` : ''}
+    ${clientName ? `<div class="mt-2"><i class="fas fa-user mr-1 text-primary"></i><small><strong>Cliente:</strong> ${clientName}</small></div>` : ''}
+    ${sheetName  ? `<div class="mt-1"><i class="fas fa-table mr-1 text-success"></i><small><strong>Hoja:</strong> ${sheetName}</small></div>` : ''}
     ${result.googleSheets?.sheetUrl ? `
     <div class="mt-1">
         <a href="${result.googleSheets.sheetUrl}" target="_blank" class="btn btn-sm btn-outline-success mt-1">
-            <i class="fas fa-external-link-alt mr-1"></i> Open Google Sheet
+            <i class="fas fa-external-link-alt mr-1"></i> Abrir Hoja de Google
         </a>
     </div>` : ''}`;
 
@@ -2089,11 +1524,11 @@ function showResults(result) {
     if (resultsSection)  resultsSection.style.display  = 'block';
 }
 
-// ── Cancel upload ─────────────────────────────────────────────────────
+// ── Cancelar subida ─────────────────────────────────────────────────────────
 function cancelUpload() {
     if (abortController) abortController.abort();
     resetForm();
-    showNotification('Upload cancelled', 'info');
+    showNotification('Subida cancelada', 'info');
 }
 
 // ── Event listeners ───────────────────────────────────────────────────
@@ -2116,7 +1551,7 @@ if (uploadBtn)      uploadBtn.addEventListener('click',  uploadFile);
 if (cancelBtn)      cancelBtn.addEventListener('click',  cancelUpload);
 if (uploadAnotherBtn) uploadAnotherBtn.addEventListener('click', resetForm);
 
-// ── Drag & drop ───────────────────────────────────────────────────────
+// ── Arrastrar y soltar ───────────────────────────────────────────────────────
 const cardBody = document.querySelector('.card-body');
 if (cardBody) {
     cardBody.addEventListener('dragover',  e => { e.preventDefault(); cardBody.style.backgroundColor = '#f8f9fa'; });
@@ -2131,25 +1566,25 @@ if (cardBody) {
     });
 }
 
-// ── Logout ────────────────────────────────────────────────────────────
+// ── Cerrar sesión ────────────────────────────────────────────────────────────
 function logout() {
     fetch('/logout', { method: 'POST', credentials: 'include' })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
                 Swal.fire({
-                    icon: 'success', title: 'Logged out',
+                    icon: 'success', title: 'Sesión cerrada',
                     text: data.message, timer: 1200, showConfirmButton: false
                 });
                 setTimeout(() => { window.location.href = '/login'; }, 1200);
             } else {
-                Swal.fire('Error', data.message || 'Logout failed', 'error');
+                Swal.fire('Error', data.message || 'Error al cerrar sesión', 'error');
             }
         })
-        .catch(() => Swal.fire('Error', 'Server error', 'error'));
+        .catch(() => Swal.fire('Error', 'Error del servidor', 'error'));
 }
 
-// ── Mobile menu ───────────────────────────────────────────────────────
+// ── Menú móvil ───────────────────────────────────────────────────────────────
 function initMobileMenu() {
     const menuBtn = document.querySelector(".button-menu-mobile");
     if (menuBtn && !menuBtn.dataset.mobileListenerAttached) {
@@ -2184,15 +1619,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     observer.observe(document.body, { childList: true, subtree: true });
 
     const staffName = localStorage.getItem('staffName');
-    console.log('🚀 Page loaded — staffName:', staffName);
+    console.log('🚀 Página cargada — staffName:', staffName);
 
     if (!staffName || staffName === 'null') {
-        console.warn('No staffName — redirecting to login');
+        console.warn('Sin staffName — redirigiendo al login');
         window.location.href = '/login';
         return;
     }
 
-    // ✅ Load dashboard + dropdown in parallel
     await Promise.all([
         loadDashboard(staffName),
         loadClients(staffName)

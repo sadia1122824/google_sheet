@@ -9,24 +9,15 @@
     <meta content="" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- App favicon -->
     <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
-
     <link href="../plugins/dropify/css/dropify.min.css" rel="stylesheet">
-
-    <!-- App css -->
     <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/metisMenu.min.css" rel="stylesheet" type="text/css" />
     <link href="../plugins/daterangepicker/daterangepicker.css" rel="stylesheet" type="text/css" />
     <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
 
-
     <style>
-        /* =========================
-   CORRECCIONES RESPONSIVAS MÓVIL
-   ========================= */
-
         @media (max-width: 767px) {
             .left-sidenav {
                 position: fixed !important;
@@ -38,703 +29,91 @@
                 height: 100vh !important;
                 width: 260px !important;
             }
-
             body.mobile-menu-open .left-sidenav {
                 transform: translateX(0) !important;
             }
         }
 
         @media (max-width: 767px) {
-
-            /* Relleno del contenedor de página */
-            .page-content {
-                padding: 12px !important;
-            }
-
-            /* Espaciado de tarjetas */
-            .card {
-                margin-bottom: 15px;
-            }
-
-            .card-header {
-                padding: 12px;
-            }
-
-            .card-body {
-                padding: 12px !important;
-            }
-
-            /* Títulos de tarjeta */
-            .card-title {
-                font-size: 1rem;
-            }
-
-            /* Grupo de entrada apilado en móvil */
-            .input-group {
-                flex-direction: column;
-            }
-
+            .page-content { padding: 12px !important; }
+            .card { margin-bottom: 15px; }
+            .card-header { padding: 12px; }
+            .card-body { padding: 12px !important; }
+            .card-title { font-size: 1rem; }
+            .input-group { flex-direction: column; }
             .input-group .custom-file,
-            .input-group-append {
-                width: 100%;
-            }
-
-            .input-group-append {
-                margin-top: 10px;
-            }
-
-            .input-group-append button {
-                width: 100%;
-            }
-
-            /* Etiqueta de archivo personalizado */
-            .custom-file-label {
-                white-space: normal;
-                text-overflow: unset;
-                overflow: visible;
-            }
-
-            /* Fila de progreso apilada */
-            #progressSection .d-flex {
-                flex-direction: column;
-                align-items: flex-start !important;
-            }
-
-            #progressPercent {
-                margin-top: 5px;
-            }
-
-            /* Corrección de cuadrícula de resultados */
-            #resultsSection .row>div {
-                width: 100%;
-                margin-bottom: 10px;
-            }
-
-            /* Ocultar nombre de usuario en barra superior */
-            .nav-user span {
-                display: none !important;
-            }
-
-            /* Comportamiento de superposición de barra lateral */
-            body.enlarge-menu .left-sidenav {
-                transform: translateX(0);
-            }
-
-            .left-sidenav {
-                position: fixed;
-                z-index: 1051;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            body.enlarge-menu .left-sidenav {
-                transform: translateX(0);
-            }
-
-            /* Evitar desplazamiento horizontal */
-            body {
-                overflow-x: hidden;
-            }
+            .input-group-append { width: 100%; }
+            .input-group-append { margin-top: 10px; }
+            .input-group-append button { width: 100%; }
+            .custom-file-label { white-space: normal; text-overflow: unset; overflow: visible; }
+            #progressSection .d-flex { flex-direction: column; align-items: flex-start !important; }
+            #progressPercent { margin-top: 5px; }
+            #resultsSection .row>div { width: 100%; margin-bottom: 10px; }
+            .nav-user span { display: none !important; }
+            body.enlarge-menu .left-sidenav { transform: translateX(0); }
+            .left-sidenav { position: fixed; z-index: 1051; transform: translateX(-100%); transition: transform 0.3s ease; }
+            body { overflow-x: hidden; }
         }
 
-        /* Estilo del formulario dentro de la tarjeta Dastone */
-        #addForm {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-            margin: 20px auto;
-        }
+        /* ===== TOAST NOTIFICATION ===== */
 
-        #addForm input {
-            padding: 10px 15px;
-            border-radius: 5px;
-            border: 1px solid #ced4da;
-            font-size: 16px;
-        }
+      
 
-        #addForm button {
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+        /* ===== FORM STYLES ===== */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { font-weight: 600; color: #495057; margin-bottom: 0.5rem; display: block; font-size: 0.875rem; }
+        .card-body { padding: 1.5rem !important; }
 
-        #addForm button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Lista de filas existentes */
-        #rowsList {
-            list-style: none;
-            padding: 0;
-            max-width: 600px;
-            margin: 20px auto;
-        }
-
-        #rowsList li {
-            background-color: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            font-size: 16px;
-        }
-
-        /* Encabezados */
-        h1,
-        h2 {
-            text-align: center;
-            color: #343a40;
-        }
-
-        /* Estilo personalizado para formulario dinámico dentro de tarjeta Dastone */
-
-        /* Encabezado principal */
-        h2 {
-            color: #343a40;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .total-display {
-            background-color: #007bff;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            float: right;
-        }
-
-        /* Mensajes de alerta */
-        .alert {
-            border-radius: 0.25rem;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid transparent;
-            display: none;
-        }
-
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-
-        .alert-error {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        /* Grupos de formulario */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            color: #495057;
-            margin-bottom: 0.5rem;
-            display: block;
-            font-size: 0.875rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.6rem 0.75rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-        }
-
-        .form-group input:focus {
-            border-color: #80bdff;
-            outline: 0;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        /* Cuadrícula de entrada */
-        .input-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr auto;
-            gap: 15px;
-            margin-bottom: 1.5rem;
-            align-items: end;
-        }
-
-        @media (max-width: 768px) {
-            .input-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .input-grid select {
-            width: 100%;
-            padding: 0.6rem 0.75rem;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            height: calc(2.25rem + 2px);
-        }
-
-        .input-grid .add-entry-btn {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 0.25rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.15s ease-in-out;
-            white-space: nowrap;
-            height: calc(2.25rem + 2px);
-        }
-
-        .input-grid .add-entry-btn:hover {
-            background-color: #218838;
-        }
-
-        .input-grid .add-entry-btn span {
-            font-weight: bold;
-            margin-right: 5px;
-        }
-
-        /* Lista de entradas */
-        .entries-list {
-            background-color: #f8f9fa;
-            border-radius: 0.25rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e9ecef;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #6c757d;
-            padding: 2rem;
-            font-style: italic;
-            font-size: 0.875rem;
-        }
-
-        /* Elemento de entrada */
-        .entry-item {
-            background-color: white;
-            padding: 1rem;
-            border-radius: 0.25rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #e9ecef;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .entry-details {
-            flex: 1;
-        }
-
-        .entry-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .month-badge {
-            background-color: #6c757d;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 10rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .value-badge {
-            background-color: #17a2b8;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 10rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .remove-entry {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.375rem 0.75rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.15s ease-in-out;
-            margin-left: 1rem;
-        }
-
-        .remove-entry:hover {
-            background-color: #c82333;
-        }
-
-        /* Botón de envío */
-        .submit-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.25rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-            transition: background-color 0.15s ease-in-out;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background-color: #0069d9;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-
-        /* Indicador de carga */
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Relleno correcto del contenido de la tarjeta */
-        .card-body {
-            padding: 1.5rem !important;
-        }
-
-        /* Estilos del Modal de Confirmación */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1050;
-            overflow-y: auto;
-        }
-
-        .modal.show {
-            display: block;
-        }
-
-        .modal-dialog {
-            margin: 10% auto;
-            max-width: 500px;
-        }
-
-        .modal-content {
-            border-radius: 0.3rem;
-            border: none;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            border-radius: 0.3rem 0.3rem 0 0;
-            padding: 1rem;
-        }
-
-        .modal-title {
-            margin: 0;
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .modal-footer {
-            border-top: 1px solid #dee2e6;
-            padding: 1rem;
-            text-align: right;
-        }
-
-        /* Estilos de Toast */
-        .toast {
-            background-color: white;
-            border-radius: 0.25rem;
-            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        .toast-header {
-            border-radius: 0.25rem 0.25rem 0 0;
-            padding: 0.5rem 0.75rem;
-        }
-
-        .toast-body {
-            padding: 0.75rem;
-            white-space: pre-line;
-            line-height: 1.5;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Estilos de Alerta */
-        .alert {
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-
-        .alert-error {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-
-        .alert-info {
-            color: #0c5460;
-            background-color: #d1ecf1;
-            border-color: #bee5eb;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Estilos de Lista de Entradas */
-        .entries-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 1.5rem;
-        }
-
-        .entry-item {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .month-badge {
-            background-color: #6c757d;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-
-        .value-badge {
-            background-color: #28a745;
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #6c757d;
-            padding: 2rem;
-            font-style: italic;
-        }
-
-        .total-display {
-            background-color: #007bff;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            font-weight: 600;
-            float: right;
-        }
-
-        /* Enlaces de la barra lateral */
+        /* ===== SIDEBAR ===== */
         .left-sidenav-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin: 4px 10px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #5b6475;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.25s ease;
-            position: relative;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            margin: 4px 10px; border-radius: 10px; text-decoration: none;
+            color: #5b6475; font-size: 14px; font-weight: 500;
+            transition: all 0.25s ease; position: relative;
         }
-
-        /* Efecto al pasar el cursor */
-        .left-sidenav-menu a:hover {
-            transform: translateX(5px);
-            color: #2563eb;
-        }
-
-        /* Enlace activo */
-        .left-sidenav-menu a.active {
-            color: #2563eb;
-            font-weight: 600;
-        }
-
-        /* Estilo de iconos */
-        .left-sidenav-menu .menu-icon {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-            transition: all 0.25s ease;
-        }
-
-        /* Animación de icono al pasar cursor */
-        .left-sidenav-menu a:hover .menu-icon {
-            transform: scale(1.1);
-        }
-
-        /* Indicador de borde izquierdo moderno */
+        .left-sidenav-menu a:hover { transform: translateX(5px); color: #2563eb; }
+        .left-sidenav-menu a.active { color: #2563eb; font-weight: 600; }
+        .left-sidenav-menu .menu-icon { width: 18px; height: 18px; stroke-width: 2; transition: all 0.25s ease; }
+        .left-sidenav-menu a:hover .menu-icon { transform: scale(1.1); }
         .left-sidenav-menu a::before {
-            content: "";
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 0;
-            background: #2563eb;
-            border-radius: 10px;
-            transition: all 0.25s ease;
+            content: ""; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+            width: 3px; height: 0; background: #2563eb; border-radius: 10px; transition: all 0.25s ease;
         }
-
         .left-sidenav-menu a:hover::before,
-        .left-sidenav-menu a.active::before {
-            height: 70%;
-        }
-
-        /* Etiqueta del menú */
-        .menu-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #9aa4b2;
-            font-weight: 600;
-            margin: 18px 16px 8px;
-        }
+        .left-sidenav-menu a.active::before { height: 70%; }
+        .menu-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #9aa4b2; font-weight: 600; margin: 18px 16px 8px; }
     </style>
-
 </head>
 
 <body>
+    <!-- Toast — body ke andar, sab se upar -->
+   
+
     <div id="side-navbar"></div>
 
-
-
     <div class="page-wrapper">
-        <!-- Inicio de la Barra Superior -->
+        <!-- Topbar -->
         <div class="topbar">
-            <!-- Barra de navegación -->
             <nav class="navbar-custom">
                 <ul class="list-unstyled topbar-nav float-right mb-0">
-
                     <li class="dropdown">
-                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown"
-                            href="#" role="button">
-
-                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">
-                                Nick
-                            </span>
-
-                            <img src="../admin/assets/images/users/user-5.jpg" alt="usuario-perfil"
-                                class="rounded-circle thumb-sm border" />
+                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown" href="#" role="button">
+                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">Nick</span>
+                            <img src="../admin/assets/images/users/user-5.jpg" alt="usuario-perfil" class="rounded-circle thumb-sm border" />
                         </a>
-
                         <div class="dropdown-menu dropdown-menu-right shadow-sm">
-
                             <div class="dropdown-divider"></div>
-
                             <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
                                 <i data-feather="power" class="icon-xs mr-2"></i>
                                 <span>Cerrar sesión</span>
                             </a>
-
                             <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
                                 <i data-feather="settings" class="icon-xs mr-2"></i>
                                 <span>Configuración</span>
                             </a>
-
                         </div>
                     </li>
-
-                </ul><!--fin topbar-nav-->
-
+                </ul>
                 <ul class="list-unstyled topbar-nav mb-0">
                     <li>
                         <button class="nav-link button-menu-mobile">
@@ -743,123 +122,74 @@
                     </li>
                 </ul>
             </nav>
-            <!-- fin barra de navegación-->
         </div>
-        <!-- Fin de la Barra Superior -->
+        <!-- /Topbar -->
 
-        <!-- Contenido de la Página -->
         <div class="page-content">
             <div class="container-fluid">
-                <!-- Título de la Página -->
+
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="page-title-box">
+                        <div class="page-title-box"></div>
+                    </div>
+                </div>
 
-                        </div><!--fin page-title-box-->
-                    </div><!--fin col-->
-                </div><!--fin row-->
-                <!-- fin título de página -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Importar Datos a Google Sheets</h4>
                                 <p class="text-muted mb-0">Sube un archivo Excel para importar datos directamente</p>
-
-                                <!-- Selector de Año -->
-
                             </div>
 
                             <div class="card mb-4">
-
                                 <div class="card-header">
-                                    <h4 class="card-title">
-                                        Gestión de Clientes
-                                    </h4>
-
-                                    <p class="text-muted mb-0">
-                                        Agregar clientes y asignarlos a miembros del personal
-                                    </p>
+                                    <h4 class="card-title">Gestión de Clientes</h4>
+                                    <p class="text-muted mb-0">Agregar clientes y asignarlos a miembros del personal</p>
                                 </div>
 
                                 <div class="card-body">
-
-                                    <!-- Alerta -->
-                                    <div id="clientAlert" class="alert" style="display:none;">
-                                    </div>
-
-                                    <!-- Formulario de Cliente -->
                                     <form id="clientForm">
-
                                         <div class="row">
 
-                                            <!-- Nombre del Cliente -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        Nombre del Cliente
-                                                    </label>
-
-                                                    <input type="text" id="clientName" class="form-control"
-                                                        placeholder="Ingrese el Nombre del Cliente" required>
+                                                    <label>Nombre del Cliente</label>
+                                                    <input type="text" id="clientName" class="form-control" placeholder="Ingrese el Nombre del Cliente" required>
                                                 </div>
                                             </div>
 
-                                            <!-- Correo del Cliente -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        Correo Electrónico del Cliente
-                                                    </label>
-
-                                                    <input type="email" id="clientEmail" class="form-control"
-                                                        placeholder="Ingrese el Correo del Cliente" required>
+                                                    <label>Correo Electrónico del Cliente</label>
+                                                    <input type="email" id="clientEmail" class="form-control" placeholder="Ingrese el Correo del Cliente" required>
                                                 </div>
                                             </div>
 
-                                            <!-- Contraseña -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        Contraseña
-                                                    </label>
-
-                                                    <input type="password" id="clientPassword" class="form-control"
-                                                        placeholder="Ingrese la Contraseña" required>
+                                                    <label>Contraseña</label>
+                                                    <input type="password" id="clientPassword" class="form-control" placeholder="Ingrese la Contraseña" required>
                                                 </div>
                                             </div>
 
-                                            <!-- Teléfono -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        Número de Teléfono
-                                                    </label>
-
-                                                    <input type="text" id="clientPhone" class="form-control"
-                                                        placeholder="0300XXXXXXX" required>
+                                                    <label>Número de Teléfono</label>
+                                                    <input type="text" id="clientPhone" class="form-control" placeholder="0300XXXXXXX" required>
                                                 </div>
                                             </div>
 
-                                            <!-- ID del Cliente -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        ID del Cliente
-                                                    </label>
-
-                                                    <input type="text" id="clientId" class="form-control"
-                                                        placeholder="CLT001" required>
+                                                    <label>ID del Cliente</label>
+                                                    <input type="text" id="clientId" class="form-control" placeholder="CLT001" required>
                                                 </div>
                                             </div>
 
-                                            <!-- Asignar Personal -->
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label>
-                                                        Asignar Miembro del Personal
-                                                    </label>
-
+                                                    <label>Asignar Miembro del Personal</label>
                                                     <select id="assignStaff" class="form-control" required>
                                                         <option value="">Seleccionar Miembro del Personal</option>
                                                     </select>
@@ -868,38 +198,22 @@
 
                                         </div>
 
-                                        <!-- Botón de Envío -->
                                         <button type="submit" class="btn btn-primary btn-block mt-3">
-
                                             <i class="fas fa-user-plus mr-1"></i>
-
                                             Agregar Cliente
                                         </button>
-
                                     </form>
-
                                 </div>
                             </div>
 
-
-
-                        </div><!--fin card-->
-                    </div><!--fin col-->
+                        </div>
+                    </div>
                 </div>
 
-
-            </div><!-- contenedor -->
-
-
+            </div>
         </div>
-        <!-- fin contenido de página -->
     </div>
-    <!-- fin page-wrapper -->
 
-
-
-
-    <!-- jQuery  -->
     <script src="../admin/side_navbar.js"></script>
     <script src="../admin/assets/js/jquery.min.js"></script>
     <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
@@ -909,19 +223,64 @@
     <script src="../admin/assets/js/simplebar.min.js"></script>
     <script src="../admin/assets/js/moment.js"></script>
     <script src="../plugins/daterangepicker/daterangepicker.js"></script>
-
     <script src="../plugins/dropify/js/dropify.min.js"></script>
     <script src="../admin/assets/pages/jquery.form-upload.init.js"></script>
 
     <script>
+    function showToast(type, message) {
+    let toast = document.getElementById("toastNotification");
+
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toastNotification";
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            min-width: 300px;
+            max-width: 420px;
+            padding: 14px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            transition: opacity 0.3s ease;
+        `;
+        document.body.appendChild(toast);
+    }
+
+    const styles = {
+        success: { background: "#d4edda", color: "#155724", border: "1px solid #c3e6cb" },
+        danger:  { background: "#f8d7da", color: "#721c24", border: "1px solid #f5c6cb" },
+        warning: { background: "#fff3cd", color: "#856404", border: "1px solid #ffeeba" },
+        info:    { background: "#d1ecf1", color: "#0c5460", border: "1px solid #bee5eb" }
+    };
+
+    const style = styles[type] || styles.info;
+    toast.style.background = style.background;
+    toast.style.color      = style.color;
+    toast.style.border     = style.border;
+
+    const icons = { success: "✅", danger: "❌", warning: "⚠️", info: "ℹ️" };
+    toast.innerHTML     = `${icons[type] || "ℹ️"} ${message}`;
+    toast.style.display = "block";
+    toast.style.opacity = "1";
+
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => { toast.style.display = "none"; }, 300);
+    }, 4000);
+}
         document.addEventListener("DOMContentLoaded", async function () {
 
+            // Hamburger menu
             const hamburgerBtn = document.querySelector('.button-menu-mobile');
-
             if (hamburgerBtn) {
                 hamburgerBtn.addEventListener('click', function () {
                     const isMobile = window.innerWidth <= 767;
-
                     if (isMobile) {
                         document.body.classList.toggle('mobile-menu-open');
                     } else {
@@ -930,13 +289,11 @@
                 });
             }
 
-            // Cerrar barra lateral al hacer clic fuera en móvil
+            // Sidebar close on outside click (mobile)
             document.addEventListener('click', function (e) {
                 if (window.innerWidth > 767) return;
-
-                const sidebar = document.querySelector('.left-sidenav');
+                const sidebar   = document.querySelector('.left-sidenav');
                 const hamburger = document.querySelector('.button-menu-mobile');
-
                 if (sidebar && hamburger &&
                     !sidebar.contains(e.target) &&
                     !hamburger.contains(e.target)
@@ -945,93 +302,65 @@
                 }
             });
 
-
-
-            // =========================
-            // 1. CARGAR DESPLEGABLE DE PERSONAL
-            // =========================
+            // Staff dropdown load
             async function loadStaffDropdown() {
-
                 try {
-
                     const response = await fetch("/getStaff");
-                    const result = await response.json();
-
-                    const select = document.getElementById("assignStaff");
-
-                    select.innerHTML = `<option value="">Seleccionar Miembro del Personal</option>`;
-
+                    const result   = await response.json();
+                    const select   = document.getElementById("assignStaff");
+                    select.innerHTML = '<option value="">Seleccionar Miembro del Personal</option>';
                     if (result.success && result.data.length > 0) {
-
-                        result.data.forEach(staff => {
-
-                            const option = document.createElement("option");
-                            option.value = staff.fullName;
-                            option.textContent = `${staff.fullName}`;
-
+                        result.data.forEach(function(staff) {
+                            const option       = document.createElement("option");
+                            option.value       = staff.fullName;
+                            option.textContent = staff.fullName;
                             select.appendChild(option);
                         });
                     }
-
                 } catch (error) {
-                    console.log("Error al cargar personal:", error);
+                    showToast("warning", "Staff load karne mein masla hua.");
                 }
             }
 
             loadStaffDropdown();
 
-
-            // =========================
-            // 2. ENVÍO DEL FORMULARIO DE CLIENTE
-            // =========================
+            // Form submit
             document.getElementById("clientForm").addEventListener("submit", async function (e) {
                 e.preventDefault();
 
                 const clientData = {
-                    fullName: document.getElementById("clientName").value,
-                    email: document.getElementById("clientEmail").value,
-                    password: document.getElementById("clientPassword").value,
-                    phone: document.getElementById("clientPhone").value,
-                    clientId: document.getElementById("clientId").value,
+                    fullName:    document.getElementById("clientName").value,
+                    email:       document.getElementById("clientEmail").value,
+                    password:    document.getElementById("clientPassword").value,
+                    phone:       document.getElementById("clientPhone").value,
+                    clientId:    document.getElementById("clientId").value,
                     assignStaff: document.getElementById("assignStaff").value
                 };
 
                 try {
-
                     const response = await fetch("/AddClients", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(clientData)
+                        method:  "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body:    JSON.stringify(clientData)
                     });
 
                     const result = await response.json();
 
-                    const alertBox = document.getElementById("clientAlert");
-
-                    alertBox.style.display = "block";
-
                     if (response.ok) {
-                        alertBox.className = "alert alert-success";
-                        alertBox.innerText = result.message;
-
+                        showToast("success", result.message || "Cliente agregado exitosamente.");
                         document.getElementById("clientForm").reset();
                     } else {
-                        alertBox.className = "alert alert-danger";
-                        alertBox.innerText = result.message;
+                        showToast("danger", result.message || "Error al agregar cliente.");
                     }
 
                 } catch (error) {
                     console.log(error);
+                    showToast("danger", "Network error. Please try again.");
                 }
             });
-
-
 
         });
     </script>
 
 </body>
-
 </html>

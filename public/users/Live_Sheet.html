@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Sheet Results</title>
+  <title>Resultados de Google Sheet</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
   <link rel="stylesheet" href="/users/styles.css">
 </head>
 
@@ -22,32 +21,52 @@
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
 
-
       <!-- Top Bar -->
-     <div class="top-bar">
+  <div class="top-bar">
   <button class="hamburger-btn" onclick="toggleSidebar()">
     <i class="bi bi-list"></i>
   </button>
 
-<a href="/LiveSheetData">
-  <img
-    src="/users/icons/image1.png"
-    alt="logo"
-    class="theme-logo top-bar-logo"
-    onerror="this.style.display='none'"
-  >
-</a>
+  <a href="/LiveSheetData">
+    <img src="/users/icons/image1.png" alt="logotipo" class="theme-logo top-bar-logo"
+      onerror="this.style.display='none'">
+  </a>
 
   <span class="top-bar-title"></span>
 
-  <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">
+  <!-- Language Button ONLY — modal neeche body level pe hai -->
+   <button class="lang-btn" id="langBtn" onclick="openLangModal()" aria-haspopup="dialog">
+    <span class="lang-flag" id="activeFlag">Select languages</span>
+   
+    
+  </button>
+
+  <button class="theme-toggle-btn" onclick="toggleTheme()" data-i18n-title="theme_toggle" title="Cambiar tema">
     <span class="icon-dark">🌙</span>
     <span class="icon-light">☀️</span>
   </button>
-    <span class="badge-status">
-          <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
-          <span class="live-text"> Live Data</span>
-        </span>
+
+  <span class="badge-status">
+    <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
+    <span class="live-text" data-i18n="live_data"> Datos en vivo</span>
+  </span>
+</div>
+
+<!-- ✅ Modal body ke end mein, top-bar ke BAHAR -->
+<div class="lang-modal-overlay" id="langModalOverlay">
+  <div class="lang-modal-box" onclick="event.stopPropagation()">
+    <div class="lang-modal-header">
+      <span class="lang-modal-title">Select Language</span>
+      <button class="lang-modal-close" onclick="closeLangModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="lang-modal-list" id="langList"></div>
+    <div class="lang-modal-footer">
+      <button class="lang-modal-btn-cancel" onclick="closeLangModal()">Cancel</button>
+      <button class="lang-modal-btn-apply" onclick="applyLangModal()">Apply</button>
+    </div>
+  </div>
 </div>
 
       <!-- Filter Open Button + Active Pills -->
@@ -55,13 +74,13 @@
 
         <button class="btn-open-filter" onclick="openFilterDrawer()">
           <i class="bi bi-sliders2"></i>
-          Filters
+          <span data-i18n="filters">Filtros</span>
           <span class="filter-badge" id="filterBadge" style="display:none;">0</span>
         </button>
 
         <button onclick="openChatDrawer()" class="ai-chat-btn">
           <i class="bi bi-robot" style="font-size:14px;"></i>
-          <span class="btn-text">AI Chat</span>
+          <span class="btn-text" data-i18n="ai_chat">Chat IA</span>
         </button>
 
         <div class="active-filter-pills" id="activePills"></div>
@@ -73,33 +92,41 @@
 
       <div class="filter-drawer" id="filterDrawer">
         <div class="fd-header">
-          <div class="fd-header-title"><i class="bi bi-sliders2" style="font-size:18px;"></i> Filters & Summary</div>
+          <div class="fd-header-title">
+            <i class="bi bi-sliders2" style="font-size:18px;"></i>
+            <span data-i18n="filters_summary"> Filtros y resumen</span>
+          </div>
           <button class="fd-close-btn" onclick="closeFilterDrawer()"><i class="bi bi-x-lg"></i></button>
         </div>
         <div class="fd-body">
 
           <!-- Period Filter -->
           <div class="fd-section">
-            <div class="fd-section-title"><i class="bi bi-calendar3"></i> Period Filter</div>
+            <div class="fd-section-title">
+              <i class="bi bi-calendar3"></i>
+              <span data-i18n="filter_period"> Filtro por período</span>
+            </div>
 
             <div class="filter-toggle-group">
-              <button class="toggle-btn active" id="btnMonth" onclick="setFilterType('month')">Month</button>
-              <button class="toggle-btn" id="btnYear" onclick="setFilterType('year')">Year</button>
-              <button class="toggle-btn" id="btnMonthYear" onclick="setFilterType('monthyear')">M vs Y</button>
+              <button class="toggle-btn active" id="btnMonth" onclick="setFilterType('month')"
+                data-i18n="month">Mes</button>
+              <button class="toggle-btn" id="btnYear" onclick="setFilterType('year')" data-i18n="year">Año</button>
+              <button class="toggle-btn" id="btnMonthYear" onclick="setFilterType('monthyear')" data-i18n="m_vs_a">M vs
+                A</button>
             </div>
 
             <!-- Month-only -->
             <div id="monthFilters">
               <div class="fd-row">
-                <label class="fd-label">Month 1</label>
+                <label class="fd-label" data-i18n="month_1">Mes 1</label>
                 <select class="fd-select" id="selMonth1" onchange="onFilterChange()">
-                  <option value="">-- Select --</option>
+                  <option value="" data-i18n="select">-- Seleccionar --</option>
                 </select>
               </div>
               <div class="fd-row">
-                <label class="fd-label">Compare With</label>
+                <label class="fd-label" data-i18n="compare_with">Comparar con</label>
                 <select class="fd-select" id="selMonth2" onchange="onFilterChange()">
-                  <option value="">-- None --</option>
+                  <option value="" data-i18n="none">-- Ninguno --</option>
                 </select>
               </div>
             </div>
@@ -107,15 +134,15 @@
             <!-- Year-only -->
             <div id="yearFilters" style="display:none;">
               <div class="fd-row">
-                <label class="fd-label">Year 1</label>
+                <label class="fd-label" data-i18n="year_1">Año 1</label>
                 <select class="fd-select" id="selYear1" onchange="onFilterChange()">
-                  <option value="">-- Select --</option>
+                  <option value="" data-i18n="select">-- Seleccionar --</option>
                 </select>
               </div>
               <div class="fd-row">
-                <label class="fd-label">Compare With</label>
+                <label class="fd-label" data-i18n="compare_with">Comparar con</label>
                 <select class="fd-select" id="selYear2" onchange="onFilterChange()">
-                  <option value="">-- None --</option>
+                  <option value="" data-i18n="none">-- Ninguno --</option>
                 </select>
               </div>
             </div>
@@ -123,15 +150,15 @@
             <!-- Month vs Year -->
             <div id="monthYearFilters" style="display:none;">
               <div class="fd-row">
-                <label class="fd-label">Month</label>
+                <label class="fd-label" data-i18n="month">Mes</label>
                 <select class="fd-select" id="selMY_month" onchange="onFilterChange()">
-                  <option value="">-- Select Month --</option>
+                  <option value="" data-i18n="select_month">-- Seleccionar mes --</option>
                 </select>
               </div>
               <div class="fd-row">
-                <label class="fd-label">Compare With Year</label>
+                <label class="fd-label" data-i18n="compare_with_year">Comparar con año</label>
                 <select class="fd-select" id="selMY_year" onchange="onFilterChange()">
-                  <option value="">-- Select Year --</option>
+                  <option value="" data-i18n="select_year">-- Seleccionar año --</option>
                 </select>
               </div>
             </div>
@@ -144,65 +171,70 @@
 
           <!-- Code Filter -->
           <div class="fd-section purple-section" id="codeFilterSection" style="display:none;">
-            <div class="fd-section-title"><i class="bi bi-hash"></i> Code Summary</div>
+            <div class="fd-section-title">
+              <i class="bi bi-hash"></i>
+              <span data-i18n="code_summary"> Resumen por código</span>
+            </div>
 
             <div class="fd-row">
-              <label class="fd-label">Google Sheet Code</label>
+              <label class="fd-label" data-i18n="sheet_code">Código de Google Sheet</label>
               <select class="fd-select purple" id="codeSelect" onchange="onCodeSelect()">
-                <option value="">-- Select Code --</option>
+                <option value="" data-i18n="select_code">-- Seleccionar código --</option>
               </select>
             </div>
 
             <div id="codePeriodRow" style="display:none;">
 
               <div class="filter-toggle-group" style="margin-bottom:8px;">
-                <button class="toggle-btn active" id="codeBtnMonth" onclick="setCodePeriodType('month')">Month</button>
-                <button class="toggle-btn" id="codeBtnYear" onclick="setCodePeriodType('year')">Year</button>
-                <button class="toggle-btn" id="codeBtnMonthYear" onclick="setCodePeriodType('monthyear')">M vs
-                  Y</button>
+                <button class="toggle-btn active" id="codeBtnMonth" onclick="setCodePeriodType('month')"
+                  data-i18n="month">Mes</button>
+                <button class="toggle-btn" id="codeBtnYear" onclick="setCodePeriodType('year')"
+                  data-i18n="year">Año</button>
+                <button class="toggle-btn" id="codeBtnMonthYear" onclick="setCodePeriodType('monthyear')"
+                  data-i18n="m_vs_a">M vs A</button>
               </div>
 
               <div id="codeMonthFilters">
                 <div class="fd-row">
-                  <label class="fd-label">Month 1</label>
+                  <label class="fd-label" data-i18n="month_1">Mes 1</label>
                   <select class="fd-select purple" id="codeSelMonth1" onchange="onCodePeriodChange()">
-                    <option value="">-- Select --</option>
+                    <option value="" data-i18n="select">-- Seleccionar --</option>
                   </select>
                 </div>
                 <div class="fd-row">
-                  <label class="fd-label">Compare With</label>
+                  <label class="fd-label" data-i18n="compare_with">Comparar con</label>
                   <select class="fd-select purple" id="codeSelMonth2" onchange="onCodePeriodChange()">
-                    <option value="">-- None --</option>
+                    <option value="" data-i18n="none">-- Ninguno --</option>
                   </select>
                 </div>
               </div>
 
               <div id="codeYearFilters" style="display:none;">
                 <div class="fd-row">
-                  <label class="fd-label">Year 1</label>
+                  <label class="fd-label" data-i18n="year_1">Año 1</label>
                   <select class="fd-select purple" id="codeSelYear1" onchange="onCodePeriodChange()">
-                    <option value="">-- Select --</option>
+                    <option value="" data-i18n="select">-- Seleccionar --</option>
                   </select>
                 </div>
                 <div class="fd-row">
-                  <label class="fd-label">Compare With</label>
+                  <label class="fd-label" data-i18n="compare_with">Comparar con</label>
                   <select class="fd-select purple" id="codeSelYear2" onchange="onCodePeriodChange()">
-                    <option value="">-- None --</option>
+                    <option value="" data-i18n="none">-- Ninguno --</option>
                   </select>
                 </div>
               </div>
 
               <div id="codeMonthYearFilters" style="display:none;">
                 <div class="fd-row">
-                  <label class="fd-label">Month</label>
+                  <label class="fd-label" data-i18n="month">Mes</label>
                   <select class="fd-select purple" id="codeSelMY_month" onchange="onCodePeriodChange()">
-                    <option value="">-- Select Month --</option>
+                    <option value="" data-i18n="select_month">-- Seleccionar mes --</option>
                   </select>
                 </div>
                 <div class="fd-row">
-                  <label class="fd-label">Compare With Year</label>
+                  <label class="fd-label" data-i18n="compare_with_year">Comparar con año</label>
                   <select class="fd-select purple" id="codeSelMY_year" onchange="onCodePeriodChange()">
-                    <option value="">-- Select Year --</option>
+                    <option value="" data-i18n="select_year">-- Seleccionar año --</option>
                   </select>
                 </div>
               </div>
@@ -215,8 +247,14 @@
         </div>
 
         <div class="fd-footer">
-          <button class="fd-btn-reset" onclick="resetAllFilters()"><i class="bi bi-x-circle"></i> Reset All</button>
-          <button class="fd-btn-apply" onclick="closeFilterDrawer()"><i class="bi bi-check2-circle"></i> Done</button>
+          <button class="fd-btn-reset" onclick="resetAllFilters()">
+            <i class="bi bi-x-circle"></i>
+            <span data-i18n="reset_all"> Restablecer todo</span>
+          </button>
+          <button class="fd-btn-apply" onclick="closeFilterDrawer()">
+            <i class="bi bi-check2-circle"></i>
+            <span data-i18n="done"> Listo</span>
+          </button>
         </div>
       </div>
 
@@ -225,7 +263,6 @@
 
         <!-- Skeleton Loader -->
         <div id="loader" class="loader-wrapper">
-
           <!-- Top Bar skeleton -->
           <div class="skel-topbar">
             <div class="skeleton-base skeleton-circle" style="width:32px;height:32px;flex-shrink:0;"></div>
@@ -235,7 +272,6 @@
             <div class="skeleton-base" style="width:110px;height:32px;border-radius:8px;"></div>
             <div class="skeleton-base skeleton-circle" style="width:34px;height:34px;"></div>
           </div>
-
           <!-- Table Head skeleton -->
           <div class="skel-thead">
             <div class="skeleton-base skel-cell" style="height:16px;"></div>
@@ -245,7 +281,6 @@
             <div class="skeleton-base skel-cell" style="height:16px;"></div>
             <div class="skeleton-base skel-cell" style="height:16px;"></div>
           </div>
-
           <!-- Table Rows skeleton -->
           <div class="skel-row">
             <div class="skeleton-base skel-cell"></div>
@@ -311,7 +346,6 @@
             <div class="skeleton-base skel-cell"></div>
             <div class="skeleton-base skel-cell"></div>
           </div>
-
           <!-- Pagination skeleton -->
           <div class="skel-pagination">
             <div style="display:flex;align-items:center;gap:8px;">
@@ -326,7 +360,6 @@
               <div class="skeleton-base" style="width:32px;height:32px;border-radius:7px;"></div>
             </div>
           </div>
-
         </div>
 
         <!-- Table -->
@@ -338,14 +371,15 @@
 
           <!-- Prev / Next column buttons -->
           <div class="col-nav-btns" id="colNavBtns" style="display:none;">
-            <button class="col-nav-btn" id="btnPrevCol" onclick="shiftColumns(-1)"
-              title="Previous columns">&#8249;</button>
-            <button class="col-nav-btn" id="btnNextCol" onclick="shiftColumns(1)" title="Next columns">&#8250;</button>
+            <button class="col-nav-btn" id="btnPrevCol" onclick="shiftColumns(-1)" data-i18n-title="prev_col"
+              title="Columnas anteriores">&#8249;</button>
+            <button class="col-nav-btn" id="btnNextCol" onclick="shiftColumns(1)" data-i18n-title="next_col"
+              title="Columnas siguientes">&#8250;</button>
           </div>
 
           <!-- Fullscreen button -->
-          <button id="btnFullscreen" onclick="openFullscreenTable()" title="View all columns fullscreen"
-            style="display:none;">
+          <button id="btnFullscreen" onclick="openFullscreenTable()" data-i18n-title="fullscreen_btn"
+            title="Ver todas las columnas en pantalla completa" style="display:none;">
             &#x26F6;
           </button>
         </div>
@@ -369,9 +403,7 @@
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════════
-   FULLSCREEN OVERLAY
-═══════════════════════════════════════════════ -->
+  <!-- FULLSCREEN OVERLAY -->
   <div id="fullscreenOverlay">
     <div id="fsContainer">
 
@@ -379,14 +411,13 @@
       <div id="fsHeader">
         <div id="fsHeaderTitle">
           <i class="bi bi-fullscreen" style="font-size:16px;"></i>
-          All Columns View
-          <span style="
-            background:rgba(255,255,255,0.2);
-            font-size:11px;font-weight:600;
-            padding:2px 10px;border-radius:20px;
-            margin-left:4px;" id="fsColCount"></span>
+          <span data-i18n="fullscreen_title"> Vista de todas las columnas</span>
+          <span
+            style="background:rgba(255,255,255,0.2);font-size:11px;font-weight:600;padding:2px 10px;border-radius:20px;margin-left:4px;"
+            id="fsColCount"></span>
         </div>
-        <button id="fsCloseBtn" onclick="closeFullscreenTable()" title="Close (Esc)">&#x2715;</button>
+        <button id="fsCloseBtn" onclick="closeFullscreenTable()" data-i18n-title="chat_close"
+          title="Cerrar (Esc)">&#x2715;</button>
       </div>
 
       <!-- Table wrapper -->
@@ -400,8 +431,10 @@
       <!-- Footer -->
       <div id="fsFooter">
         <span id="fsRowCount"></span>
-        &nbsp;|&nbsp; Scroll horizontally to navigate all columns &nbsp;|&nbsp;
-        Press <strong>Esc</strong> to close
+        &nbsp;|&nbsp;
+        <span data-i18n="fullscreen_hint">Desplácese horizontalmente para navegar por todas las columnas</span>
+        &nbsp;|&nbsp;
+        Presione <strong>Esc</strong> <span data-i18n="fullscreen_esc">para cerrar</span>
       </div>
 
     </div>
@@ -415,54 +448,39 @@
     <div class="cd-header">
       <div class="cd-avatar">🤖</div>
       <div class="cd-header-info">
-        <p class="cd-title">Sheet AI Assistant</p>
+        <p class="cd-title" data-i18n="chat_title">Asistente IA de hoja</p>
       </div>
       <div class="cd-header-actions">
-        <button class="cd-icon-btn" onclick="clearChat()" title="Clear chat">🗑</button>
-        <button class="cd-icon-btn" onclick="closeChatDrawer()" title="Close">✕</button>
+        <button class="cd-icon-btn" onclick="clearChat()" data-i18n-title="chat_clear" title="Limpiar chat">🗑</button>
+        <button class="cd-icon-btn" onclick="closeChatDrawer()" data-i18n-title="chat_close" title="Cerrar">✕</button>
       </div>
     </div>
     <div class="cd-messages" id="cdMessages"></div>
 
     <div class="cd-input-area">
       <div class="cd-input-row">
-        <textarea class="cd-textarea" id="cdInput" placeholder="Please enter the prompt..." rows="1"
-          onkeydown="handleChatKey(event)" oninput="autoResizeCdTextarea(this)"></textarea>
+        <textarea class="cd-textarea" id="cdInput" data-i18n-placeholder="chat_placeholder"
+          placeholder="Ingrese el mensaje aquí..." rows="1" onkeydown="handleChatKey(event)"
+          oninput="autoResizeCdTextarea(this)"></textarea>
         <button class="cd-send-btn" id="cdSendBtn" onclick="sendChatMessage()">➤</button>
-        <!-- Input ke saath mic button -->
-<button 
-  id="voiceMicBtn"
-  onclick="toggleRecording()"
-  title="Click to speak"
-  style="
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: none;
-    background: #e8f0fe;
-    color: #0d6efd;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-  ">
-  <i class="bi bi-mic-fill"></i>
-</button>
+        <button id="voiceMicBtn" onclick="toggleRecording()" data-i18n-title="mic_btn" title="Haga clic para hablar"
+          style="width:38px;height:38px;border-radius:50%;border:none;background:#e8f0fe;color:#0d6efd;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;">
+          <i class="bi bi-mic-fill"></i>
+        </button>
       </div>
     </div>
   </div>
 
-  <button class="floating-chat-btn" onclick="openChatDrawer()" title="AI Chat">
+  <button class="floating-chat-btn" onclick="openChatDrawer()" data-i18n-title="ai_chat" title="Chat IA">
     <i class="bi bi-robot"></i>
     <span class="fc-badge"></span>
   </button>
 
-</body>
+  <script src="/users/client_details.js"></script>
+  <script src="/users/sidebar.js"></script>
+  <script src="/users/languageTranslater.js"></script>
+  
 
-<script src="/users/client_details.js"></script>
-<script src="/users/sidebar.js"></script>
+</body>
 
 </html>

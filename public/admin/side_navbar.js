@@ -18,34 +18,34 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="menu-content h-100" data-simplebar>
         <ul class="metismenu left-sidenav-menu">
 
-          <li class="menu-label mt-0">Main</li>
+          <li class="menu-label mt-0">Principal</li>
 
         
 
         <li>
   <a href="/">
     <i data-feather="home" class="menu-icon"></i>
-    <span>Dashboard</span>
+    <span>Panel de Control</span>
   </a>
 
   <a href="/staffRecord">
     <i data-feather="user-plus" class="menu-icon"></i>
-    <span>Add Staff</span>
+    <span>Agregar Personal</span>
   </a>
 
   <a href="/showStaffRecord">
     <i data-feather="users" class="menu-icon"></i>
-    <span>Show Staff</span>
+    <span>Ver Personal</span>
   </a>
 
   <a href="/AddClients">
     <i data-feather="briefcase" class="menu-icon"></i>
-    <span>Add Client</span>
+    <span>Agregar Cliente</span>
   </a>
 
   <a href="/showClients">
     <i data-feather="user-check" class="menu-icon"></i>
-    <span>Show Clients</span>
+    <span>Ver Clientes</span>
   </a>
 </li>
   
@@ -56,6 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
     </div>
   `;
 
-  // Feather icons activate
+  // Activar iconos Feather
   if (window.feather) feather.replace();
 });
