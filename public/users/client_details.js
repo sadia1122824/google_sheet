@@ -1076,6 +1076,95 @@ async function loadSheetData() {
 // ═══════════════════════════════════════════════════════════════════
 //  TABLE RENDER
 // ═══════════════════════════════════════════════════════════════════
+// function renderTable() {
+//   const tbody = document.getElementById("tableBody");
+//   const thead = document.getElementById("tableHead");
+//   const cpp = getColsPerPage();
+//   const totalCols = headers.length;
+//   const visHeaders = headers.slice(colOffset, colOffset + cpp);
+//   const colEnd = Math.min(colOffset + cpp, totalCols);
+
+//   const rangeLabel = document.getElementById("colRangeLabel");
+//   if (rangeLabel)
+//     rangeLabel.textContent =
+//       totalCols > 0 ? `Columns ${colOffset + 1}–${colEnd} of ${totalCols}` : "";
+//   if (thead) thead.innerHTML = "";
+
+//   const table = tbody.closest("table");
+//   if (table) {
+//     const oldCg = table.querySelector("colgroup");
+//     if (oldCg) oldCg.remove();
+//     const cg = document.createElement("colgroup");
+//     visHeaders.forEach((_, i) => {
+//       const colAbsIndex = colOffset + i;
+//       const col = document.createElement("col");
+//       if (colAbsIndex === 0) col.style.width = "45px";
+//       else if (colAbsIndex === 1) col.style.width = "240px";
+//       else col.style.width = "110px";
+//       cg.appendChild(col);
+//     });
+//     table.insertBefore(cg, table.firstChild);
+//     table.style.tableLayout = "fixed";
+//     table.style.width = "100%";
+//     table.style.minWidth = "100%";
+//   }
+
+//   const colCount = visHeaders.length || 1;
+//   let html = "";
+//   infoRows.forEach((row) => {
+//     const text = row.filter((c) => c !== "").join(" ");
+//     html += `<tr class="info-row"><td colspan="${colCount}" style="text-align:left;">${text}</td></tr>`;
+//   });
+//   html += `<tr class="header-row">${visHeaders.map((h) => `<th title="${h}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.3;vertical-align:middle;">${h}</th>`).join("")}</tr>`;
+
+//   const start = (currentPage - 1) * rowsPerPage;
+//   const end = start + rowsPerPage;
+//   const pageRows = allDataRows.slice(start, end);
+
+//   if (pageRows.length === 0) {
+//     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
+//   } else {
+//     pageRows.forEach((row) => {
+//       html +=
+//         "<tr>" +
+//         visHeaders
+//           .map((_, i) => {
+//             const absIdx = colOffset + i;
+//             const val = row[absIdx] ?? "";
+//             const isPct = pctColIndices.has(absIdx);
+//             const isMonth = monthCols.some((m) => m.colIndex === absIdx);
+//             const isYear = yearCols.some((y) => y.colIndex === absIdx);
+//             const bgStyle = isPct
+//               ? "background: var(--pct-col-bg, #c8e6c9);"
+//               : isYear
+//                 ? "background: var(--year-col-bg, #ce93d8);"
+//                 : isMonth
+//                   ? "background: var(--month-col-bg, #90caf9);"
+//                   : "";
+//             return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+//           })
+//           .join("") +
+//         "</tr>";
+//     });
+//   }
+
+//   tbody.innerHTML = html;
+
+//   const btnPrev = document.getElementById("btnPrevCol");
+//   const btnNext = document.getElementById("btnNextCol");
+//   if (btnPrev) btnPrev.disabled = colOffset === 0;
+//   if (btnNext) btnNext.disabled = colOffset + cpp >= totalCols;
+
+//   const colNav = document.getElementById("colNavBtns");
+//   if (colNav) colNav.style.display = totalCols > cpp ? "flex" : "none";
+
+//   const fsBtn = document.getElementById("btnFullscreen");
+//   if (fsBtn) fsBtn.style.display = totalCols > 0 ? "flex" : "none";
+
+//   renderPagination();
+// }
+
+
 function renderTable() {
   const tbody = document.getElementById("tableBody");
   const thead = document.getElementById("tableHead");
@@ -1121,10 +1210,21 @@ function renderTable() {
   const end = start + rowsPerPage;
   const pageRows = allDataRows.slice(start, end);
 
+  const CODE_COL = findCodeColIndex();
+
+  // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
+  const NUMBERED_LABEL_RE = /^\d+\.\s*\S+/;
+  function isNumberedLabel(val) {
+    return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
+  }
+
   if (pageRows.length === 0) {
     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
   } else {
     pageRows.forEach((row) => {
+      // check if any visible cell in this row matches the numbered-label pattern
+      const isLabelRow = row.some((val) => isNumberedLabel(val));
+
       html +=
         "<tr>" +
         visHeaders
@@ -1141,7 +1241,11 @@ function renderTable() {
                 : isMonth
                   ? "background: var(--month-col-bg, #90caf9);"
                   : "";
-            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+            const isBold =
+              (absIdx === CODE_COL &&
+                extractCode((val ?? "").toString().trim()) !== null) ||
+              isLabelRow;
+            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isBold ? "600" : "400"};">${val}</td>`;
           })
           .join("") +
         "</tr>";

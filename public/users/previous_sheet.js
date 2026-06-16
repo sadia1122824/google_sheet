@@ -1121,10 +1121,21 @@ function renderTable() {
   const end = start + rowsPerPage;
   const pageRows = allDataRows.slice(start, end);
 
+  const CODE_COL = findCodeColIndex();
+
+  // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
+  const NUMBERED_LABEL_RE = /^\d+\.\s*\S+/;
+  function isNumberedLabel(val) {
+    return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
+  }
+
   if (pageRows.length === 0) {
     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
   } else {
     pageRows.forEach((row) => {
+      // check if any visible cell in this row matches the numbered-label pattern
+      const isLabelRow = row.some((val) => isNumberedLabel(val));
+
       html +=
         "<tr>" +
         visHeaders
@@ -1141,7 +1152,11 @@ function renderTable() {
                 : isMonth
                   ? "background: var(--month-col-bg, #90caf9);"
                   : "";
-            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+            const isBold =
+              (absIdx === CODE_COL &&
+                extractCode((val ?? "").toString().trim()) !== null) ||
+              isLabelRow;
+            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isBold ? "600" : "400"};">${val}</td>`;
           })
           .join("") +
         "</tr>";
