@@ -555,68 +555,97 @@
             animation: spin .8s linear infinite;
         }
 
-        .left-sidenav-menu a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            margin: 4px 10px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: #5b6475;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.25s ease;
-            position: relative;
-        }
+       .left-sidenav {
+    background: #0f172a !important;
+}
 
-        .left-sidenav-menu a:hover {
-            transform: translateX(5px);
-            color: #2563eb;
-        }
+/* Menu Links */
+.left-sidenav-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin: 4px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #ffffff; /* White Text */
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    position: relative;
+}
 
-        .left-sidenav-menu a.active {
-            color: #2563eb;
-            font-weight: 600;
-        }
+/* Hover Effect */
+.left-sidenav-menu a:hover {
+    transform: translateX(5px);
+    color: #ffffff;
+    background: rgba(255,255,255,0.08);
+}
 
-        .left-sidenav-menu .menu-icon {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-            transition: all 0.25s ease;
-        }
+/* Active Link */
+.left-sidenav-menu a.active {
+    color: #ffffff;
+    background: rgba(255,255,255,0.12);
+    font-weight: 600;
+}
 
-        .left-sidenav-menu a:hover .menu-icon {
-            transform: scale(1.1);
-        }
+/* Icons */
+.left-sidenav-menu .menu-icon {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+    color: #ffffff;
+    transition: all 0.25s ease;
+}
 
-        .left-sidenav-menu a::before {
-            content: "";
-            position: absolute;
-            left: -10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 0;
-            background: #2563eb;
-            border-radius: 10px;
-            transition: all 0.25s ease;
-        }
+.left-sidenav-menu a:hover .menu-icon,
+.left-sidenav-menu a.active .menu-icon {
+    color: #ffffff;
+    transform: scale(1.1);
+}
 
-        .left-sidenav-menu a:hover::before,
-        .left-sidenav-menu a.active::before {
-            height: 70%;
-        }
+/* Left Indicator */
+.left-sidenav-menu a::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: #ffffff;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
 
-        .menu-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #9aa4b2;
-            font-weight: 600;
-            margin: 18px 16px 8px;
-        }
+.left-sidenav-menu a:hover::before,
+.left-sidenav-menu a.active::before {
+    height: 70%;
+}
+
+/* Section Labels */
+.menu-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    font-weight: 600;
+    margin: 18px 16px 8px;
+}
+.left-sidenav-menu a,
+.left-sidenav-menu a span,
+.left-sidenav-menu .menu-text,
+.menu-label {
+    color: #ffffff !important;
+}
+       .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
     </style>
 </head>
 
@@ -627,27 +656,106 @@
     <div class="page-wrapper">
 
         <!-- =================== TOP BAR =================== -->
-        <div class="topbar">
-            <nav class="navbar-custom">
-                <ul class="list-unstyled topbar-nav float-right mb-0">
-                    <li class="dropdown">
-                        <a class="nav-link dropdown-toggle nav-user d-flex align-items-center" data-toggle="dropdown"
-                            href="#" role="button">
-                            <span class="mr-2 d-none d-sm-inline text-dark fw-semibold">Nick</span>
-                            <img src="../admin/assets/images/users/user-5.jpg" alt="profile-user"
-                                class="rounded-circle thumb-sm border" />
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right shadow-sm">
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item d-flex align-items-center text-danger" href="#" onclick="logout()">
-                                <i data-feather="power" class="icon-xs mr-2"></i><span>Cerrar sesión</span>
+         <div class="topbar">
+                <nav class="navbar-custom">
+                    <ul class="list-unstyled topbar-nav float-right mb-0">
+                        <li class="dropdown hide-phone">
+                            <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                                aria-haspopup="false" aria-expanded="false">
+                                <i data-feather="search" class="topbar-icon"></i>
                             </a>
-                            <a class="dropdown-item d-flex align-items-center" href="#" onclick="openSettings()">
-                                <i data-feather="settings" class="icon-xs mr-2"></i><span>Configuración</span>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-lg p-0">
+                                <div class="app-search-topbar">
+                                    <form action="#" method="get">
+                                        <input type="search" name="search" class="from-control top-search mb-0" placeholder="Type text...">
+                                        <button type="submit"><i class="ti-search"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li class="dropdown notification-list">
+                            <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button"
+                                aria-haspopup="false" aria-expanded="false">
+                                <i data-feather="bell" class="align-self-center topbar-icon"></i>
+                                <span class="badge badge-danger badge-pill noti-icon-badge">2</span>
                             </a>
-                        </div>
-                    </li>
-                </ul>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-lg pt-0">
+                                <h6 class="dropdown-item-text font-15 m-0 py-3 border-bottom d-flex justify-content-between align-items-center">
+                                    Notifications <span class="badge badge-primary badge-pill">2</span>
+                                </h6>
+                                <div class="notification-menu" data-simplebar>
+                                    <a href="#" class="dropdown-item py-3">
+                                        <small class="float-right text-muted pl-2">2 min ago</small>
+                                        <div class="media">
+                                            <div class="avatar-md bg-soft-primary">
+                                                <i data-feather="shopping-cart" class="align-self-center icon-xs"></i>
+                                            </div>
+                                            <div class="media-body align-self-center ml-2 text-truncate">
+                                                <h6 class="my-0 font-weight-normal text-dark">Your order is placed</h6>
+                                                <small class="text-muted mb-0">Dummy text of the printing and industry.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="dropdown-item py-3">
+                                        <small class="float-right text-muted pl-2">10 min ago</small>
+                                        <div class="media">
+                                            <div class="avatar-md bg-soft-primary">
+                                                <img src="assets/images/users/user-4.jpg" alt="" class="thumb-sm rounded-circle">
+                                            </div>
+                                            <div class="media-body align-self-center ml-2 text-truncate">
+                                                <h6 class="my-0 font-weight-normal text-dark">Meeting with designers</h6>
+                                                <small class="text-muted mb-0">It is a long established fact that a reader.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="dropdown-item py-3">
+                                        <small class="float-right text-muted pl-2">40 min ago</small>
+                                        <div class="media">
+                                            <div class="avatar-md bg-soft-primary">
+                                                <i data-feather="users" class="align-self-center icon-xs"></i>
+                                            </div>
+                                            <div class="media-body align-self-center ml-2 text-truncate">
+                                                <h6 class="my-0 font-weight-normal text-dark">UX 3 Task complete.</h6>
+                                                <small class="text-muted mb-0">Dummy text of the printing.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="dropdown-item py-3">
+                                        <small class="float-right text-muted pl-2">1 hr ago</small>
+                                        <div class="media">
+                                            <div class="avatar-md bg-soft-primary">
+                                                <img src="assets/images/users/user-5.jpg" alt="" class="thumb-sm rounded-circle">
+                                            </div>
+                                            <div class="media-body align-self-center ml-2 text-truncate">
+                                                <h6 class="my-0 font-weight-normal text-dark">Your order is placed</h6>
+                                                <small class="text-muted mb-0">It is a long established fact that a reader.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    <a href="#" class="dropdown-item py-3">
+                                        <small class="float-right text-muted pl-2">2 hrs ago</small>
+                                        <div class="media">
+                                            <div class="avatar-md bg-soft-primary">
+                                                <i data-feather="check-circle" class="align-self-center icon-xs"></i>
+                                            </div>
+                                            <div class="media-body align-self-center ml-2 text-truncate">
+                                                <h6 class="my-0 font-weight-normal text-dark">Payment Successfull</h6>
+                                                <small class="text-muted mb-0">Dummy text of the printing.</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <a href="javascript:void(0);" class="dropdown-item text-center text-primary">
+                                    View all <i class="fi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </li>
+
+                       
+                    </ul>
+
+                   
                 <ul class="list-unstyled topbar-nav mb-0">
                     <li>
                         <button class="nav-link button-menu-mobile">
@@ -655,8 +763,8 @@
                         </button>
                     </li>
                 </ul>
-            </nav>
-        </div>
+                </nav>
+            </div>
         <!-- =================== TOP BAR END =================== -->
 
         <!-- =================== PAGE CONTENT =================== -->

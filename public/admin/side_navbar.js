@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="brand">
         <a href="/" class="logo">
           <span>
-            <img src="../admin/assets/images/browser_logo/image1.png" class="logo-sm">
+            <img src="../admin/assets/images/browser_logo/image2.png" class="logo-sm">
           </span>
           <span>
            

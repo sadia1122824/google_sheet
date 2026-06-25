@@ -96,6 +96,8 @@ const showClients = async (req, reply) => {
     return reply.sendFile('admin/show_clients.html');
 }
 
+
+
 const deleteClient = async (request, reply) => {
 
     try {

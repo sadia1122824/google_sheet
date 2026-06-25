@@ -22,8 +22,9 @@
     <div class="main-content" id="mainContent">
 
       <!-- Top Bar -->
-   <div class="top-bar">
-        <button class="hamburger-btn" onclick="toggleSidebar()" data-i18n-title="toggle_sidebar" title="Alternar barra lateral">
+      <div class="top-bar">
+        <button class="hamburger-btn" onclick="toggleSidebar()" data-i18n-title="toggle_sidebar"
+          title="Alternar barra lateral">
           <i class="bi bi-list"></i>
         </button>
 
@@ -50,8 +51,8 @@
         </span>
       </div>
 
-<!-- ✅ Modal body ke end mein, top-bar ke BAHAR -->
-   <div class="lang-modal-overlay" id="langModalOverlay">
+      <!-- ✅ Modal body ke end mein, top-bar ke BAHAR -->
+      <div class="lang-modal-overlay" id="langModalOverlay">
         <div class="lang-modal-box" onclick="event.stopPropagation()">
           <div class="lang-modal-header">
             <span class="lang-modal-title" data-i18n="select_language">Select Language</span>
@@ -70,16 +71,20 @@
       <!-- Filter Open Button + Active Pills -->
       <div style="display:flex;align-items:center;justify-content:right;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
 
-        <button class="btn-open-filter" onclick="openFilterDrawer()">
-          <i class="bi bi-sliders2"></i>
-          <span data-i18n="filters">Filtros</span>
-          <span class="filter-badge" id="filterBadge" style="display:none;">0</span>
-        </button>
+        <div class="action-buttons">
 
-        <button onclick="openChatDrawer()" class="ai-chat-btn">
-          <i class="bi bi-robot" style="font-size:14px;"></i>
-          <span class="btn-text" data-i18n="ai_chat">Chat IA</span>
-        </button>
+          <button class="btn-open-filter" onclick="openFilterDrawer()">
+            <i class="bi bi-sliders2"></i>
+            <span data-i18n="filters">Filtros</span>
+            <span class="filter-badge" id="filterBadge" style="display:none;">0</span>
+          </button>
+
+          <button onclick="openChatDrawer()" class="ai-chat-btn">
+            <i class="bi bi-stars"></i>
+            <span class="btn-text" data-i18n="ai_chat">AI-chat</span>
+          </button>
+
+        </div>
 
         <div class="active-filter-pills" id="activePills"></div>
 
@@ -474,10 +479,10 @@
     <span class="fc-badge"></span>
   </button>
 
-  <script src="/users/client_details.js"></script>
+  <script src="/users/dept_latest.js"></script>
   <script src="/users/sidebar.js"></script>
   <script src="/users/languageTranslater.js"></script>
-  
+
 
 </body>
 

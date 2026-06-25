@@ -4,14 +4,16 @@
 function updateLogoByTheme() {
   const currentTheme = document.documentElement.getAttribute("data-theme");
   document.querySelectorAll(".theme-logo").forEach((logo) => {
-    logo.src = currentTheme === "dark"
-      ? "/users/icons/image2.png"
-      : "/users/icons/image1.png";
+    logo.src =
+      currentTheme === "dark"
+        ? "/users/icons/image2.png"
+        : "/users/icons/image1.png";
   });
 }
 
 function toggleTheme() {
-  const current = document.documentElement.getAttribute("data-theme") || "light";
+  const current =
+    document.documentElement.getAttribute("data-theme") || "light";
   const next = current === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("appTheme", next);
@@ -65,557 +67,807 @@ window.addEventListener("resize", () => {
 /* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
-let sidebarOpen   = true; 
-let allDataRows   = [];
-let headers       = [];
-let infoRows      = [];
-let monthCols     = [];
-let yearCols      = [];
+let sidebarOpen = true;
+let allDataRows = [];
+let headers = [];
+let infoRows = [];
+let monthCols = [];
+let yearCols = [];
 let pctColIndices = new Set();
-let chartInst     = {};
-let currentPeriod = 'monthly';
-let ieChartType   = 'bar';
+let chartInst = {};
+let currentPeriod = "monthly";
+let ieChartType = "bar";
 
 /* ══════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════ */
-const MONTHS_EN    = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-const MONTHS_AB    = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-const MONTHS_ES    = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-const MONTHS_AB_ES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MONTHS_EN = [
+  "january",
+  "february",
+  "march",
+  "april",
+  "may",
+  "june",
+  "july",
+  "august",
+  "september",
+  "october",
+  "november",
+  "december",
+];
+const MONTHS_AB = [
+  "jan",
+  "feb",
+  "mar",
+  "apr",
+  "may",
+  "jun",
+  "jul",
+  "aug",
+  "sep",
+  "oct",
+  "nov",
+  "dec",
+];
+const MONTHS_ES = [
+  "enero",
+  "febrero",
+  "marzo",
+  "abril",
+  "mayo",
+  "junio",
+  "julio",
+  "agosto",
+  "septiembre",
+  "octubre",
+  "noviembre",
+  "diciembre",
+];
+const MONTHS_AB_ES = [
+  "ene",
+  "feb",
+  "mar",
+  "abr",
+  "may",
+  "jun",
+  "jul",
+  "ago",
+  "sep",
+  "oct",
+  "nov",
+  "dic",
+];
 
-function isMonth(s){
-  const lc=s.toLowerCase().trim();
-  return MONTHS_EN.includes(lc)||MONTHS_AB.includes(lc)||MONTHS_ES.includes(lc)||MONTHS_AB_ES.includes(lc);
+function isMonth(s) {
+  const lc = s.toLowerCase().trim();
+  return (
+    MONTHS_EN.includes(lc) ||
+    MONTHS_AB.includes(lc) ||
+    MONTHS_ES.includes(lc) ||
+    MONTHS_AB_ES.includes(lc)
+  );
 }
-function isYear(s){
-  return /^\d{4}$/.test(s.trim())&&parseInt(s)>=1990&&parseInt(s)<=2100;
+function isYear(s) {
+  return /^\d{4}$/.test(s.trim()) && parseInt(s) >= 1990 && parseInt(s) <= 2100;
 }
-function isSkipRow(row){
-  return !row||row.length===0||row.every(c=>c===null||c===undefined||c.toString().trim()==='');
+function isSkipRow(row) {
+  return (
+    !row ||
+    row.length === 0 ||
+    row.every(
+      (c) => c === null || c === undefined || c.toString().trim() === "",
+    )
+  );
 }
-function extractCode(val){
-  if(val===null||val===undefined)return null;
-  const s=val.toString().trim();
-  const m=s.match(/^(\d{3,6})\s+/);
-  if(!m)return null;
-  const n=parseInt(m[1]);
-  if(n>=1990&&n<=2100)return null;
+function extractCode(val) {
+  if (val === null || val === undefined) return null;
+  const s = val.toString().trim();
+  const m = s.match(/^(\d{3,6})\s+/);
+  if (!m) return null;
+  const n = parseInt(m[1]);
+  if (n >= 1990 && n <= 2100) return null;
   return m[1];
 }
-function extractLabel(val){
-  if(val===null||val===undefined)return '';
-  const s=val.toString().trim();
-  const m=s.match(/^\d{3,6}\s+(.*)/);
-  return m?m[1].trim():s;
+function extractLabel(val) {
+  if (val === null || val === undefined) return "";
+  const s = val.toString().trim();
+  const m = s.match(/^\d{3,6}\s+(.*)/);
+  return m ? m[1].trim() : s;
 }
-function findCodeColIndex(){
-  for(let r=0;r<Math.min(allDataRows.length,20);r++){
-    const row=allDataRows[r];if(!row)continue;
-    for(let c=0;c<row.length;c++){
-      const v=(row[c]!==null&&row[c]!==undefined)?row[c].toString().trim():'';
-      if(extractCode(v)!==null)return c;
+function findCodeColIndex() {
+  for (let r = 0; r < Math.min(allDataRows.length, 20); r++) {
+    const row = allDataRows[r];
+    if (!row) continue;
+    for (let c = 0; c < row.length; c++) {
+      const v =
+        row[c] !== null && row[c] !== undefined ? row[c].toString().trim() : "";
+      if (extractCode(v) !== null) return c;
     }
   }
   return 1;
 }
-function cellNum(row,ci){
-  if(pctColIndices.has(ci))return 0;
-  const raw=(row[ci]!==undefined&&row[ci]!==null)?row[ci].toString().trim():'';
-  if(!raw)return 0;
-  const cleaned=raw.replace(/[^0-9.\-]/g,'');
-  if(!cleaned||cleaned==='-')return 0;
-  const v=parseFloat(cleaned);
-  return isNaN(v)?0:v;
+function cellNum(row, ci) {
+  if (pctColIndices.has(ci)) return 0;
+  const raw =
+    row[ci] !== undefined && row[ci] !== null ? row[ci].toString().trim() : "";
+  if (!raw) return 0;
+  const cleaned = raw.replace(/[^0-9.\-]/g, "");
+  if (!cleaned || cleaned === "-") return 0;
+  const v = parseFloat(cleaned);
+  return isNaN(v) ? 0 : v;
 }
-function parseColumnsFromHeaders(){
-  monthCols=[];yearCols=[];pctColIndices=new Set();
-  headers.forEach((h,i)=>{
-    const s=(h||'').toString().trim();
-    if(!s)return;
-    if(s==='%'){pctColIndices.add(i);return;}
-    if(isYear(s))       yearCols.push({label:s,colIndex:i});
-    else if(isMonth(s)) monthCols.push({label:s,colIndex:i});
+function parseColumnsFromHeaders() {
+  monthCols = [];
+  yearCols = [];
+  pctColIndices = new Set();
+  headers.forEach((h, i) => {
+    const s = (h || "").toString().trim();
+    if (!s) return;
+    if (s === "%") {
+      pctColIndices.add(i);
+      return;
+    }
+    if (isYear(s)) yearCols.push({ label: s, colIndex: i });
+    else if (isMonth(s)) monthCols.push({ label: s, colIndex: i });
   });
 }
 
 /* ══════════════════════════════════════════
    calcSummary
 ══════════════════════════════════════════ */
-function calcSummary(colObj){
-  const ci=colObj.colIndex;
-  const CODE_COL=findCodeColIndex();
-  const IS_INCOME_ROW      =v=>/^1[\.\s]|^importe\s+neto|^1\s+importe/i.test(v);
-  const IS_EXPLOTACION_ROW =v=>/^A\)\s*RESULTADO\s+DE\s+EXPLOT/i.test(v);
-  const IS_INTEREST_ROW    =v=>/^14[\.\s]|gastos\s+financiero/i.test(v);
-  const IS_EXPENSE_ROW     =v=>/^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
-  let income=0,explotacion=0,bankInterest=0,pureExpense=0;
-  allDataRows.forEach(row=>{
-    if(isSkipRow(row))return;
-    const cellVal=(row[CODE_COL]??'').toString().trim();
-    if(!cellVal)return;
-    const v=cellNum(row,ci);
-    if(v===0)return;
-    if(IS_INCOME_ROW(cellVal))           income=v;
-    else if(IS_EXPLOTACION_ROW(cellVal)) explotacion=v;
-    else if(IS_INTEREST_ROW(cellVal))    bankInterest=v;
-    else if(IS_EXPENSE_ROW(cellVal))     pureExpense+=v;
+function calcSummary(colObj) {
+  const ci = colObj.colIndex;
+  const CODE_COL = findCodeColIndex();
+  const IS_INCOME_ROW = (v) => /^1[\.\s]|^importe\s+neto|^1\s+importe/i.test(v);
+  const IS_EXPLOTACION_ROW = (v) => /^A\)\s*RESULTADO\s+DE\s+EXPLOT/i.test(v);
+  const IS_INTEREST_ROW = (v) => /^14[\.\s]|gastos\s+financiero/i.test(v);
+  const IS_EXPENSE_ROW = (v) => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
+  let income = 0,
+    explotacion = 0,
+    bankInterest = 0,
+    pureExpense = 0;
+  allDataRows.forEach((row) => {
+    if (isSkipRow(row)) return;
+    const cellVal = (row[CODE_COL] ?? "").toString().trim();
+    if (!cellVal) return;
+    const v = cellNum(row, ci);
+    if (v === 0) return;
+    if (IS_INCOME_ROW(cellVal)) income = v;
+    else if (IS_EXPLOTACION_ROW(cellVal)) explotacion = v;
+    else if (IS_INTEREST_ROW(cellVal)) bankInterest = v;
+    else if (IS_EXPENSE_ROW(cellVal)) pureExpense += v;
   });
-  const finalResult=explotacion+bankInterest;
-  return{income,expense:pureExpense,explotacion,bankInterest,
-         finalResult,profit:finalResult>0?finalResult:0,loss:finalResult<0?finalResult:0};
+  const finalResult = explotacion + bankInterest;
+  return {
+    income,
+    expense: pureExpense,
+    explotacion,
+    bankInterest,
+    finalResult,
+    profit: finalResult > 0 ? finalResult : 0,
+    loss: finalResult < 0 ? finalResult : 0,
+  };
 }
 
 /* ══════════════════════════════════════════
    FORMAT
 ══════════════════════════════════════════ */
-function fmt(n){
-  if(isNaN(n)||n===undefined||n===null)return '0';
-  const abs=Math.abs(n),sign=n<0?'-':'';
-  if(abs>=1e9)return sign+(abs/1e9).toFixed(2)+'B';
-  if(abs>=1e6)return sign+(abs/1e6).toFixed(2)+'M';
-  if(abs>=1e3)return sign+(abs/1e3).toFixed(1)+'K';
-  return sign+abs.toLocaleString('en-PK',{minimumFractionDigits:0,maximumFractionDigits:0});
+function fmt(n) {
+  if (isNaN(n) || n === undefined || n === null) return "0";
+  const abs = Math.abs(n),
+    sign = n < 0 ? "-" : "";
+  if (abs >= 1e9) return sign + (abs / 1e9).toFixed(2) + "B";
+  if (abs >= 1e6) return sign + (abs / 1e6).toFixed(2) + "M";
+  if (abs >= 1e3) return sign + (abs / 1e3).toFixed(1) + "K";
+  return (
+    sign +
+    abs.toLocaleString("en-PK", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+  );
 }
 
 /* ══════════════════════════════════════════
    CHART HELPERS
 ══════════════════════════════════════════ */
-function isDark(){
-  return document.documentElement.getAttribute('data-theme')==='dark';
+function isDark() {
+  return document.documentElement.getAttribute("data-theme") === "dark";
 }
-function alpha(hex,a){
-  if(!hex||hex.length<7)return `rgba(0,201,122,${a})`;
-  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+function alpha(hex, a) {
+  if (!hex || hex.length < 7) return `rgba(0,201,122,${a})`;
+  const r = parseInt(hex.slice(1, 3), 16),
+    g = parseInt(hex.slice(3, 5), 16),
+    b = parseInt(hex.slice(5, 7), 16);
   return `rgba(${r},${g},${b},${a})`;
 }
-function baseOpts(type){
-  const dark=isDark();
-  const gc=dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)';
-  const tc=dark?'#556680':'#aab0be';
-  const opts={
-    responsive:true,maintainAspectRatio:false,
-    animation:{duration:600,easing:'easeOutQuart'},
-    plugins:{
-      legend:{display:false},
-      tooltip:{
-        backgroundColor:dark?'#161b27':'#fff',
-        borderColor:dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.10)',
-        borderWidth:1,
-        titleColor:dark?'#dde4f5':'#0e1220',
-        bodyColor:dark?'#8892a4':'#7a83a8',
-        padding:10,cornerRadius:10,
-        callbacks:{label:ctx=>` ${fmt(ctx.parsed.y??ctx.parsed)}`}
-      }
-    }
+function baseOpts(type) {
+  const dark = isDark();
+  const gc = dark ? "rgba(255,255,255,.05)" : "rgba(0,0,0,.05)";
+  const tc = dark ? "#556680" : "#aab0be";
+  const opts = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 600, easing: "easeOutQuart" },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: dark ? "#161b27" : "#fff",
+        borderColor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.10)",
+        borderWidth: 1,
+        titleColor: dark ? "#dde4f5" : "#0e1220",
+        bodyColor: dark ? "#8892a4" : "#7a83a8",
+        padding: 10,
+        cornerRadius: 10,
+        callbacks: { label: (ctx) => ` ${fmt(ctx.parsed.y ?? ctx.parsed)}` },
+      },
+    },
   };
-  if(['bar','line'].includes(type)){
-    opts.scales={
-      x:{ticks:{color:tc,font:{size:10},maxRotation:45,autoSkip:false,maxTicksLimit:16},grid:{color:gc}},
-      y:{ticks:{color:tc,font:{size:10},callback:v=>fmt(v)},grid:{color:gc},beginAtZero:true}
+  if (["bar", "line"].includes(type)) {
+    opts.scales = {
+      x: {
+        ticks: {
+          color: tc,
+          font: { size: 10 },
+          maxRotation: 45,
+          autoSkip: false,
+          maxTicksLimit: 16,
+        },
+        grid: { color: gc },
+      },
+      y: {
+        ticks: { color: tc, font: { size: 10 }, callback: (v) => fmt(v) },
+        grid: { color: gc },
+        beginAtZero: true,
+      },
     };
   }
   return opts;
 }
-function mk(id,type,data,opts){
-  if(chartInst[id])chartInst[id].destroy();
-  const canvas=document.getElementById(id);
-  if(!canvas)return;
-  chartInst[id]=new Chart(canvas,{type,data,options:opts});
+function mk(id, type, data, opts) {
+  if (chartInst[id]) chartInst[id].destroy();
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  chartInst[id] = new Chart(canvas, { type, data, options: opts });
 }
 
 /* ══════════════════════════════════════════
    KPI
 ══════════════════════════════════════════ */
-function updateKPIs(sums){
-  const totalInc=sums.reduce((a,s)=>a+(s.income>0?s.income:0),0);
-  const totalExp=sums.reduce((a,s)=>a+Math.abs(s.expense),0);
-  const totalPL =sums.reduce((a,s)=>a+s.finalResult,0);
-  const margin  =totalInc?((totalPL/totalInc)*100):0;
-  document.getElementById('kpiIncome').textContent =fmt(totalInc);
-  document.getElementById('kpiExpense').textContent=fmt(totalExp);
-  const kp=document.getElementById('kpiProfit');
-  kp.textContent=fmt(totalPL);
-  kp.style.color=totalPL>=0?'#5b9cf6':'#ff4d6d';
-  document.getElementById('kpiMargin').textContent   =margin.toFixed(1)+'%';
-  document.getElementById('kpiMarginSub').textContent=`Based on ${sums.length} periods`;
-  const half=Math.floor(sums.length/2);
-  if(half){
-    const hv=(arr,k)=>arr.reduce((a,s)=>a+(s[k]||0),0);
-    const setT=(elId,v1,v2)=>{
-      const chg=v1?((v2-v1)/Math.abs(v1)*100):0;
-      const el=document.getElementById(elId);
-      if(el)el.innerHTML=`<span class="${chg>=0?'trend-up':'trend-down'}">${chg>=0?'↑':'↓'} ${Math.abs(chg).toFixed(1)}% vs prev half</span>`;
+function updateKPIs(sums) {
+  const totalInc = sums.reduce((a, s) => a + (s.income > 0 ? s.income : 0), 0);
+  const totalExp = sums.reduce((a, s) => a + Math.abs(s.expense), 0);
+  const totalPL = sums.reduce((a, s) => a + s.finalResult, 0);
+  const margin = totalInc ? (totalPL / totalInc) * 100 : 0;
+  document.getElementById("kpiIncome").textContent = fmt(totalInc);
+  document.getElementById("kpiExpense").textContent = fmt(totalExp);
+  const kp = document.getElementById("kpiProfit");
+  kp.textContent = fmt(totalPL);
+  kp.style.color = totalPL >= 0 ? "#5b9cf6" : "#ff4d6d";
+  document.getElementById("kpiMargin").textContent = margin.toFixed(1) + "%";
+  document.getElementById("kpiMarginSub").textContent =
+    `Based on ${sums.length} periods`;
+  const half = Math.floor(sums.length / 2);
+  if (half) {
+    const hv = (arr, k) => arr.reduce((a, s) => a + (s[k] || 0), 0);
+    const setT = (elId, v1, v2) => {
+      const chg = v1 ? ((v2 - v1) / Math.abs(v1)) * 100 : 0;
+      const el = document.getElementById(elId);
+      if (el)
+        el.innerHTML = `<span class="${chg >= 0 ? "trend-up" : "trend-down"}">${chg >= 0 ? "↑" : "↓"} ${Math.abs(chg).toFixed(1)}% vs prev half</span>`;
     };
-    setT('kpiIncomeTrend', hv(sums.slice(0,half),'income'),      hv(sums.slice(half),'income'));
-    setT('kpiExpenseTrend',hv(sums.slice(0,half),'expense'),     hv(sums.slice(half),'expense'));
-    setT('kpiProfitTrend', hv(sums.slice(0,half),'finalResult'), hv(sums.slice(half),'finalResult'));
+    setT(
+      "kpiIncomeTrend",
+      hv(sums.slice(0, half), "income"),
+      hv(sums.slice(half), "income"),
+    );
+    setT(
+      "kpiExpenseTrend",
+      hv(sums.slice(0, half), "expense"),
+      hv(sums.slice(half), "expense"),
+    );
+    setT(
+      "kpiProfitTrend",
+      hv(sums.slice(0, half), "finalResult"),
+      hv(sums.slice(half), "finalResult"),
+    );
   }
 }
 
-/* ══════════════════════════════════════════
-   DONUT
-══════════════════════════════════════════ */
-// function buildDonut(activeCols){
-//   const CODE_COL = findCodeColIndex();
-//   const IS_EXP = v => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
-//   const expMap = {};
-//   allDataRows.forEach(row => {
-//     if(isSkipRow(row)) return;
-//     const cellVal = (row[CODE_COL] ?? '').toString().trim();
-//     if(!IS_EXP(cellVal)) return;
-//     const label = extractLabel(cellVal) || cellVal;
-//     activeCols.forEach(col => {
-//       const v = cellNum(row, col.colIndex);
-//       if(v !== 0) expMap[label] = (expMap[label] || 0) + Math.abs(v);
-//     });
-//   });
-
-//   const entries = Object.entries(expMap).sort((a,b) => b[1]-a[1]).slice(0,8);
-//   const labels  = entries.map(e => e[0]);
-//   const vals    = entries.map(e => e[1]);
-//   const total   = vals.reduce((a,b) => a+b, 0);   // ← TOTAL ADD KIYA
-//   const palette = ['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
-//   const dark    = isDark();
-
-//   mk('chartDonut','doughnut',{labels,datasets:[{
-//     data: vals,
-//     backgroundColor: palette.slice(0,labels.length),
-//     borderWidth: 2,
-//     hoverOffset: 6,
-//     borderColor: dark ? '#161b27' : '#fff'
-//   }]},{
-//     responsive: true,
-//     maintainAspectRatio: false,
-//     animation: { duration: 500 },
-//     plugins: {
-//       legend: { display: false },
-//       tooltip: {
-//         backgroundColor: dark ? '#161b27' : '#fff',
-//         borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
-//         borderWidth: 1,
-//         titleColor: dark ? '#dde4f5' : '#0e1220',
-//         bodyColor: dark ? '#8892a4' : '#7a83a8',
-//         padding: 10,
-//         cornerRadius: 10,
-//         callbacks: {
-//           // ← PERCENTAGE TOOLTIP
-//           label: ctx => {
-//             const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
-//             return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
-//           }
-//         }
-//       }
-//     },
-//     cutout: '60%',
-//     // ← CENTER LABEL ON HOVER
-//     onHover: (event, elements) => {
-//       const centerVal = document.getElementById('donutCenterVal');
-//       const centerSub = document.getElementById('donutCenterSub');
-//       if(!centerVal || !centerSub) return;
-//       if(elements.length > 0){
-//         const idx = elements[0].index;
-//         const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
-//         centerVal.textContent = pct + '%';
-//         centerSub.textContent = (labels[idx] || '').substring(0, 14);
-//       } else {
-//         centerVal.textContent = fmt(total);
-//         centerSub.textContent = 'total';
-//       }
-//     }
-//   });
-// }
-
-function buildDonut(activeCols){
+function buildDonut(activeCols) {
   const CODE_COL = findCodeColIndex();
-  const IS_EXP = v => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
+  const IS_EXP = (v) => /^[4-9][\.\s]|^1[0-3][\.\s]/.test(v);
   const expMap = {};
-  allDataRows.forEach(row => {
-    if(isSkipRow(row)) return;
-    const cellVal = (row[CODE_COL] ?? '').toString().trim();
-    if(!IS_EXP(cellVal)) return;
+  allDataRows.forEach((row) => {
+    if (isSkipRow(row)) return;
+    const cellVal = (row[CODE_COL] ?? "").toString().trim();
+    if (!IS_EXP(cellVal)) return;
     const label = extractLabel(cellVal) || cellVal;
-    activeCols.forEach(col => {
+    activeCols.forEach((col) => {
       const v = cellNum(row, col.colIndex);
-      if(v !== 0) expMap[label] = (expMap[label] || 0) + Math.abs(v);
+      if (v !== 0) expMap[label] = (expMap[label] || 0) + Math.abs(v);
     });
   });
 
-  const entries = Object.entries(expMap).sort((a,b) => b[1]-a[1]).slice(0,8);
-  const labels  = entries.map(e => e[0]);
-  const vals    = entries.map(e => e[1]);
-  const total   = vals.reduce((a,b) => a+b, 0);
-  const palette = ['#ff4d6d','#ffc75f','#5b9cf6','#00c97a','#c77dff','#00b4d8','#f77f00','#a8dadc'];
-  const dark    = isDark();
+  const entries = Object.entries(expMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+  const labels = entries.map((e) => e[0]);
+  const vals = entries.map((e) => e[1]);
+  const total = vals.reduce((a, b) => a + b, 0);
+  const palette = [
+    "#ff4d6d",
+    "#ffc75f",
+    "#5b9cf6",
+    "#00c97a",
+    "#c77dff",
+    "#00b4d8",
+    "#f77f00",
+    "#a8dadc",
+  ];
+  const dark = isDark();
 
   // destroy old
-  if(chartInst['chartDonut']) chartInst['chartDonut'].destroy();
-  const canvas = document.getElementById('chartDonut');
-  if(!canvas) return;
+  if (chartInst["chartDonut"]) chartInst["chartDonut"].destroy();
+  const canvas = document.getElementById("chartDonut");
+  if (!canvas) return;
 
   const outerLabelsPlugin = {
-  id: 'outerLabels',
-  afterDraw(chart) {
-    const ctx = chart.ctx;
-    const meta = chart.getDatasetMeta(0);
-    if(!meta || !meta.data.length) return;
-    const cx = (chart.chartArea.left + chart.chartArea.right) / 2;
-    const cy = (chart.chartArea.top  + chart.chartArea.bottom) / 2;
-    ctx.save();
-    meta.data.forEach((arc, i) => {
-      const pct = total ? ((vals[i] / total) * 100) : 0;
-      if(pct < 4) return;
-      const angle = (arc.startAngle + arc.endAngle) / 2;
-      const x1 = cx + Math.cos(angle) * arc.outerRadius;
-      const y1 = cy + Math.sin(angle) * arc.outerRadius;
-      const x2 = cx + Math.cos(angle) * (arc.outerRadius + 18);
-      const y2 = cy + Math.sin(angle) * (arc.outerRadius + 18);
-      const xt  = x2 + (Math.cos(angle) >= 0 ? 5 : -5);
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.strokeStyle = palette[i] || '#888';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
-      ctx.fillStyle = dark ? '#dde4f5' : '#333';
-      ctx.font = '600 11px sans-serif';
-      ctx.textAlign = Math.cos(angle) >= 0 ? 'left' : 'right';
-      ctx.textBaseline = 'middle';
-      // ↓ SIRF YEH LINE BАДLI HAI
-      ctx.fillText(pct.toFixed(1) + '%  ' + (labels[i] || '').substring(0, 18), xt, y2);
-    });
-    ctx.restore();
-  }
-};
-  chartInst['chartDonut'] = new Chart(canvas, {
-    type: 'doughnut',
+    id: "outerLabels",
+    afterDraw(chart) {
+      const ctx = chart.ctx;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data.length) return;
+      const cx = (chart.chartArea.left + chart.chartArea.right) / 2;
+      const cy = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+      ctx.save();
+      meta.data.forEach((arc, i) => {
+        const pct = total ? (vals[i] / total) * 100 : 0;
+        if (pct < 1.5) return;
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const x1 = cx + Math.cos(angle) * arc.outerRadius;
+        const y1 = cy + Math.sin(angle) * arc.outerRadius;
+        const x2 = cx + Math.cos(angle) * (arc.outerRadius + 26);
+        const y2 = cy + Math.sin(angle) * (arc.outerRadius + 26);
+        const xt = x2 + (Math.cos(angle) >= 0 ? 5 : -5);
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = palette[i] || "#888";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.fillStyle = dark ? "#dde4f5" : "#333";
+        ctx.font = "600 11px sans-serif";
+        ctx.textAlign = Math.cos(angle) >= 0 ? "left" : "right";
+        ctx.textBaseline = "middle";
+        // ↓ SIRF YEH LINE BАДLI HAI
+        ctx.fillText(
+          pct.toFixed(1) + "%  " + (labels[i] || "").substring(0, 18),
+          xt,
+          y2,
+        );
+      });
+      ctx.restore();
+    },
+  };
+  chartInst["chartDonut"] = new Chart(canvas, {
+    type: "doughnut",
     data: {
       labels,
-      datasets:[{
-        data: vals,
-        backgroundColor: palette.slice(0, labels.length),
-        borderWidth: 2,
-        hoverOffset: 6,
-        borderColor: dark ? '#161b27' : '#fff'
-      }]
+      datasets: [
+        {
+          data: vals,
+          backgroundColor: palette.slice(0, labels.length),
+          borderWidth: 2,
+          hoverOffset: 6,
+          borderColor: dark ? "#161b27" : "#fff",
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       animation: { duration: 500 },
-      layout: { padding: 35 },
+      layout: { padding: 55 },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: dark ? '#161b27' : '#fff',
-          borderColor: dark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.10)',
+          backgroundColor: dark ? "#161b27" : "#fff",
+          borderColor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.10)",
           borderWidth: 1,
-          titleColor: dark ? '#dde4f5' : '#0e1220',
-          bodyColor: dark ? '#8892a4' : '#7a83a8',
+          titleColor: dark ? "#dde4f5" : "#0e1220",
+          bodyColor: dark ? "#8892a4" : "#7a83a8",
           padding: 10,
           cornerRadius: 10,
           callbacks: {
-            label: ctx => {
-              const pct = total ? ((ctx.parsed / total) * 100).toFixed(1) : '0.0';
+            label: (ctx) => {
+              const pct = total
+                ? ((ctx.parsed / total) * 100).toFixed(1)
+                : "0.0";
               return ` ${ctx.label}: ${fmt(ctx.parsed)}  (${pct}%)`;
-            }
-          }
-        }
+            },
+          },
+        },
       },
-      cutout: '60%',
+      cutout: "60%",
       onHover: (event, elements) => {
-        const centerVal = document.getElementById('donutCenterVal');
-        const centerSub = document.getElementById('donutCenterSub');
-        if(!centerVal || !centerSub) return;
-        if(elements.length > 0){
+        const centerVal = document.getElementById("donutCenterVal");
+        const centerSub = document.getElementById("donutCenterSub");
+        if (!centerVal || !centerSub) return;
+        if (elements.length > 0) {
           const idx = elements[0].index;
-          const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : '0.0';
-          centerVal.textContent = pct + '%';
-          centerSub.textContent = (labels[idx] || '').substring(0, 14);
+          const pct = total ? ((vals[idx] / total) * 100).toFixed(1) : "0.0";
+          centerVal.textContent = pct + "%";
+          centerSub.textContent = (labels[idx] || "").substring(0, 14);
         } else {
           centerVal.textContent = fmt(total);
-          centerSub.textContent = 'total';
+          centerSub.textContent = "total";
         }
-      }
+      },
     },
-    plugins: [outerLabelsPlugin]
+    plugins: [outerLabelsPlugin],
   });
 }
 
 /* ══════════════════════════════════════════
    BUILD DASHBOARD
 ══════════════════════════════════════════ */
-function buildDashboard(){
-  const activeCols=currentPeriod==='monthly'?monthCols:yearCols;
-  if(!activeCols.length)return;
-  const labels  =activeCols.map(c=>c.label);
-  const sums    =activeCols.map(c=>calcSummary(c));
-  const incomes =sums.map(s=>s.income>0?s.income:0);
-  const expenses=sums.map(s=>Math.abs(s.expense));
-  const profits =sums.map(s=>s.finalResult);
+function buildDashboard() {
+  const activeCols = currentPeriod === "monthly" ? monthCols : yearCols;
+  if (!activeCols.length) return;
+  const labels = activeCols.map((c) => c.label);
+  const sums = activeCols.map((c) => calcSummary(c));
+  const incomes = sums.map((s) => (s.income > 0 ? s.income : 0));
+  const expenses = sums.map((s) => Math.abs(s.expense));
+  const profits = sums.map((s) => s.finalResult);
   updateKPIs(sums);
-  const t=ieChartType;
-  const plColors=profits.map(v=>v>=0?alpha('#5b9cf6',.85):alpha('#ff4d6d',.85));
-  mk('chartIE',t,{labels,datasets:[
-    {label:'Income', data:incomes,backgroundColor:t==='bar'?alpha('#00c97a',.82):'transparent',borderColor:'#00c97a',borderWidth:t==='bar'?0:2.2,borderRadius:t==='bar'?4:0,fill:t==='line',tension:.4,pointRadius:3,pointBackgroundColor:'#00c97a'},
-    {label:'Expense',data:expenses,backgroundColor:t==='bar'?alpha('#ff4d6d',.82):'transparent',borderColor:'#ff4d6d',borderWidth:t==='bar'?0:2.2,borderRadius:t==='bar'?4:0,fill:t==='line',tension:.4,pointRadius:3,pointBackgroundColor:'#ff4d6d'}
-  ]},baseOpts(t));
-  const plOpts=baseOpts('bar');plOpts.scales.y.beginAtZero=false;
-  mk('chartPL','bar',{labels,datasets:[{label:'P/L',data:profits,backgroundColor:plColors,borderWidth:0,borderRadius:4}]},plOpts);
-  mk('chartTrend','line',{labels,datasets:[{label:'Income',data:incomes,borderColor:'#00c97a',backgroundColor:alpha('#00c97a',.10),fill:true,tension:.42,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#00c97a'}]},baseOpts('line'));
+  const t = ieChartType;
+  const plColors = profits.map((v) =>
+    v >= 0 ? alpha("#5b9cf6", 0.85) : alpha("#ff4d6d", 0.85),
+  );
+  mk(
+    "chartIE",
+    t,
+    {
+      labels,
+      datasets: [
+        {
+          label: "Income",
+          data: incomes,
+          backgroundColor: t === "bar" ? alpha("#00c97a", 0.82) : "transparent",
+          borderColor: "#00c97a",
+          borderWidth: t === "bar" ? 0 : 2.2,
+          borderRadius: t === "bar" ? 4 : 0,
+          fill: t === "line",
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: "#00c97a",
+        },
+        {
+          label: "Expense",
+          data: expenses,
+          backgroundColor: t === "bar" ? alpha("#ff4d6d", 0.82) : "transparent",
+          borderColor: "#ff4d6d",
+          borderWidth: t === "bar" ? 0 : 2.2,
+          borderRadius: t === "bar" ? 4 : 0,
+          fill: t === "line",
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: "#ff4d6d",
+        },
+      ],
+    },
+    baseOpts(t),
+  );
+  const plOpts = baseOpts("bar");
+  plOpts.scales.y.beginAtZero = false;
+  mk(
+    "chartPL",
+    "bar",
+    {
+      labels,
+      datasets: [
+        {
+          label: "P/L",
+          data: profits,
+          backgroundColor: plColors,
+          borderWidth: 0,
+          borderRadius: 4,
+        },
+      ],
+    },
+    plOpts,
+  );
+  mk(
+    "chartTrend",
+    "line",
+    {
+      labels,
+      datasets: [
+        {
+          label: "Income",
+          data: incomes,
+          borderColor: "#00c97a",
+          backgroundColor: alpha("#00c97a", 0.1),
+          fill: true,
+          tension: 0.42,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: "#00c97a",
+        },
+      ],
+    },
+    baseOpts("line"),
+  );
   buildDonut(activeCols);
-  const margins=incomes.map((inc,i)=>inc?((profits[i]/inc)*100):0);
-  const marginOpts=baseOpts('line');
-  marginOpts.scales.y.ticks.callback=v=>v.toFixed(0)+'%';
-  marginOpts.plugins.tooltip.callbacks={label:ctx=>` ${ctx.parsed.y.toFixed(1)}%`};
-  mk('chartMargin','line',{labels,datasets:[{label:'Margin %',data:margins,borderColor:'#ffc75f',backgroundColor:alpha('#ffc75f',.10),fill:true,tension:.4,borderWidth:2.5,pointRadius:3,pointBackgroundColor:'#ffc75f'}]},marginOpts);
-  let running=0;
-  const cumul=profits.map(v=>{running+=v;return running;});
-  mk('chartCumul','bar',{labels,datasets:[{label:'Cumulative P/L',data:cumul,backgroundColor:cumul.map(v=>v>=0?alpha('#5b9cf6',.82):alpha('#ff4d6d',.82)),borderRadius:4,borderWidth:0}]},baseOpts('bar'));
-  const yearlyRow=document.getElementById('yearlyRow');
-  if(yearCols.length>0&&currentPeriod==='monthly'){
-    yearlyRow.style.display='grid';
-    const yl=yearCols.map(c=>c.label);
-    const ys=yearCols.map(c=>calcSummary(c));
-    const yi=ys.map(s=>s.income>0?s.income:0);
-    const ye=ys.map(s=>Math.abs(s.expense));
-    const yp=ys.map(s=>s.finalResult);
-    mk('chartYearIE','bar',{labels:yl,datasets:[
-      {label:'Income', data:yi,backgroundColor:alpha('#00c97a',.82),borderWidth:0,borderRadius:4},
-      {label:'Expense',data:ye,backgroundColor:alpha('#ff4d6d',.82),borderWidth:0,borderRadius:4}
-    ]},baseOpts('bar'));
-    mk('chartYearPL','bar',{labels:yl,datasets:[{label:'Yearly P/L',data:yp,backgroundColor:yp.map(v=>v>=0?alpha('#5b9cf6',.85):alpha('#ff4d6d',.85)),borderWidth:0,borderRadius:4}]},baseOpts('bar'));
+  const margins = incomes.map((inc, i) => (inc ? (profits[i] / inc) * 100 : 0));
+  const marginOpts = baseOpts("line");
+  marginOpts.scales.y.ticks.callback = (v) => v.toFixed(0) + "%";
+  marginOpts.plugins.tooltip.callbacks = {
+    label: (ctx) => ` ${ctx.parsed.y.toFixed(1)}%`,
+  };
+  mk(
+    "chartMargin",
+    "line",
+    {
+      labels,
+      datasets: [
+        {
+          label: "Margin %",
+          data: margins,
+          borderColor: "#ffc75f",
+          backgroundColor: alpha("#ffc75f", 0.1),
+          fill: true,
+          tension: 0.4,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointBackgroundColor: "#ffc75f",
+        },
+      ],
+    },
+    marginOpts,
+  );
+  let running = 0;
+  const cumul = profits.map((v) => {
+    running += v;
+    return running;
+  });
+  mk(
+    "chartCumul",
+    "bar",
+    {
+      labels,
+      datasets: [
+        {
+          label: "Cumulative P/L",
+          data: cumul,
+          backgroundColor: cumul.map((v) =>
+            v >= 0 ? alpha("#5b9cf6", 0.82) : alpha("#ff4d6d", 0.82),
+          ),
+          borderRadius: 4,
+          borderWidth: 0,
+        },
+      ],
+    },
+    baseOpts("bar"),
+  );
+  const yearlyRow = document.getElementById("yearlyRow");
+  if (yearCols.length > 0 && currentPeriod === "monthly") {
+    yearlyRow.style.display = "grid";
+    const yl = yearCols.map((c) => c.label);
+    const ys = yearCols.map((c) => calcSummary(c));
+    const yi = ys.map((s) => (s.income > 0 ? s.income : 0));
+    const ye = ys.map((s) => Math.abs(s.expense));
+    const yp = ys.map((s) => s.finalResult);
+    mk(
+      "chartYearIE",
+      "bar",
+      {
+        labels: yl,
+        datasets: [
+          {
+            label: "Income",
+            data: yi,
+            backgroundColor: alpha("#00c97a", 0.82),
+            borderWidth: 0,
+            borderRadius: 4,
+          },
+          {
+            label: "Expense",
+            data: ye,
+            backgroundColor: alpha("#ff4d6d", 0.82),
+            borderWidth: 0,
+            borderRadius: 4,
+          },
+        ],
+      },
+      baseOpts("bar"),
+    );
+    mk(
+      "chartYearPL",
+      "bar",
+      {
+        labels: yl,
+        datasets: [
+          {
+            label: "Yearly P/L",
+            data: yp,
+            backgroundColor: yp.map((v) =>
+              v >= 0 ? alpha("#5b9cf6", 0.85) : alpha("#ff4d6d", 0.85),
+            ),
+            borderWidth: 0,
+            borderRadius: 4,
+          },
+        ],
+      },
+      baseOpts("bar"),
+    );
   } else {
-    yearlyRow.style.display='none';
+    yearlyRow.style.display = "none";
   }
 }
 
 /* ══════════════════════════════════════════
    CONTROLS
 ══════════════════════════════════════════ */
-function setPeriod(p,btn){
-  currentPeriod=p;
-  document.querySelectorAll('.period-tab').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function setPeriod(p, btn) {
+  currentPeriod = p;
+  document
+    .querySelectorAll(".period-tab")
+    .forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
   buildDashboard();
 }
-function toggleIEType(type,btn){
-  ieChartType=type;
-  document.querySelectorAll('.chart-type-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function toggleIEType(type, btn) {
+  ieChartType = type;
+  document
+    .querySelectorAll(".chart-type-btn")
+    .forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
   buildDashboard();
 }
-function rebuildAllCharts(){
-  Object.values(chartInst).forEach(c=>c.destroy());
-  chartInst={};
+function rebuildAllCharts() {
+  Object.values(chartInst).forEach((c) => c.destroy());
+  chartInst = {};
   buildDashboard();
 }
 
 /* ══════════════════════════════════════════
    DOWNLOAD / EXPORT / REFRESH / TOAST
 ══════════════════════════════════════════ */
-function dlChart(id,name){
-  const c=document.getElementById(id);if(!c)return;
-  const a=document.createElement('a');
-  a.download=name+'.png';a.href=c.toDataURL('image/png');a.click();
-  toast('Chart saved as PNG');
+function dlChart(id, name) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const a = document.createElement("a");
+  a.download = name + ".png";
+  a.href = c.toDataURL("image/png");
+  a.click();
+  toast("Chart saved as PNG");
 }
-function exportCSV(){
-  if(!allDataRows.length){toast('No data to export');return;}
-  const rows=[headers.join(','),...allDataRows.map(r=>(r||[]).map(c=>JSON.stringify(c??'')).join(','))];
-  const blob=new Blob([rows.join('\n')],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='financials.csv';a.click();
-  toast('CSV exported');
+function exportCSV() {
+  if (!allDataRows.length) {
+    toast("No data to export");
+    return;
+  }
+  const rows = [
+    headers.join(","),
+    ...allDataRows.map((r) =>
+      (r || []).map((c) => JSON.stringify(c ?? "")).join(","),
+    ),
+  ];
+  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "financials.csv";
+  a.click();
+  toast("CSV exported");
 }
-async function refreshData(){
-  Object.values(chartInst).forEach(c=>c.destroy());
-  chartInst={};
-  document.getElementById('dashContent').style.display='none';
-  document.getElementById('dashLoader').style.display='flex';
+async function refreshData() {
+  Object.values(chartInst).forEach((c) => c.destroy());
+  chartInst = {};
+  document.getElementById("dashContent").style.display = "none";
+  document.getElementById("dashLoader").style.display = "flex";
   await loadSheetData();
 }
-function toast(msg,d=3000){
-  const el=document.createElement('div');
-  el.className='toast-msg';el.textContent=msg;
-  document.getElementById('toastWrap').appendChild(el);
-  setTimeout(()=>el.remove(),d);
+function toast(msg, d = 3000) {
+  const el = document.createElement("div");
+  el.className = "toast-msg";
+  el.textContent = msg;
+  document.getElementById("toastWrap").appendChild(el);
+  setTimeout(() => el.remove(), d);
 }
 
 /* ══════════════════════════════════════════
    FULLSCREEN TABLE
 ══════════════════════════════════════════ */
-function openFullscreenTable(){
-  const overlay=document.getElementById('fullscreenOverlay');
-  const fsHead =document.getElementById('fsTableHead');
-  const fsBody =document.getElementById('fsTableBody');
-  if(!overlay||!fsHead||!fsBody)return;
-  fsHead.innerHTML=`<tr>${headers.map(h=>`<th title="${h}">${h}</th>`).join('')}</tr>`;
-  let bodyHtml='';
-  allDataRows.forEach(row=>{
-    if(!row)return;
-    bodyHtml+='<tr>'+headers.map((_,i)=>`<td>${row[i]??''}</td>`).join('')+'</tr>';
+function openFullscreenTable() {
+  const overlay = document.getElementById("fullscreenOverlay");
+  const fsHead = document.getElementById("fsTableHead");
+  const fsBody = document.getElementById("fsTableBody");
+  if (!overlay || !fsHead || !fsBody) return;
+  fsHead.innerHTML = `<tr>${headers.map((h) => `<th title="${h}">${h}</th>`).join("")}</tr>`;
+  let bodyHtml = "";
+  allDataRows.forEach((row) => {
+    if (!row) return;
+    bodyHtml +=
+      "<tr>" +
+      headers.map((_, i) => `<td>${row[i] ?? ""}</td>`).join("") +
+      "</tr>";
   });
-  fsBody.innerHTML=bodyHtml;
-  document.getElementById('fsColCount').textContent=`${headers.length} columns`;
-  document.getElementById('fsRowCount').textContent=`${allDataRows.length} rows · ${headers.length} columns`;
-  overlay.classList.add('open');
-  document.body.style.overflow='hidden';
+  fsBody.innerHTML = bodyHtml;
+  document.getElementById("fsColCount").textContent =
+    `${headers.length} columns`;
+  document.getElementById("fsRowCount").textContent =
+    `${allDataRows.length} rows · ${headers.length} columns`;
+  overlay.classList.add("open");
+  document.body.style.overflow = "hidden";
 }
-function closeFullscreenTable(){
-  document.getElementById('fullscreenOverlay').classList.remove('open');
-  document.body.style.overflow='';
+function closeFullscreenTable() {
+  document.getElementById("fullscreenOverlay").classList.remove("open");
+  document.body.style.overflow = "";
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFullscreenTable();});
-document.getElementById('fullscreenOverlay').addEventListener('click',function(e){if(e.target===this)closeFullscreenTable();});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeFullscreenTable();
+});
+document
+  .getElementById("fullscreenOverlay")
+  .addEventListener("click", function (e) {
+    if (e.target === this) closeFullscreenTable();
+  });
 
 /* ══════════════════════════════════════════
    LOAD DATA
 ══════════════════════════════════════════ */
-async function loadSheetData(){
-  try{
-    const clientId=localStorage.getItem('clientId');
-    const res=await fetch('/getLatestSheetResult',{
-      method:'GET',credentials:'include',
-      headers:{'Content-Type':'application/json','x-client-id':clientId||''}
+async function loadSheetData() {
+  try {
+    const clientId = localStorage.getItem("clientId");
+    const res = await fetch("/getLatestSheetResult", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "x-client-id": clientId || "",
+      },
     });
-    const text=await res.text();
-    if(!res.ok)throw new Error(`Server error: ${res.status} - ${text}`);
-    const result=JSON.parse(text);
-    if(!result.success){
-      toast('Error: '+(result.error||'Unknown'));
-      document.getElementById('dashLoader').style.display='none';
+    const text = await res.text();
+    if (!res.ok) throw new Error(`Server error: ${res.status} - ${text}`);
+    const result = JSON.parse(text);
+    if (!result.success) {
+      toast("Error: " + (result.error || "Unknown"));
+      document.getElementById("dashLoader").style.display = "none";
       return;
     }
-    const rawData=result.data;
-    if(!rawData||rawData.length===0){
-      toast('No data found in sheet');
-      document.getElementById('dashLoader').style.display='none';
+    const rawData = result.data;
+    if (!rawData || rawData.length === 0) {
+      toast("No data found in sheet");
+      document.getElementById("dashLoader").style.display = "none";
       return;
     }
-    const data=rawData.map(row=>{
-      if(Array.isArray(row))return row;
-      return Object.entries(row).filter(([k])=>!k.startsWith('_')).map(([,v])=>v);
+    const data = rawData.map((row) => {
+      if (Array.isArray(row)) return row;
+      return Object.entries(row)
+        .filter(([k]) => !k.startsWith("_"))
+        .map(([, v]) => v);
     });
-    infoRows   =data.slice(0,3);
-    headers    =data[3]||[];
-    allDataRows=data.slice(4);
+    infoRows = data.slice(0, 3);
+    headers = data[3] || [];
+    allDataRows = data.slice(4);
     parseColumnsFromHeaders();
-    document.getElementById('dashLoader').style.display='none';
-    document.getElementById('dashContent').style.display='block';
+    document.getElementById("dashLoader").style.display = "none";
+    document.getElementById("dashContent").style.display = "block";
     buildDashboard();
-    toast('Data loaded ✓');
-  }catch(err){
+    toast("Data loaded ✓");
+  } catch (err) {
     console.error(err);
-    toast('Load error: '+err.message);
-    document.getElementById('dashLoader').style.display='none';
+    toast("Load error: " + err.message);
+    document.getElementById("dashLoader").style.display = "none";
   }
 }
 
 /* ══════════════════════════════════════════
    DOMContentLoaded — SIRF EK, SABSE NEECHE
 ══════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   // Theme init
   const saved = localStorage.getItem("appTheme") || "light";
   document.documentElement.setAttribute("data-theme", saved);

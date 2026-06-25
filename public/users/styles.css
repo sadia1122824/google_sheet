@@ -331,7 +331,7 @@ body {
   gap: 12px;
   margin-bottom: 16px;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 16px 16px 0 0;
   padding: 10px 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   flex-wrap: nowrap;
@@ -383,6 +383,8 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
 }
+
+
 
 /**
  * style.css
@@ -486,53 +488,79 @@ body {
 /* ═══════════════════════════════════════════════
    BUTTONS
 ═══════════════════════════════════════════════ */
-.btn-open-filter,
-.ai-chat-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(135deg, #0d6efd, #6f42c1);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.25);
-  transition: all 0.2s ease;
+/* Wrapper agar dono buttons right side align karne hain */
+.action-buttons{
+  display:flex;
+  justify-content:flex-end;
+  gap:16px;
+  align-items:center;
 }
 
-.btn-open-filter:hover,
-.ai-chat-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(13, 110, 253, 0.35);
+/* FILTER BUTTON - WHITE */
+.btn-open-filter{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 28px;
+  background:#fff;
+  color:#3d4f8c;
+  border:1px solid #e7ebf5;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.04);
+  transition:.3s;
 }
 
-.btn-open-filter:active,
-.ai-chat-btn:active {
-  transform: scale(0.97);
+.btn-open-filter:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
-.btn-open-filter i,
-.ai-chat-btn i {
-  font-size: 14px;
-  opacity: 0.95;
+.btn-open-filter i{
+  font-size:18px;
 }
 
-.filter-badge {
-  background: rgba(255, 255, 255, 0.28);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 20px;
-  min-width: 22px;
-  text-align: center;
+/* Badge */
+.filter-badge{
+  width:22px;
+  height:22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#22356f;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
 }
 
+/* AI CHAT BUTTON - DARK BLUE */
+.ai-chat-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 28px;
+  background:linear-gradient(135deg,#102a68,#1d3479);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(16,42,104,.25);
+  transition:.3s;
+}
+
+.ai-chat-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(16,42,104,.35);
+}
+
+.ai-chat-btn i{
+  font-size:18px;
+}
 
 /* ═══════════════════════════════════════════════
    FILTER DRAWER
@@ -1760,7 +1788,7 @@ body {
   --bg-primary:       #ffffff;
   --bg-secondary:     #f4f7fb;
   --bg-card:          #ffffff;
-  --bg-sidebar:       #ffffff;
+ --bg-sidebar: #12141f;
   --text-primary:     #2c3e50;
   --text-secondary:   #546e7a;
   --border-color:     #d0e0ff;
@@ -1827,15 +1855,38 @@ body {
 }
 
 .sidebar {
-  background: var(--bg-sidebar) !important;
-  border-right-color: var(--border-color) !important;
+  background: #12141f !important;
+  border-right-color: #1e2340 !important;
   transition: background 0.35s, border-color 0.35s;
 }
 
-.sidebar-header             { border-bottom-color: var(--border-color) !important; }
-.sb-nav-link                { color: var(--text-primary) !important; }
-.sb-nav-link:hover,
-.sb-nav-link.active         { background: var(--sidebar-hover) !important; }
+.sidebar-header {
+  background: #12141f !important;
+  border-bottom-color: #1e2340 !important;
+}
+
+.sidebar-body {
+  background: #12141f !important;
+}
+
+.sidebar-section-title {
+  color: #5a6899 !important;
+}
+
+.sb-nav-link {
+  color: #9aaacf !important;
+}
+
+.sb-nav-link:hover {
+  background: #1c2140 !important;
+  color: #c8d6ff !important;
+}
+
+.sb-nav-link.active {
+  background: #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
 
 .top-bar {
   background: var(--bg-card) !important;
@@ -2535,13 +2586,12 @@ body {
     padding: 10px !important;
     overflow-x: hidden;
   }
-
-  .top-bar {
+.top-bar {
     padding: 10px 12px !important;
-    border-radius: 16px;
+    border-radius: 16px 16px 0 0;
     gap: 8px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-  }
+}
 
   .top-bar-title { display: none; }
   .top-bar-logo  { height: 20px; }

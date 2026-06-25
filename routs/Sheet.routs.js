@@ -15,7 +15,8 @@
     text_to_speech,
     uploadExcell,
     liveSheetGraphs,
-    previousSheetGraphs
+    previousSheetGraphs,
+   
     
     
     
@@ -26,6 +27,16 @@ AssignedClients
 }
 
  =require('../controllers/Add_Staff');
+
+ const{
+  loanSheet,
+  importDebtFile,
+   showLatestdept,
+   getLatestdeptResult,
+   showPreviousdept,
+   getPreviousdeptResult
+ }
+ = require('../controllers/dept.controller');
 
  const googleSheet = async(app,options)=>{
     // app.get('/debug',(req,reply)=>{
@@ -44,6 +55,10 @@ AssignedClients
   app.get("/getLatestSheetResult", getLatestSheetResult);
   app.get("/previousSheetData",{ preHandler: [app.webauthenticate] }, previousSheetData);
   app.get("/getPreviousSheetResult", getPreviousSheetResult);
+  app.get("/showLatestdept",{ preHandler: [app.webauthenticate] }, showLatestdept);
+  app.get("/getLatestdeptResult", getLatestdeptResult);
+  app.get("/showPreviousdept",{ preHandler: [app.webauthenticate] }, showPreviousdept);
+  app.get("/getPreviousdeptResult", getPreviousdeptResult);
 
   // staff prehandler
   app.get('/uploadExcell',{ preHandler: [app.staffauthenticate] }, uploadExcell);
@@ -54,6 +69,9 @@ AssignedClients
 
   app.get('/liveSheetGraphs',{ preHandler: [app.webauthenticate] }, liveSheetGraphs);
   app.get('/previousSheetGraphs',{ preHandler: [app.webauthenticate] }, previousSheetGraphs);
+
+  app.get('/loanSheet',{ preHandler: [app.staffauthenticate] }, loanSheet);
+  app.post('/importDebtFile', importDebtFile);
 }
 
 module.exports = googleSheet

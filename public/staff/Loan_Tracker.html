@@ -649,7 +649,7 @@
         }
 
         /* Modern Sidebar Menu */
-        .left-sidenav {
+       .left-sidenav {
     background: #0f172a !important;
 }
 
@@ -732,7 +732,8 @@
 .menu-label {
     color: #ffffff !important;
 }
-       .topbar {
+
+        .topbar {
     position: sticky;
     top: 0;
     z-index: 1050;
@@ -1107,7 +1108,7 @@
                 formData.append('clientName', clientName);
                 formData.append('staffId', localStorage.getItem('staffId') || '');
 
-                const response = await fetch('/importExcelFile', {
+                const response = await fetch('/importDebtFile', {
                     method: 'POST',
                     body: formData,
                     signal: abortController.signal

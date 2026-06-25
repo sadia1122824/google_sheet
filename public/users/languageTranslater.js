@@ -77,23 +77,18 @@ async function initI18n(preferredLang) {
 /* ── Button Display ───────────────────────────────────────── */
 
 function updateBtnDisplay(selectedSet) {
-  const flagEl  = document.getElementById('activeFlag');
+  const flagEl = document.getElementById('activeFlag');
   const labelEl = document.getElementById('activeLabel');
-  const codeEl  = document.getElementById('activeCode');
+  const codeEl = document.getElementById('activeCode');
+
   if (!flagEl || !labelEl || !codeEl) return;
 
-  const langs = [...selectedSet];
-  if (langs.length === 1) {
-    const data = LANG_MAP[langs[0]];
-    if (!data) return;
-    flagEl.textContent  = data.flag;
-    labelEl.textContent = data.label;
-    codeEl.textContent  = langs[0].toUpperCase();
-  } else {
-    flagEl.textContent  = LANG_MAP[langs[0]]?.flag ?? '';
-    labelEl.textContent = `${langs.length} languages`;
-    codeEl.textContent  = '';
-  }
+  const lang = [...selectedSet][0];
+  const data = LANG_MAP[lang];
+
+  flagEl.textContent = data.flag;
+  labelEl.textContent = data.label;
+  codeEl.textContent = lang.toUpperCase();
 }
 
 /* ── Modal Logic ──────────────────────────────────────────── */
@@ -122,16 +117,21 @@ function renderModalList() {
 }
 
 function toggleModalItem(code, el) {
-  if (_tempSelected.has(code) && _tempSelected.size === 1) return;
-  if (_tempSelected.has(code)) {
-    _tempSelected.delete(code);
-    el.classList.remove('selected');
-    el.setAttribute('aria-checked', 'false');
-  } else {
-    _tempSelected.add(code);
-    el.classList.add('selected');
-    el.setAttribute('aria-checked', 'true');
-  }
+  // Purani selection remove karo
+  _tempSelected.clear();
+
+  // Nayi language select karo
+  _tempSelected.add(code);
+
+  // Sab items se selected class hatao
+  document.querySelectorAll('.lang-modal-item').forEach(item => {
+    item.classList.remove('selected');
+    item.setAttribute('aria-checked', 'false');
+  });
+
+  // Current item select karo
+  el.classList.add('selected');
+  el.setAttribute('aria-checked', 'true');
 }
 
 function openLangModal() {
@@ -152,10 +152,13 @@ function closeLangModal() {
 }
 
 async function applyLangModal() {
-  _appliedLangs = new Set(_tempSelected);
+  const selectedLang = [..._tempSelected][0];
+
+  _appliedLangs = new Set([selectedLang]);
+
   updateBtnDisplay(_appliedLangs);
-  const primaryLang = [..._appliedLangs][0];
-  await setLang(primaryLang);
+  await setLang(selectedLang);
+
   closeLangModal();
 }
 

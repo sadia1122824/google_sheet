@@ -1,4 +1,5 @@
-const sheetService = require("../services/sheet.service");
+
+const SheetService = require("../services/sheet.service");
 const Latest_ClientCredentials = require("../models/latest_googlesheet_credentials");
 const Previous_ClientCredentials = require("../models/previous_googlesheet_credentials");
 const UploadRecord = require("../models/UploadRecord");
@@ -239,7 +240,7 @@ const importExcelFile = async (request, reply) => {
 
     // ✅ sheetService ko clientId, clientName, aur yearType pass karo
     // Sheet copy ka naam hoga: "C.Resultado - ClientName"
-    const result = await sheetService.addMultipleRows(
+    const result = await SheetService.addMultipleRows(
       rowsForGoogleSheets,
       selectedYear,
       actualClientId, // ✅ NEW
@@ -285,7 +286,6 @@ const importExcelFile = async (request, reply) => {
 
 //  ******************************** Live data in google sheet and show data in table  **************************************
 
-
 // *********************************previous sheet data show in table  ***********************************
 
 // ==============================
@@ -309,7 +309,7 @@ const getLatestSheetResult = async (req, reply) => {
         .send({ success: false, error: "clientId missing" });
     }
 
-    const result = await sheetService.fetchLatestSheetData(clientId);
+    const result = await SheetService.fetchLatestSheetData(clientId);
 
     if (!result.success) {
       return reply.send({ success: false, error: result.error });
@@ -341,7 +341,7 @@ const getPreviousSheetResult = async (req, reply) => {
         .send({ success: false, error: "clientId missing" });
     }
 
-    const result = await sheetService.fetchPreviousSheetData(clientId);
+    const result = await SheetService.fetchPreviousSheetData(clientId);
 
     if (!result.success) {
       return reply.send({ success: false, error: result.error });
@@ -364,7 +364,7 @@ const showTable = async (req, reply) => {
 };
 const getMostRecentSheet = async (req, reply) => {
   const { clientId } = req.params;
-  const result = await sheetService.getMostRecentSheetData(clientId);
+  const result = await SheetService.getMostRecentSheetData(clientId);
 
   if (!result.success) {
     return reply.status(400).send(result);
@@ -375,7 +375,7 @@ const getMostRecentSheet = async (req, reply) => {
 
 const deleteSheetData = async (req, reply) => {
   const { clientId } = req.params;
-  const result = await sheetService.deleteSheetDataByClientId(clientId);
+  const result = await SheetService.deleteSheetDataByClientId(clientId);
 
   if (!result.success) {
     return reply.status(400).send(result);
@@ -385,109 +385,6 @@ const deleteSheetData = async (req, reply) => {
 };
 
 // **************************** AI Controller Logic ****************************
-
-// const AI_chat = async (req, reply) => {
-//   try {
-//     const {
-//       question,
-//       jsResult,
-//       history = [],
-//       metric = null,
-//       sheetContext = "",
-//     } = req.body;
-
-//     // ── No jsResult → General question (with full context)
-//     if (!jsResult) {
-//       try {
-//         const conversationHistory = (history || []).slice(-8).map((m) => ({
-//           role: m.role === "user" ? "user" : "model",
-//           parts: [{ text: m.content }],
-//         }));
-
-//         const systemContext = `You are an expert financial analyst and AI assistant named "FinBot", embedded in a financial analytics dashboard.
-
-// About yourself:
-// - Your name is FinBot (or whatever name you want)
-// - You are created to help with financial analysis AND general questions
-// - You are friendly, helpful, and professional
-
-// You can help with:
-// 1. Sheet data analysis — use the provided sheet context for specific numbers
-// 2. Financial concepts — P&L, income statements, ratios, accounting terms
-// 3. General knowledge questions — history, science, math, etc.
-// 4. Casual conversation — greetings, jokes, general chat
-// 5. Urdu/Roman Urdu, English, Spanish — respond in user's language
-
-// Sheet Data Context:
-// ${sheetContext ? sheetContext.slice(0, 8000) : "No sheet data loaded yet."}
-
-// Rules:
-// - Be concise but thorough
-// - Use **bold** for important numbers/terms
-// - Never make up financial numbers — only use sheet context data
-// - For general questions outside finance, answer freely and helpfully
-// - Be conversational and friendly`;
-
-//         const formatRes = await fetch(
-//           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-//           {
-//             method: "POST",
-//             headers: { "Content-Type": "application/json" },
-//             body: JSON.stringify({
-//               system_instruction: { parts: [{ text: systemContext }] },
-//               contents: [
-//                 ...conversationHistory,
-//                 { role: "user", parts: [{ text: question }] },
-//               ],
-//               generationConfig: {
-//                 temperature: 0.3,
-//                 maxOutputTokens: 800,
-//                 topP: 0.9,
-//               },
-//             }),
-//           },
-//         );
-
-//         const formatData = await formatRes.json();
-//         if (formatData.error)
-//           throw new Error(formatData.error.message || "Gemini error");
-
-//         const geminiAnswer =
-//           formatData?.candidates?.[0]?.content?.parts?.[0]?.text;
-//         return reply.send({
-//           success: true,
-//           answer:
-//             geminiAnswer ||
-//             "I couldn't generate an answer. Please try rephrasing your question.",
-//           intent: { type: "general" },
-//         });
-//       } catch (err) {
-//         console.error("Gemini general error:", err.message);
-//         return reply.send({
-//           success: true,
-//           answer: `⚠️ AI connection issue: ${err.message}. Please try again or ask about a specific period (e.g., "What is income for January?")`,
-//           intent: { type: "general" },
-//         });
-//       }
-//     }
-
-//     // ── jsResult error
-//     if (jsResult.error) {
-//       return reply.send({
-//         success: true,
-//         answer: `⚠️ ${jsResult.error}`,
-//         intent: {},
-//       });
-//     }
-
-//     // ── jsResult exists → build structured answer
-//     const jsAnswer = buildAnswerFromJs(jsResult, question, metric);
-//     return reply.send({ success: true, answer: jsAnswer, intent: {} });
-//   } catch (err) {
-//     console.error("AI_chat error:", err);
-//     return reply.send({ success: false, error: err.message });
-//   }
-// };
 
 const AI_chat = async (req, reply) => {
   try {
@@ -717,7 +614,7 @@ const speech_to_text = async (req, reply) => {
   try {
     const data = await req.file(); // multipart/form-data
     const audioBuffer = await data.toBuffer();
-    
+
     const formData = new FormData();
     const blob = new Blob([audioBuffer], { type: data.mimetype });
     formData.append("file", blob, "audio.webm");
@@ -776,14 +673,11 @@ const text_to_speech = async (req, reply) => {
     const audioBuffer = await res.arrayBuffer();
     reply.header("Content-Type", "audio/mpeg");
     return reply.send(Buffer.from(audioBuffer));
-
   } catch (err) {
     console.error("TTS error:", err.message);
     return reply.send({ success: false, error: err.message });
   }
 };
-
-
 
 const liveSheetGraphs = async (req, reply) => {
   return reply.sendFile("users/liveSheet_graphs.html");
@@ -792,6 +686,8 @@ const liveSheetGraphs = async (req, reply) => {
 const previousSheetGraphs = async (req, reply) => {
   return reply.sendFile("users/previousSheet_graphs.html");
 };
+
+
 
 module.exports = {
   showDashboard,
@@ -809,4 +705,5 @@ module.exports = {
   uploadExcell,
   liveSheetGraphs,
   previousSheetGraphs,
+  
 };

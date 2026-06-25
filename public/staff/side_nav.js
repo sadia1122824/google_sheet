@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="brand">
         <a href="/staffDashboard" class="logo">
           <span>
-            <img src="../admin/assets/images/browser_logo/image1.png" class="logo-sm">
+            <img src="../admin/assets/images/browser_logo/image2.png" class="logo-sm">
           </span>
           <span>
            
@@ -31,6 +31,12 @@ document.addEventListener("DOMContentLoaded", function () {
             <a href="uploadExcell">
               <i data-feather="upload-cloud" class="menu-icon"></i>
               <span>Subir Excel</span>
+            </a>
+          </li>
+             <li>
+            <a href="loanSheet">
+              <i data-feather="file-text" class="menu-icon"></i>
+              <span>Tracker de Préstamos</span>
             </a>
           </li>
 
