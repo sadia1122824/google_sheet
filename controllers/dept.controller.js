@@ -88,17 +88,16 @@ const importDebtFile = async (request, reply) => {
 
     // ── Helper: Excel serial → "DD-MM-YYYY" ────────────────────────────
     const toDate = (v) => {
-      if (v === null || v === undefined || v === "") return "";
-      if (typeof v === "number" && v > 40000 && v < 60000) {
-        const d = new Date(Math.round((v - 25569) * 86400 * 1000));
-        return [
-          String(d.getUTCDate()).padStart(2, "0"),
-          String(d.getUTCMonth() + 1).padStart(2, "0"),
-          d.getUTCFullYear(),
-        ].join("-");
-      }
-      return v.toString().trim();
-    };
+  if (v === null || v === undefined || v === "") return "";
+  if (v instanceof Date) {
+    return `${v.getUTCMonth() + 1}/${v.getUTCDate()}/${v.getUTCFullYear()}`;
+  }
+  if (typeof v === "number" && v > 40000 && v < 60000) {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
+  }
+  return v.toString().trim();
+};
 
     // ── Helper: Safe number parse ───────────────────────────────────────
     const toNum = (v) => {
@@ -126,42 +125,21 @@ const importDebtFile = async (request, reply) => {
     const isEmptyRow = (row) => row.every((c) => c === null || c === undefined || c === "");
 
     // ── Helper: Normalize cell value ────────────────────────────────────
-    const normalizeCell = (v) => {
-      if (v === null || v === undefined) return null;
-      if (typeof v === "number") {
-        // Could be a date serial
-        if (v > 40000 && v < 60000) return toDate(v);
-        return toNum(v);
-      }
-      const s = v.toString().trim();
-      return s === "" || s === "null" ? null : s;
-    };
+const normalizeCell = (v) => {
+  if (v === null || v === undefined) return null;
+  if (v instanceof Date) {
+    return toDate(v);
+  }
+  if (typeof v === "number") {
+    // Could be a date serial
+    if (v > 40000 && v < 60000) return toDate(v);
+    return toNum(v);
+  }
+  const s = v.toString().trim();
+  return s === "" || s === "null" ? null : s;
+};
 
-    // ══════════════════════════════════════════════════════════════════
-    //  CORE PARSER — Identifies: MAIN HEADER → COLUMN ROW → DATA ROWS
-    // ══════════════════════════════════════════════════════════════════
-    //
-    //  Strategy:
-    //  1. We scan each row for a "main header" signal:
-    //     - A row where only 1–2 cells are non-null (sparse row)
-    //     - AND it does NOT look like a data row (no numbers across many cols)
-    //     - AND the next non-empty row looks like a column header row
-    //       (cells are all strings, no numbers, short labels)
-    //
-    //  2. Once we find a main header, the NEXT non-empty row = column headers
-    //
-    //  3. Everything after that = data rows, mapped to the column names
-    //
-    //  4. A new main header OR a separator row (----, ====, etc.) ends the block
-    //
-    //  This works for ANY Excel that follows the pattern:
-    //    DEBTORS          ← main header
-    //    Name  Amount  Date ← columns
-    //    Ali   5000    ...  ← data
-    //    Ahmed 7000    ...
-    //    CREDITORS        ← new main header → new block
-    // ══════════════════════════════════════════════════════════════════
-
+  
     // Detectors ─────────────────────────────────────────────────────────
 
     // Is this row a "separator" (dashes, equals, underscores)?

@@ -501,7 +501,7 @@ body {
   display:inline-flex;
   align-items:center;
   gap:10px;
-  padding:14px 28px;
+  padding:10px 20px;
   background:#fff;
   color:#3d4f8c;
   border:1px solid #e7ebf5;
@@ -541,7 +541,7 @@ body {
   display:inline-flex;
   align-items:center;
   gap:10px;
-  padding:14px 28px;
+  padding:10px 20px;
   background:linear-gradient(135deg,#102a68,#1d3479);
   color:#fff;
   border:none;
@@ -1848,31 +1848,98 @@ body {
 /* ═══════════════════════════════════════════════
    DARK MODE THEME APPLICATION
 ═══════════════════════════════════════════════ */
-body {
-  background: var(--bg-secondary) !important;
-  color: var(--text-primary) !important;
-  transition: background 0.35s ease, color 0.35s ease;
+.sidebar{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+
+    /* Dark Theme */
+    background:#12141f;
+    color:#fff;
+    border-right:1px solid #1e2340;
 }
 
-.sidebar {
-  background: #12141f !important;
-  border-right-color: #1e2340 !important;
-  transition: background 0.35s, border-color 0.35s;
+.sidebar-header{
+    background:#12141f;
+    border-bottom:1px solid #1e2340;
 }
 
-.sidebar-header {
-  background: #12141f !important;
-  border-bottom-color: #1e2340 !important;
+.sidebar-body{
+    flex:1;
+    overflow-y:auto;
+    padding-bottom:20px;
+
+    background:#12141f;
 }
 
-.sidebar-body {
-  background: #12141f !important;
+.sb-dropdown{
+    margin-bottom:8px;
 }
 
-.sidebar-section-title {
-  color: #5a6899 !important;
+.sb-dropdown-menu{
+    margin-left:18px;
+    margin-top:6px;
 }
 
+.sb-dropdown-menu .sb-nav-link{
+    padding:10px 14px;
+    margin-bottom:4px;
+}
+
+.sidebar-footer{
+    padding:15px;
+    border-top:1px solid rgba(255,255,255,.08);
+    background:#12141f;
+}
+
+.user-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(255,255,255,.05);
+    padding:12px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.user-card:hover{
+    background:rgba(255,255,255,.08);
+}
+
+.user-avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#2f63ff;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:18px;
+}
+
+.user-details{
+    flex:1;
+}
+
+.user-name{
+    color:#fff;
+    font-size:14px;
+    font-weight:600;
+}
+
+.user-role{
+    color:#9aa8c7;
+    font-size:12px;
+}
+
+.sb-nav-link.active{
+    background:#1d3f88;
+    color:#fff;
+    border-radius:12px;
+}
 .sb-nav-link {
   color: #9aaacf !important;
 }
