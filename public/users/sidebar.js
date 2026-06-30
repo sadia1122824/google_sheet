@@ -138,7 +138,7 @@ const sidebarHTML = `
     <div class="user-card">
 
       <div class="user-avatar">
-        S
+        A
       </div>
 
       <div class="user-details">

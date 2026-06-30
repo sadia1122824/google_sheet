@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
              <li>
             <a href="loanSheet">
               <i data-feather="file-text" class="menu-icon"></i>
-              <span>Tracker de Préstamos</span>
+              <span>Relación de Deuda</span>
             </a>
           </li>
 

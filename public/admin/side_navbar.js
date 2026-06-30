@@ -4,16 +4,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   sideNavbar.innerHTML = `
     <div class="left-sidenav">
-      <div class="brand">
+       <div class="brand">
         <a href="/" class="logo">
-          <span>
-            <img src="../admin/assets/images/browser_logo/image2.png" class="logo-sm">
-          </span>
-          <span>
-           
-          </span>
+            <span>
+                <img src="../admin/assets/images/browser_logo/image2.png"
+                     class="logo-sm animate__animated animate__flipInY">
+            </span>
         </a>
-      </div>
+    </div>
       
       <div class="menu-content h-100" data-simplebar>
         <ul class="metismenu left-sidenav-menu">
