@@ -87,15 +87,23 @@ const importDebtFile = async (request, reply) => {
     console.log(`📊 Sheet loaded: ${jsonData.length} total rows`);
 
     // ── Helper: Excel serial → "DD-MM-YYYY" ────────────────────────────
-    const toDate = (v) => {
+ const toDate = (v) => {
   if (v === null || v === undefined || v === "") return "";
-  if (v instanceof Date) {
-    return `${v.getUTCMonth() + 1}/${v.getUTCDate()}/${v.getUTCFullYear()}`;
-  }
+
+  const format = (d) => {
+    const dd = String(d.getUTCDate()).padStart(2, "0");
+    const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const yyyy = d.getUTCFullYear();
+    return `${dd}-${mm}-${yyyy}`; // ab sach mein DD-MM-YYYY
+  };
+
+  if (v instanceof Date) return format(v);
+
   if (typeof v === "number" && v > 40000 && v < 60000) {
     const d = new Date(Math.round((v - 25569) * 86400 * 1000));
-    return `${d.getUTCMonth() + 1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
+    return format(d);
   }
+
   return v.toString().trim();
 };
 

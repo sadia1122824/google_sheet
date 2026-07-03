@@ -1271,9 +1271,22 @@ function renderTable() {
 
 function shiftColumns(dir) {
   const cpp = getColsPerPage();
-  const next = colOffset + dir * cpp;
-  if (next < 0 || next >= headers.length) return;
-  colOffset = Math.max(0, Math.min(next, headers.length - cpp));
+  const totalCols = headers.length;
+  const maxOffset = Math.max(0, totalCols - cpp);
+
+  if (dir > 0) {
+    // Forward
+    if (colOffset >= maxOffset) return;
+    colOffset = Math.min(colOffset + cpp, maxOffset);
+  } else {
+    // Backward
+    if (colOffset <= 0) return;
+    const alignedOffset = Math.floor(colOffset / cpp) * cpp;
+    colOffset = (alignedOffset === colOffset)
+      ? Math.max(0, colOffset - cpp)   // already aligned, normal step back
+      : alignedOffset;                 // misaligned (last page) — snap to aligned boundary
+  }
+
   renderTable();
 }
 
