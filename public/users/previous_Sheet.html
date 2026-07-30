@@ -28,28 +28,28 @@
           <i class="bi bi-list"></i>
         </button>
 
-        <a href="/LiveSheetData">
-          <img src="/users/icons/image1.png" alt="logotipo" data-i18n-alt="logo_alt" class="theme-logo top-bar-logo"
-            onerror="this.style.display='none'">
-        </a>
-
-        <span class="top-bar-title" data-i18n="top_bar_title"></span>
+        <!-- pushes everything after it to the right, like the screenshot -->
+        <div class="top-bar-spacer"></div>
 
         <!-- Language Button ONLY — modal neeche body level pe hai -->
         <button class="lang-btn" id="langBtn" onclick="openLangModal()" aria-haspopup="dialog">
-          <span class="lang-flag" id="activeFlag" data-i18n="select_languages">Select languages</span>
+          <i class="bi bi-globe2 lang-globe-icon"></i>
+          <span class="lang-flag" id="activeFlag" data-i18n="select_languages">Select language</span>
+          <i class="bi bi-chevron-down lang-chevron-icon"></i>
+        </button>
+
+        <!-- Notification bell -->
+        <button class="notif-btn" id="notifBtn" data-i18n-title="notifications" title="Notificaciones">
+          <i class="bi bi-bell"></i>
+          <span class="notif-badge" id="notifBadge">3</span>
         </button>
 
         <button class="theme-toggle-btn" onclick="toggleTheme()" data-i18n-title="theme_toggle" title="Cambiar tema">
           <span class="icon-dark">🌙</span>
           <span class="icon-light">☀️</span>
         </button>
-
-        <span class="badge-status">
-          <i class="bi bi-circle-fill" style="font-size:8px;color:#28a745;"></i>
-          <span class="live-text" data-i18n="live_data"> Datos en vivo</span>
-        </span>
       </div>
+   
 
       <!-- ✅ Modal body ke end mein, top-bar ke BAHAR -->
          <div class="lang-modal-overlay" id="langModalOverlay">

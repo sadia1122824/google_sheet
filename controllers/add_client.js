@@ -419,6 +419,44 @@ const getDashboardStats = async (request, reply) => {
 };
 
 
+
+async function logoutController(request, reply) {
+  try {
+    // Case 1: Agar cookie-based auth hai (httpOnly cookie me token)
+    reply.clearCookie("token", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+
+    reply.clearCookie("refreshToken", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
+    });
+
+   
+    return reply.status(200).send({
+      success: true,
+      message: "Logout successful"
+    });
+
+  } catch (error) {
+    request.log.error(error);
+    return reply.status(500).send({
+      success: false,
+      message: "Something went wrong during logout"
+    });
+  }
+}
+
+const AI_Assistant = async (request, reply) => {
+    return reply.sendFile('users/Ai_assistant.html');
+}
+
+
 module.exports = {
     client,
     addClient,
@@ -428,5 +466,7 @@ module.exports = {
     deleteClient,
     updateClient,
     webLogin,
-    clientLogin
+    clientLogin,
+    logoutController,
+    AI_Assistant
 }

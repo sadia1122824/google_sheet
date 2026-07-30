@@ -65,6 +65,16 @@ window.addEventListener("resize", () => {
 });
 
 /* ══════════════════════════════════════════
+   DATALABELS PLUGIN REGISTER
+   (bar/line charts ke upar values permanently
+   dikhane ke liye — CDN script tag zaroor add karein:
+   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+══════════════════════════════════════════ */
+if (typeof Chart !== "undefined" && typeof ChartDataLabels !== "undefined") {
+  Chart.register(ChartDataLabels);
+}
+
+/* ══════════════════════════════════════════
    STATE
 ══════════════════════════════════════════ */
 let sidebarOpen = true;
@@ -269,6 +279,26 @@ function fmt(n) {
 }
 
 /* ══════════════════════════════════════════
+   EXCEL-STYLE DATA TABLE (chart ke neeche row-wise values)
+   NAYA: canvas ke turant niche ek div hona chahiye
+   HTML mein, id = "<chartId>TableWrap" (e.g. "chartIETableWrap")
+══════════════════════════════════════════ */
+function renderExcelDataTable(wrapId, labels, series) {
+  const wrap = document.getElementById(wrapId);
+  if (!wrap) return; // agar HTML mein div nahi mila to silently skip
+  let html = '<table><thead><tr><th></th>';
+  labels.forEach((l) => (html += `<th>${l}</th>`));
+  html += "</tr></thead><tbody>";
+  series.forEach((s) => {
+    html += `<tr><th><span class="legend-dot" style="background:${s.color}"></span>${s.label}</th>`;
+    s.data.forEach((v) => (html += `<td>${fmt(v)}</td>`));
+    html += "</tr>";
+  });
+  html += "</tbody></table>";
+  wrap.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════
    CHART HELPERS
 ══════════════════════════════════════════ */
 function isDark() {
@@ -289,6 +319,7 @@ function baseOpts(type) {
     responsive: true,
     maintainAspectRatio: false,
     animation: { duration: 600, easing: "easeOutQuart" },
+    layout: { padding: { top: 22 } },
     plugins: {
       legend: { display: false },
       tooltip: {
@@ -300,6 +331,20 @@ function baseOpts(type) {
         padding: 10,
         cornerRadius: 10,
         callbacks: { label: (ctx) => ` ${fmt(ctx.parsed.y ?? ctx.parsed)}` },
+      },
+      /* Har bar/point ke andar, top-edge se thoda neeche (bottom-aligned) value show karta hai */
+      datalabels: {
+        display: (ctx) => {
+          const v = ctx.dataset.data[ctx.dataIndex];
+          return v !== 0 && v !== null && v !== undefined;
+        },
+        color: dark ? "#dde4f5" : "#333",
+        anchor: "end",
+        align: "bottom",
+        offset: 4,
+        clamp: true,
+        font: { size: 9, weight: "600" },
+        formatter: (v) => fmt(v),
       },
     },
   };
@@ -471,6 +516,8 @@ function buildDonut(activeCols) {
       layout: { padding: 55 },
       plugins: {
         legend: { display: false },
+        /* Donut ke apne outer labels already hain, is liye datalabels plugin yahan off */
+        datalabels: { display: false },
         tooltip: {
           backgroundColor: dark ? "#161b27" : "#fff",
           borderColor: dark ? "rgba(255,255,255,.08)" : "rgba(0,0,0,.10)",
@@ -507,6 +554,11 @@ function buildDonut(activeCols) {
     },
     plugins: [outerLabelsPlugin],
   });
+
+  // Excel-style data table for donut (agar HTML mein div hai)
+  renderExcelDataTable("chartDonutTableWrap", labels, [
+    { label: "Expense", data: vals, color: "#ff4d6d" },
+  ]);
 }
 
 /* ══════════════════════════════════════════
@@ -542,6 +594,14 @@ function buildDashboard() {
           tension: 0.4,
           pointRadius: 3,
           pointBackgroundColor: "#00c97a",
+          datalabels: {
+            color: "#0e1220",
+            anchor: "start",
+            align: "top",
+            offset: 4,
+            clamp: true,
+            font: { size: 9, weight: "700" },
+          },
         },
         {
           label: "Expense",
@@ -554,11 +614,25 @@ function buildDashboard() {
           tension: 0.4,
           pointRadius: 3,
           pointBackgroundColor: "#ff4d6d",
+          datalabels: {
+            color: "#0e1220",
+            anchor: "start",
+            align: "top",
+            offset: 4,
+            clamp: true,
+            font: { size: 9, weight: "700" },
+          },
         },
       ],
     },
     baseOpts(t),
   );
+  // NAYA: Income vs Expense chart ke neeche Excel-style values table
+  renderExcelDataTable("chartIETableWrap", labels, [
+    { label: "Income", data: incomes, color: "#00c97a" },
+    { label: "Expense", data: expenses, color: "#ff4d6d" },
+  ]);
+
   const plOpts = baseOpts("bar");
   plOpts.scales.y.beginAtZero = false;
   mk(
@@ -578,6 +652,11 @@ function buildDashboard() {
     },
     plOpts,
   );
+  // NAYA: P/L chart ke neeche Excel-style values table
+  renderExcelDataTable("chartPLTableWrap", labels, [
+    { label: "P/L", data: profits, color: "#5b9cf6" },
+  ]);
+
   mk(
     "chartTrend",
     "line",
@@ -599,6 +678,11 @@ function buildDashboard() {
     },
     baseOpts("line"),
   );
+  // NAYA: Revenue trend ke neeche Excel-style values table
+  renderExcelDataTable("chartTrendTableWrap", labels, [
+    { label: "Income", data: incomes, color: "#00c97a" },
+  ]);
+
   buildDonut(activeCols);
   const margins = incomes.map((inc, i) => (inc ? (profits[i] / inc) * 100 : 0));
   const marginOpts = baseOpts("line");
@@ -606,6 +690,7 @@ function buildDashboard() {
   marginOpts.plugins.tooltip.callbacks = {
     label: (ctx) => ` ${ctx.parsed.y.toFixed(1)}%`,
   };
+  marginOpts.plugins.datalabels.formatter = (v) => v.toFixed(1) + "%";
   mk(
     "chartMargin",
     "line",
@@ -627,6 +712,11 @@ function buildDashboard() {
     },
     marginOpts,
   );
+  // NAYA: Margin % chart ke neeche Excel-style values table
+  renderExcelDataTable("chartMarginTableWrap", labels, [
+    { label: "Margin %", data: margins, color: "#ffc75f" },
+  ]);
+
   let running = 0;
   const cumul = profits.map((v) => {
     running += v;
@@ -651,6 +741,11 @@ function buildDashboard() {
     },
     baseOpts("bar"),
   );
+  // NAYA: Cumulative P/L chart ke neeche Excel-style values table
+  renderExcelDataTable("chartCumulTableWrap", labels, [
+    { label: "Cumulative P/L", data: cumul, color: "#5b9cf6" },
+  ]);
+
   const yearlyRow = document.getElementById("yearlyRow");
   if (yearCols.length > 0 && currentPeriod === "monthly") {
     yearlyRow.style.display = "grid";
@@ -671,6 +766,7 @@ function buildDashboard() {
             backgroundColor: alpha("#00c97a", 0.82),
             borderWidth: 0,
             borderRadius: 4,
+            datalabels: { color: isDark() ? "#0e1220" : "#fff", align: "bottom", anchor: "end" },
           },
           {
             label: "Expense",
@@ -678,11 +774,18 @@ function buildDashboard() {
             backgroundColor: alpha("#ff4d6d", 0.82),
             borderWidth: 0,
             borderRadius: 4,
+            datalabels: { color: isDark() ? "#0e1220" : "#fff", align: "bottom", anchor: "end" },
           },
         ],
       },
       baseOpts("bar"),
     );
+    // NAYA: Yearly Income vs Expense chart ke neeche Excel-style values table
+    renderExcelDataTable("chartYearIETableWrap", yl, [
+      { label: "Income", data: yi, color: "#00c97a" },
+      { label: "Expense", data: ye, color: "#ff4d6d" },
+    ]);
+
     mk(
       "chartYearPL",
       "bar",
@@ -702,6 +805,10 @@ function buildDashboard() {
       },
       baseOpts("bar"),
     );
+    // NAYA: Yearly P/L chart ke neeche Excel-style values table
+    renderExcelDataTable("chartYearPLTableWrap", yl, [
+      { label: "Yearly P/L", data: yp, color: "#5b9cf6" },
+    ]);
   } else {
     yearlyRow.style.display = "none";
   }

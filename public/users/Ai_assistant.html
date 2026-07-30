@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/users/styles.css">
+
+    <style>
+        /* ===== AI Assistant page — scoped styles ===== */
+        :root {
+            --ai-primary: #6C5CE7;
+            --ai-primary-dark: #5b4bd4;
+            --ai-primary-soft: #EFEBFF;
+            --ai-border: #ECEAF7;
+            --ai-text: #1F2430;
+            --ai-muted: #8A8FA3;
+            --ai-green: #16A34A;
+            --ai-red: #E11D48;
+            --ai-orange: #F59E0B;
+        }
+
+        .ai-page {
+            padding: 4px 2px 40px;
+        }
+
+        /* --- Page header (icon + title + subtitle) --- */
+        .ai-page-head {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .ai-page-head .ai-avatar {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--ai-primary-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .ai-page-head h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ai-text);
+            margin: 0;
+        }
+
+        .ai-page-head p {
+            font-size: 13px;
+            color: var(--ai-muted);
+            margin: 0;
+        }
+
+        /* --- Hero card --- */
+     .ai-hero {
+    position: relative;
+    
+    border-radius: 22px;
+    background: #ffffff;   /* pehle: linear-gradient(180deg, #F8F7FF 0%, #FFFFFF 60%) */
+    padding: 42px 24px 30px;
+    text-align: center;
+    margin-bottom: 22px;
+    overflow: hidden;
+}
+     .ai-wave {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;   /* pehle center tha */
+    gap: 3px;
+    height: 60px;
+    margin-bottom: 6px;
+    width: 100%;
+    padding: 0 30px;                  /* thoda edges se gap */
+}
+
+.ai-wave span {
+    width: 3px;
+    border-radius: 3px;
+    background: var(--ai-primary);
+    opacity: .35;
+    animation: ai-bounce 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+        .ai-wave span:nth-child(odd) {
+            animation-duration: 1.9s;
+        }
+
+        @keyframes ai-bounce {
+
+            0%,
+            100% {
+                height: 8px;
+                opacity: .25;
+            }
+
+            50% {
+                height: 46px;
+                opacity: .55;
+            }
+        }
+
+        .ai-orb {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #A79BFF, var(--ai-primary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: #fff;
+            margin: -46px auto 14px;
+            box-shadow: 0 10px 26px rgba(108, 92, 231, .35);
+            position: relative;
+            z-index: 2;
+            animation: ai-pulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes ai-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(108, 92, 231, .35);
+            }
+
+            50% {
+                box-shadow: 0 0 0 14px rgba(108, 92, 231, 0);
+            }
+        }
+
+        .ai-hero h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--ai-text);
+            margin: 0 0 4px;
+        }
+
+        .ai-hero .ai-hero-sub {
+            font-size: 13.5px;
+            color: var(--ai-muted);
+            margin-bottom: 22px;
+        }
+
+        .ai-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 640px;
+            margin: 0 auto 22px;
+            background: #fff;
+            border: 1px solid var(--ai-border);
+            border-radius: 16px;
+            padding: 8px 8px 8px 18px;
+            box-shadow: 0 6px 18px rgba(31, 36, 48, .06);
+        }
+
+        .ai-input-row input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+            color: var(--ai-text);
+        }
+
+        .ai-input-row input::placeholder {
+            color: var(--ai-muted);
+        }
+
+        .ai-mic-btn,
+        .ai-send-btn-hero {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: var(--ai-primary);
+            color: #fff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform .15s ease, background .15s ease;
+        }
+
+        .ai-mic-btn:hover,
+        .ai-send-btn-hero:hover {
+            background: var(--ai-primary-dark);
+        }
+
+        .ai-mic-btn.listening {
+            background: var(--ai-red);
+            animation: ai-mic-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes ai-mic-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.12);
+            }
+        }
+
+        .ai-try-label {
+            font-size: 13px;
+            color: var(--ai-muted);
+            margin-bottom: 12px;
+        }
+
+        .ai-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .ai-chip {
+            border: 1px solid var(--ai-border);
+            background: #fff;
+            color: var(--ai-text);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all .15s ease;
+        }
+
+        .ai-chip:hover {
+            border-color: var(--ai-primary);
+            color: var(--ai-primary);
+            background: var(--ai-primary-soft);
+        }
+
+        /* --- Grid layout below hero --- */
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .ai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ai-card {
+            background: #fff;
+            border: 1px solid var(--ai-border);
+            border-radius: 18px;
+            box-shadow: 0 4px 14px rgba(31, 36, 48, .04);
+        }
+
+        /* Conversation card */
+        .ai-conv-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--ai-border);
+        }
+
+        .ai-conv-head .ai-conv-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--ai-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-conv-head .ai-clear-btn {
+            border: none;
+            background: none;
+            color: var(--ai-muted);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .ai-conv-head .ai-clear-btn:hover {
+            color: var(--ai-red);
+        }
+
+        .ai-conv-body {
+            padding: 18px 20px;
+            max-height: 520px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .ai-msg {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-msg .ai-msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            color: #fff;
+        }
+
+        .ai-msg.user .ai-msg-avatar {
+            background: var(--ai-primary);
+        }
+
+        .ai-msg.bot .ai-msg-avatar {
+            background: var(--ai-primary-soft);
+            color: var(--ai-primary);
+        }
+
+        .ai-bubble {
+            background: var(--ai-primary-soft);
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            color: var(--ai-text);
+            max-width: 90%;
+        }
+
+        .ai-msg.bot .ai-bubble {
+            background: #F6F5FB;
+        }
+
+        .ai-msg-time {
+            font-size: 10.5px;
+            color: var(--ai-muted);
+            margin-top: 4px;
+        }
+
+        .ai-msg-name {
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: var(--ai-text);
+        }
+
+        .ai-msg.bot .ai-msg-name {
+            color: var(--ai-primary);
+        }
+
+        /* Result / task card */
+        .ai-result-card {
+            background: #fff;
+            border: 1px solid var(--ai-border);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-top: 4px;
+            max-width: 100%;
+        }
+
+        .ai-result-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--ai-green);
+            margin-bottom: 10px;
+        }
+
+        .ai-result-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            padding: 5px 0;
+            color: var(--ai-text);
+        }
+
+        .ai-result-row .ai-rr-label {
+            width: 90px;
+            color: var(--ai-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .ai-result-row .ai-rr-value {
+            font-weight: 600;
+        }
+
+        .ai-result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .ai-btn {
+            border: none;
+            border-radius: 9px;
+            padding: 8px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .ai-btn-confirm {
+            background: var(--ai-primary);
+            color: #fff;
+        }
+
+        .ai-btn-confirm:hover {
+            background: var(--ai-primary-dark);
+        }
+
+        .ai-btn-edit {
+            background: #fff;
+            border: 1px solid var(--ai-border);
+            color: var(--ai-text);
+        }
+
+        .ai-btn-cancel {
+            background: #FFF1F2;
+            color: var(--ai-red);
+        }
+
+        .ai-conv-input {
+            border-top: 1px solid var(--ai-border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-conv-input input {
+            flex: 1;
+            border: 1px solid var(--ai-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            outline: none;
+        }
+
+        .ai-conv-input input:focus {
+            border-color: var(--ai-primary);
+        }
+
+        .ai-conv-input button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--ai-primary);
+            color: #fff;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .ai-conv-input button.ai-mic-inline {
+            background: var(--ai-primary-soft);
+            color: var(--ai-primary);
+        }
+
+        .ai-conv-input button.ai-mic-inline.listening {
+            background: var(--ai-red);
+            color: #fff;
+        }
+
+        /* Right column cards */
+        .ai-side-card {
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+
+        .ai-side-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--ai-text);
+            margin-bottom: 14px;
+        }
+
+        .ai-side-title .ai-view-all {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ai-primary);
+            cursor: pointer;
+        }
+
+        .ai-recent-item {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 0;
+            border-bottom: 1px solid var(--ai-border);
+            font-size: 12.5px;
+        }
+
+        .ai-recent-item:last-child {
+            border-bottom: none;
+        }
+
+        .ai-recent-item .ai-ri-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+
+        .ai-recent-item .ai-ri-text {
+            flex: 1;
+            color: var(--ai-text);
+        }
+
+        .ai-recent-item .ai-ri-time {
+            color: var(--ai-muted);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .ai-tips-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ai-tips-list li {
+            font-size: 12.5px;
+            color: var(--ai-text);
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .ai-tips-list li i {
+            color: var(--ai-orange);
+            margin-top: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+        <!-- Left Nav Sidebar (unchanged) -->
+        <div id="app"></div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+
+            <!-- Top Bar (unchanged) -->
+            <div class="top-bar">
+                <button class="hamburger-btn" onclick="toggleSidebar()" data-i18n-title="toggle_sidebar"
+                    title="Alternar barra lateral">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="top-bar-spacer"></div>
+
+                <button class="lang-btn" id="langBtn" onclick="openLangModal()" aria-haspopup="dialog">
+                    <i class="bi bi-globe2 lang-globe-icon"></i>
+                    <span class="lang-flag" id="activeFlag" data-i18n="select_languages">Select language</span>
+                    <i class="bi bi-chevron-down lang-chevron-icon"></i>
+                </button>
+
+                <button class="notif-btn" id="notifBtn" data-i18n-title="notifications" title="Notificaciones">
+                    <i class="bi bi-bell"></i>
+                    <span class="notif-badge" id="notifBadge">3</span>
+                </button>
+
+                <button class="theme-toggle-btn" onclick="toggleTheme()" data-i18n-title="theme_toggle"
+                    title="Cambiar tema">
+                    <span class="icon-dark">🌙</span>
+                    <span class="icon-light">☀️</span>
+                </button>
+            </div>
+
+            <div class="lang-modal-overlay" id="langModalOverlay">
+                <div class="lang-modal-box" onclick="event.stopPropagation()">
+                    <div class="lang-modal-header">
+                        <span class="lang-modal-title" data-i18n="select_language">Select Language</span>
+                        <button class="lang-modal-close" onclick="closeLangModal()" data-i18n-title="close"
+                            title="Close">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <div class="lang-modal-list" id="langList"></div>
+                    <div class="lang-modal-footer">
+                        <button class="lang-modal-btn-cancel" onclick="closeLangModal()"
+                            data-i18n="cancel">Cancel</button>
+                        <button class="lang-modal-btn-apply" onclick="applyLangModal()" data-i18n="apply">Apply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ AI ASSISTANT PAGE ============ -->
+            <div class="ai-page">
+
+                <div class="ai-page-head">
+                    <div class="ai-avatar">🤖</div>
+                    <div>
+                        <h1 data-i18n="ai_assistant_title">AI Assistant</h1>
+                        <p data-i18n="ai_assistant_sub">Your smart voice and text assistant</p>
+                    </div>
+                </div>
+
+                <!-- Hero: voice + text input -->
+                <div class="ai-hero">
+                    <div class="ai-wave" id="aiWave"></div>
+                    <div class="ai-orb">
+                        <img src="/users/icons/icon2.png" alt="AI Assistant Logo" class="ai-assistant-icon-img"
+                            onerror="this.style.display='none'">
+                    </div>
+                    <h2 data-i18n="ai_hero_title">How can I help you today?</h2>
+                    <div class="ai-hero-sub" data-i18n="ai_hero_sub">You can speak or type your command</div>
+
+                    <div class="ai-input-row">
+                        <input type="text" id="aiHeroInput" data-i18n-placeholder="ai_hero_placeholder"
+                            placeholder="Tap the microphone and start speaking..."
+                            onkeydown="if(event.key==='Enter'){aiSendFromHero();}">
+                        <button class="ai-mic-btn" id="aiHeroMic" onclick="aiToggleVoice('aiHeroInput', this)"
+                            data-i18n-title="mic_btn" title="Hablar">
+                            <i class="bi bi-mic-fill"></i>
+                        </button>
+                    </div>
+
+                   
+                </div>
+
+                <div class="ai-grid">
+
+                    <!-- Conversation -->
+                    <div class="ai-card">
+                        <div class="ai-conv-head">
+                            <div class="ai-conv-title"><i class="bi bi-chat-dots"></i> <span
+                                    data-i18n="conversation">Conversation</span></div>
+                            <button class="ai-clear-btn" onclick="aiClearChat()"><i class="bi bi-trash"></i> <span
+                                    data-i18n="clear_all">Clear All</span></button>
+                        </div>
+                        <div class="ai-conv-body" id="aiConvBody"></div>
+                        <div class="ai-conv-input">
+                            <button class="ai-mic-inline" id="aiConvMic" onclick="aiToggleVoice('aiConvInput', this)"
+                                title="Hablar">
+                                <i class="bi bi-mic-fill"></i>
+                            </button>
+                            <input type="text" id="aiConvInput" data-i18n-placeholder="type_command"
+                                placeholder="Type your command..."
+                                onkeydown="if(event.key==='Enter'){aiSendFromConv();}">
+                            <button onclick="aiSendFromConv()" title="Enviar"><i class="bi bi-send"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Right column -->
+                    <div>
+                        <div class="ai-card ai-side-card">
+                            <div class="ai-side-title">
+                                <span><i class="bi bi-clock-history"></i> <span data-i18n="recent_commands">Recent
+                                        Commands</span></span>
+                                <span class="ai-view-all" data-i18n="view_all">View All</span>
+                            </div>
+                            <div id="aiRecentList"></div>
+                        </div>
+
+                        <div class="ai-card ai-side-card">
+                            <div class="ai-side-title"><i class="bi bi-lightbulb" style="color:var(--ai-orange);"></i>
+                                <span data-i18n="voice_tips">Voice Tips</span></div>
+                            <ul class="ai-tips-list">
+                                <li><i class="bi bi-dot"></i> <span data-i18n="tip1">Speak clearly and naturally</span>
+                                </li>
+                                <li><i class="bi bi-dot"></i> <span data-i18n="tip2">You can use commands like "create",
+                                        "add", "schedule", "show"</span></li>
+                                <li><i class="bi bi-dot"></i> <span data-i18n="tip3">AI will confirm before taking
+                                        action</span></li>
+                                <li><i class="bi bi-dot"></i> <span data-i18n="tip4">You can edit details before
+                                        confirming</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- ============ /AI ASSISTANT PAGE ============ -->
+
+        </div>
+    </div>
+    <script src="/users/ai-assistant.js"></script>
+    <script src="/users/client_details.js"></script>
+    <script src="/users/sidebar.js"></script>
+    <script src="/users/languageTranslater.js"></script>
+
+  
+
+</body>
+
+</html>

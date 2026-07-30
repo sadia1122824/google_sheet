@@ -1,5 +1,5 @@
 
- const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient,updateClient ,getDashboardStats} = require('../controllers/add_client');
+ const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient,updateClient ,getDashboardStats,logoutController,AI_Assistant} = require('../controllers/add_client');
 
 
 const clientRouts = async(app,options)=>{
@@ -19,6 +19,8 @@ const clientRouts = async(app,options)=>{
   app.get('/webLogin',webLogin);
   app.post('/webLogin',clientLogin);
   app.get('/dashboard',getDashboardStats);
+  app.post('/logoutController',logoutController);
+  app.get('/AI_Assistant',AI_Assistant);
 
 }
 
