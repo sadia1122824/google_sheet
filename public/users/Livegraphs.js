@@ -66,9 +66,10 @@ window.addEventListener("resize", () => {
 
 /* ══════════════════════════════════════════
    DATALABELS PLUGIN REGISTER
-   (bar/line charts ke upar values permanently
-   dikhane ke liye — CDN script tag zaroor add karein:
-   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+   (bar/line charts ke upar values ab NAHI dikhayenge —
+   values ab sirf niche wale Excel-style table mein
+   dikhengi. Plugin register rehne dete hain (harmless),
+   par display globally false kar diya hai neeche.)
 ══════════════════════════════════════════ */
 if (typeof Chart !== "undefined" && typeof ChartDataLabels !== "undefined") {
   Chart.register(ChartDataLabels);
@@ -280,8 +281,10 @@ function fmt(n) {
 
 /* ══════════════════════════════════════════
    EXCEL-STYLE DATA TABLE (chart ke neeche row-wise values)
-   NAYA: canvas ke turant niche ek div hona chahiye
-   HTML mein, id = "<chartId>TableWrap" (e.g. "chartIETableWrap")
+   Ye hi ab values dikhaane ka SIRF tareeka hai —
+   bar/point ke upar wale numbers hata diye gaye hain.
+   HTML mein canvas ke turant niche ek div hona chahiye,
+   id = "<chartId>TableWrap" (e.g. "chartIETableWrap")
 ══════════════════════════════════════════ */
 function renderExcelDataTable(wrapId, labels, series) {
   const wrap = document.getElementById(wrapId);
@@ -332,19 +335,11 @@ function baseOpts(type) {
         cornerRadius: 10,
         callbacks: { label: (ctx) => ` ${fmt(ctx.parsed.y ?? ctx.parsed)}` },
       },
-      /* Har bar/point ke andar, top-edge se thoda neeche (bottom-aligned) value show karta hai */
+      /* CHANGED: bar/point ke upar values ab NAHI dikhengi.
+         Values ab sirf renderExcelDataTable() wale table mein
+         (x-axis ke neeche, Excel screenshot jaisa) dikhengi. */
       datalabels: {
-        display: (ctx) => {
-          const v = ctx.dataset.data[ctx.dataIndex];
-          return v !== 0 && v !== null && v !== undefined;
-        },
-        color: dark ? "#dde4f5" : "#333",
-        anchor: "end",
-        align: "bottom",
-        offset: 4,
-        clamp: true,
-        font: { size: 9, weight: "600" },
-        formatter: (v) => fmt(v),
+        display: false,
       },
     },
   };
@@ -485,7 +480,6 @@ function buildDonut(activeCols) {
         ctx.font = "600 11px sans-serif";
         ctx.textAlign = Math.cos(angle) >= 0 ? "left" : "right";
         ctx.textBaseline = "middle";
-        // ↓ SIRF YEH LINE BАДLI HAI
         ctx.fillText(
           pct.toFixed(1) + "%  " + (labels[i] || "").substring(0, 18),
           xt,
@@ -594,14 +588,9 @@ function buildDashboard() {
           tension: 0.4,
           pointRadius: 3,
           pointBackgroundColor: "#00c97a",
-          datalabels: {
-            color: "#0e1220",
-            anchor: "start",
-            align: "top",
-            offset: 4,
-            clamp: true,
-            font: { size: 9, weight: "700" },
-          },
+          // CHANGED: dataset-level datalabels override hata di gayi,
+          // ab global baseOpts() ka display:false hi apply hoga.
+          datalabels: { display: false },
         },
         {
           label: "Expense",
@@ -614,20 +603,14 @@ function buildDashboard() {
           tension: 0.4,
           pointRadius: 3,
           pointBackgroundColor: "#ff4d6d",
-          datalabels: {
-            color: "#0e1220",
-            anchor: "start",
-            align: "top",
-            offset: 4,
-            clamp: true,
-            font: { size: 9, weight: "700" },
-          },
+          // CHANGED: dataset-level datalabels override hata di gayi
+          datalabels: { display: false },
         },
       ],
     },
     baseOpts(t),
   );
-  // NAYA: Income vs Expense chart ke neeche Excel-style values table
+  // Income vs Expense chart ke neeche Excel-style values table (x-axis ke neeche)
   renderExcelDataTable("chartIETableWrap", labels, [
     { label: "Income", data: incomes, color: "#00c97a" },
     { label: "Expense", data: expenses, color: "#ff4d6d" },
@@ -652,7 +635,7 @@ function buildDashboard() {
     },
     plOpts,
   );
-  // NAYA: P/L chart ke neeche Excel-style values table
+  // P/L chart ke neeche Excel-style values table
   renderExcelDataTable("chartPLTableWrap", labels, [
     { label: "P/L", data: profits, color: "#5b9cf6" },
   ]);
@@ -678,7 +661,7 @@ function buildDashboard() {
     },
     baseOpts("line"),
   );
-  // NAYA: Revenue trend ke neeche Excel-style values table
+  // Revenue trend ke neeche Excel-style values table
   renderExcelDataTable("chartTrendTableWrap", labels, [
     { label: "Income", data: incomes, color: "#00c97a" },
   ]);
@@ -690,7 +673,6 @@ function buildDashboard() {
   marginOpts.plugins.tooltip.callbacks = {
     label: (ctx) => ` ${ctx.parsed.y.toFixed(1)}%`,
   };
-  marginOpts.plugins.datalabels.formatter = (v) => v.toFixed(1) + "%";
   mk(
     "chartMargin",
     "line",
@@ -712,7 +694,7 @@ function buildDashboard() {
     },
     marginOpts,
   );
-  // NAYA: Margin % chart ke neeche Excel-style values table
+  // Margin % chart ke neeche Excel-style values table
   renderExcelDataTable("chartMarginTableWrap", labels, [
     { label: "Margin %", data: margins, color: "#ffc75f" },
   ]);
@@ -741,7 +723,7 @@ function buildDashboard() {
     },
     baseOpts("bar"),
   );
-  // NAYA: Cumulative P/L chart ke neeche Excel-style values table
+  // Cumulative P/L chart ke neeche Excel-style values table
   renderExcelDataTable("chartCumulTableWrap", labels, [
     { label: "Cumulative P/L", data: cumul, color: "#5b9cf6" },
   ]);
@@ -766,7 +748,8 @@ function buildDashboard() {
             backgroundColor: alpha("#00c97a", 0.82),
             borderWidth: 0,
             borderRadius: 4,
-            datalabels: { color: isDark() ? "#0e1220" : "#fff", align: "bottom", anchor: "end" },
+            // CHANGED: on-bar datalabels override hata di gayi
+            datalabels: { display: false },
           },
           {
             label: "Expense",
@@ -774,13 +757,14 @@ function buildDashboard() {
             backgroundColor: alpha("#ff4d6d", 0.82),
             borderWidth: 0,
             borderRadius: 4,
-            datalabels: { color: isDark() ? "#0e1220" : "#fff", align: "bottom", anchor: "end" },
+            // CHANGED: on-bar datalabels override hata di gayi
+            datalabels: { display: false },
           },
         ],
       },
       baseOpts("bar"),
     );
-    // NAYA: Yearly Income vs Expense chart ke neeche Excel-style values table
+    // Yearly Income vs Expense chart ke neeche Excel-style values table
     renderExcelDataTable("chartYearIETableWrap", yl, [
       { label: "Income", data: yi, color: "#00c97a" },
       { label: "Expense", data: ye, color: "#ff4d6d" },
@@ -805,7 +789,7 @@ function buildDashboard() {
       },
       baseOpts("bar"),
     );
-    // NAYA: Yearly P/L chart ke neeche Excel-style values table
+    // Yearly P/L chart ke neeche Excel-style values table
     renderExcelDataTable("chartYearPLTableWrap", yl, [
       { label: "Yearly P/L", data: yp, color: "#5b9cf6" },
     ]);
