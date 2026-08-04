@@ -1051,9 +1051,42 @@ async function loadSheetData() {
         .map(([, val]) => val);
     });
 
-    infoRows = data.slice(0, 3);
+   infoRows = data.slice(0, 3);
     headers = data[3] || [];
     allDataRows = data.slice(4);
+
+    // ─── Khali pehla column (agar poora khali hai) hata dein ───
+    function isFirstColumnEmpty() {
+      const headerEmpty = !(headers[0] || "").toString().trim();
+      if (!headerEmpty) return false;
+      return allDataRows.every((row) => {
+        if (!row) return true;
+        const v = row[0];
+        return v === null || v === undefined || v.toString().trim() === "";
+      });
+    }
+
+    while (headers.length > 0 && isFirstColumnEmpty()) {
+      headers.shift();
+      infoRows = infoRows.map((row) => {
+        const r = [...row];
+        r.shift();
+        return r;
+      });
+      allDataRows = allDataRows.map((row) => {
+        if (!row) return row;
+        const r = [...row];
+        r.shift();
+        return r;
+      });
+    }
+
+    // ─── Khali pehla row (agar poora khali hai) hata dein ───
+    while (allDataRows.length > 0 && isSkipRow(allDataRows[0])) {
+      allDataRows.shift();
+    }
+    // ─────────────────────────────────────────────────────────
+
     colOffset = 0;
     currentPage = 1;
     parseColumnsFromHeaders();
@@ -1184,14 +1217,13 @@ function renderTable() {
     const oldCg = table.querySelector("colgroup");
     if (oldCg) oldCg.remove();
     const cg = document.createElement("colgroup");
-    visHeaders.forEach((_, i) => {
-      const colAbsIndex = colOffset + i;
-      const col = document.createElement("col");
-      if (colAbsIndex === 0) col.style.width = "45px";
-      else if (colAbsIndex === 1) col.style.width = "240px";
-      else col.style.width = "110px";
-      cg.appendChild(col);
-    });
+  visHeaders.forEach((_, i) => {
+  const colAbsIndex = colOffset + i;
+  const col = document.createElement("col");
+  if (colAbsIndex === 0) col.style.width = "240px";   // label/code column — ab poora text show hoga
+  else col.style.width = "110px";                     // baqi sab (year, month, %) normal width
+  cg.appendChild(col);
+});
     table.insertBefore(cg, table.firstChild);
     table.style.tableLayout = "fixed";
     table.style.width = "100%";
@@ -1199,7 +1231,8 @@ function renderTable() {
   }
 
   // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
-  const NUMBERED_LABEL_RE = /^\d+\.\s*\S+/;
+// Detects labels like "1. Importe neto...", "4. Aprovisionamientos", "B) RESULTADO..." etc.
+  const NUMBERED_LABEL_RE = /^(?:\d{1,2}[\.\s]+|[A-Z]\)\s*)[A-Za-zÀ-ÿ]/;
   function isNumberedLabel(val) {
     return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
   }
@@ -1218,13 +1251,14 @@ function renderTable() {
   const end = start + rowsPerPage;
   const pageRows = allDataRows.slice(start, end);
 
-  const CODE_COL = findCodeColIndex();
+const CODE_COL = findCodeColIndex();
 
   if (pageRows.length === 0) {
     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
   } else {
     pageRows.forEach((row) => {
-      const isLabelRow = row.some((val) => isNumberedLabel(val));
+      // ← sirf title/label column check karo, poori row nahi
+      const isTitleRow = isNumberedLabel(row[CODE_COL]);
 
       html +=
         "<tr>" +
@@ -1242,11 +1276,11 @@ function renderTable() {
                 : isMonth
                   ? "background: var(--month-col-bg, #90caf9);"
                   : "";
-            const isBold =
-              (absIdx === CODE_COL &&
-                extractCode((val ?? "").toString().trim()) !== null) ||
-              isLabelRow;
-            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isBold ? "600" : "400"};">${val}</td>`;
+
+            // ← sirf title column ki cell bold hogi, baqi normal
+            const isTitleCell = absIdx === CODE_COL && isTitleRow;
+
+            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isTitleCell ? "700" : "400"};${isTitleCell ? "color:#0d3b8c;" : ""}">${val}</td>`;
           })
           .join("") +
         "</tr>";
@@ -1338,20 +1372,55 @@ function openFullscreenTable() {
   if (!overlay || !fsHead || !fsBody) return;
 
   // Build header row
-  fsHead.innerHTML = `<tr>${headers.map((h) => `<th title="${h}">${h}</th>`).join("")}</tr>`;
+// Build info/title rows first (yeh thead ke andar, header row se pehle jayenge)
+ // Detects label rows — same regex jo renderTable() mein use hoti hai
+// Detects label rows — same regex jo renderTable() mein use hoti hai
+  const NUMBERED_LABEL_RE = /^(?:\d{1,2}[\.\s]+|[A-Z]\)\s*)[A-Za-zÀ-ÿ]/;
+  function isNumberedLabel(val) {
+    return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
+  }
 
-  // Build body: info rows first
-  let bodyHtml = "";
-infoRows.forEach((row) => {
+  // Build info/title rows first (yeh thead ke andar, header row se pehle jayenge)
+  let infoHtml = "";
+  infoRows.forEach((row, idx) => {
     const text = row.filter((c) => c !== "").join(" ");
-    if (!text.trim()) return;   // ← yahan bhi add karein
-    bodyHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="text-align:left;">${text}</td></tr>`;
-});
+    if (!text.trim()) return;
+
+    let styleStr;
+    if (idx === 0) {
+      // Main title — bold aur bada
+      styleStr = "text-align:left;font-size:15px;font-weight:700;color:#0d3b8c;padding:8px 10px;";
+    } else if (idx === 1) {
+      // Company/subtitle line — medium weight
+      styleStr = "text-align:left;font-size:12.5px;font-weight:600;color:#333;padding:4px 10px;";
+    } else {
+      // Baaki lines — halki/italic
+      styleStr = "text-align:left;font-size:11.5px;font-weight:400;font-style:italic;color:#666;padding:4px 10px;";
+    }
+
+    infoHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="${styleStr}">${text}</td></tr>`;
+  });
+
+  // Build header row
+  const headerRowHtml = `<tr>${headers.map((h) => `<th title="${h}">${h}</th>`).join("")}</tr>`;
+
+  // ← Title/info rows pehle, phir header row — same order jaisa renderTable() mein hai
+  fsHead.innerHTML = infoHtml + headerRowHtml;
+
+  // Build body: sirf data rows
+  let bodyHtml = "";
+
+  // All data rows (no pagination limit)
+// Detects label rows — same regex jo renderTable() mein use hoti hai
+ 
+  const CODE_COL = findCodeColIndex();
 
   // All data rows (no pagination limit)
   let dataRowCount = 0;
   allDataRows.forEach((row) => {
     if (!row) return;
+    const isTitleRow = isNumberedLabel(row[CODE_COL]);
+
     bodyHtml +=
       "<tr>" +
       headers
@@ -1367,7 +1436,10 @@ infoRows.forEach((row) => {
               : isMonth
                 ? "background: var(--month-col-bg, #90caf9);"
                 : "";
-          return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+
+          const isTitleCell = i === CODE_COL && isTitleRow;
+
+          return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isTitleCell ? "700" : "400"};${isTitleCell ? "color:#0d3b8c;" : ""}">${val}</td>`;
         })
         .join("") +
       "</tr>";
@@ -1824,7 +1896,15 @@ function appendUserMsg(text) {
   scrollChat();
 }
 
-
+// function appendBotMsg(text, isError = false) {
+//   const safeText = text || "⚠️ No response received.";
+//   const time = nowTime();
+//   const el = document.createElement("div");
+//   el.className = "cd-msg bot";
+//   el.innerHTML = `<div class="cd-msg-avatar">🤖</div><div><div class="cd-bubble ${isError ? "error" : ""}">${fmtBotText(safeText)}</div><div class="cd-msg-time">${time}</div></div>`;
+//   document.getElementById("cdMessages").appendChild(el);
+//   scrollChat();
+// }
 
 function appendBotMsg(text, isError = false) {
   const safeText = text || "⚠️ No response received.";
