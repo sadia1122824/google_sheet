@@ -3832,3 +3832,41 @@ body, .main-content, .app-shell {
   left: 0;
   background: var(--color-bg-card, #fff);
 }
+
+
+/* ═══════════════════════════════════════════════
+   ROW COLOR OVERRIDES — file ke end me rakhein
+═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   VALUE-BASED TEXT COLOR — SIRF LIGHT THEME
+   (jaisa screenshot mein hai: plain bg, sirf number colored)
+═══════════════════════════════════════════════ */
+html:not([data-theme="dark"]) #sheetTable tbody tr:nth-child(odd) td,
+html:not([data-theme="dark"]) #fullscreenTable tbody tr:nth-child(odd) td {
+  background: #ffffff !important;
+}
+html:not([data-theme="dark"]) #sheetTable tbody tr:nth-child(even) td,
+html:not([data-theme="dark"]) #fullscreenTable tbody tr:nth-child(even) td {
+  background: #f5f6fb !important;
+}
+
+html:not([data-theme="dark"]) #sheetTable tbody tr.row-title td,
+html:not([data-theme="dark"]) #fullscreenTable tbody tr.row-title td {
+  background: #eef0fa !important;
+  font-weight: 700 !important;
+  color: #0e1424 !important;
+}
+html:not([data-theme="dark"]) #sheetTable tbody tr.row-title td.title-cell,
+html:not([data-theme="dark"]) #fullscreenTable tbody tr.row-title td.title-cell {
+  color: #1e3a8a !important;
+}
+
+html:not([data-theme="dark"]) #sheetTable tbody td.val-neg,
+html:not([data-theme="dark"]) #fullscreenTable tbody td.val-neg {
+  color: #dc2626 !important;
+}
+
+html:not([data-theme="dark"]) #sheetTable tbody td.val-pos,
+html:not([data-theme="dark"]) #fullscreenTable tbody td.val-pos {
+  color: #16a34a !important;
+}
