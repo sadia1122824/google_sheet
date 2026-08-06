@@ -1274,39 +1274,42 @@ function renderTable() {
 
 const CODE_COL = findCodeColIndex();
 
-  if (pageRows.length === 0) {
-    html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
-  } else {
-    pageRows.forEach((row) => {
-      // ← sirf title/label column check karo, poori row nahi
-      const isTitleRow = isNumberedLabel(row[CODE_COL]);
+if (pageRows.length === 0) {
+  html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
+} else {
+  const ROW_CLASSES = ["row-green", "row-pink", "row-red"];
+  let colorCursor = 0;
 
-      html +=
-        "<tr>" +
-        visHeaders
-          .map((_, i) => {
-            const absIdx = colOffset + i;
-            const val = row[absIdx] ?? "";
-            const isPct = pctColIndices.has(absIdx);
-            const isMonth = monthCols.some((m) => m.colIndex === absIdx);
-            const isYear = yearCols.some((y) => y.colIndex === absIdx);
-            const bgStyle = isPct
-              ? "background: var(--pct-col-bg, #c8e6c9);"
-              : isYear
-                ? "background: var(--year-col-bg, #ce93d8);"
-                : isMonth
-                  ? "background: var(--month-col-bg, #90caf9);"
-                  : "";
+ pageRows.forEach((row) => {
+  const isTitleRow = isNumberedLabel(row[CODE_COL]);
 
-            // ← sirf title column ki cell bold hogi, baqi normal
-            const isTitleCell = absIdx === CODE_COL && isTitleRow;
+  html +=
+    `<tr class="${isTitleRow ? "row-title" : ""}">` +
+    visHeaders
+      .map((_, i) => {
+        const absIdx = colOffset + i;
+        const val = row[absIdx] ?? "";
+        const isTitleCell = absIdx === CODE_COL && isTitleRow;
+        const rawStr = (val ?? "").toString().trim();
 
-            return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isTitleCell ? "700" : "400"};${isTitleCell ? "color:#0d3b8c;" : ""}">${val}</td>`;
-          })
-          .join("") +
-        "</tr>";
-    });
-  }
+        let valClass = "";
+        if (rawStr && absIdx !== CODE_COL) {
+          if (pctColIndices.has(absIdx)) {
+            const pctNum = parseFloat(rawStr.replace(/[^0-9.\-]/g, ""));
+            if (!isNaN(pctNum)) valClass = pctNum < 0 ? "val-neg" : "val-pos";
+          } else {
+            const numVal = cellNum(row, absIdx);
+            if (numVal < 0) valClass = "val-neg";
+            else if (numVal > 0) valClass = "val-pos";
+          }
+        }
+
+        return `<td title="${val}" class="${isTitleCell ? "title-cell" : ""} ${valClass}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+      })
+      .join("") +
+    "</tr>";
+});
+}
 
   tbody.innerHTML = html;
 
@@ -1434,38 +1437,39 @@ function openFullscreenTable() {
   // All data rows (no pagination limit)
 // Detects label rows — same regex jo renderTable() mein use hoti hai
  
-  const CODE_COL = findCodeColIndex();
+const CODE_COL = findCodeColIndex();
 
-  // All data rows (no pagination limit)
-  let dataRowCount = 0;
-  allDataRows.forEach((row) => {
-    if (!row) return;
-    const isTitleRow = isNumberedLabel(row[CODE_COL]);
+let dataRowCount = 0;
+allDataRows.forEach((row) => {
+  if (!row) return;
+  const isTitleRow = isNumberedLabel(row[CODE_COL]);
 
-    bodyHtml +=
-      "<tr>" +
-      headers
-        .map((_, i) => {
-          const val = row[i] ?? "";
-          const isPct = pctColIndices.has(i);
-          const isMonth = monthCols.some((m) => m.colIndex === i);
-          const isYear = yearCols.some((y) => y.colIndex === i);
-          const bgStyle = isPct
-            ? "background: var(--pct-col-bg, #c8e6c9);"
-            : isYear
-              ? "background: var(--year-col-bg, #ce93d8);"
-              : isMonth
-                ? "background: var(--month-col-bg, #90caf9);"
-                : "";
+  bodyHtml +=
+    `<tr class="${isTitleRow ? "row-title" : ""}">` +
+    headers
+      .map((_, i) => {
+        const val = row[i] ?? "";
+        const isTitleCell = i === CODE_COL && isTitleRow;
+        const rawStr = (val ?? "").toString().trim();
 
-          const isTitleCell = i === CODE_COL && isTitleRow;
+        let valClass = "";
+        if (rawStr && i !== CODE_COL) {
+          if (pctColIndices.has(i)) {
+            const pctNum = parseFloat(rawStr.replace(/[^0-9.\-]/g, ""));
+            if (!isNaN(pctNum)) valClass = pctNum < 0 ? "val-neg" : "val-pos";
+          } else {
+            const numVal = cellNum(row, i);
+            if (numVal < 0) valClass = "val-neg";
+            else if (numVal > 0) valClass = "val-pos";
+          }
+        }
 
-          return `<td title="${val}" style="${bgStyle}padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;font-weight:${isTitleCell ? "700" : "400"};${isTitleCell ? "color:#0d3b8c;" : ""}">${val}</td>`;
-        })
-        .join("") +
-      "</tr>";
-    dataRowCount++;
-  });
+        return `<td title="${val}" class="${isTitleCell ? "title-cell" : ""} ${valClass}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle;">${val}</td>`;
+      })
+      .join("") +
+    "</tr>";
+  dataRowCount++;
+});
 
   fsBody.innerHTML = bodyHtml;
 
