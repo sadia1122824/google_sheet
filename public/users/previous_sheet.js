@@ -1009,6 +1009,24 @@ function resetAllFilters() {
   }
   updatePills();
 }
+
+function applyDocTitle(sheetTitle) {
+  const titleEl = document.getElementById("docTitle");
+  const subtitleEl = document.getElementById("docSubtitle");
+  if (!titleEl || !subtitleEl) return;
+
+  let title = "";
+  let subtitle = "";
+
+  if (sheetTitle && typeof sheetTitle === "string" && sheetTitle.trim() !== "") {
+    const parts = sheetTitle.split(" - ").map((s) => s.trim()).filter(Boolean);
+    title = parts[0] || "";
+    subtitle = parts.slice(1).join(" - ") || "";
+  }
+
+  titleEl.textContent = title || "—";
+  subtitleEl.textContent = subtitle || "";
+}
 async function loadSheetData() {
   try {
     const clientId = localStorage.getItem("clientId");
@@ -1044,6 +1062,9 @@ async function loadSheetData() {
       return;
     }
 
+    // 🆕 Document title/subtitle DB se set karo
+    applyDocTitle(result.sheetTitle);
+
     const data = rawData.map((row) => {
       if (Array.isArray(row)) return row;
       return Object.entries(row)
@@ -1051,7 +1072,7 @@ async function loadSheetData() {
         .map(([, val]) => val);
     });
 
-   infoRows = data.slice(0, 3);
+    infoRows = data.slice(0, 3);
     headers = data[3] || [];
     allDataRows = data.slice(4);
 

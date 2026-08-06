@@ -11,6 +11,7 @@ const latestCredentialsSchema = new mongoose.Schema(
     clientId: String, // ✅ ADD
     clientName: String,
     createdAt: { type: Date, default: Date.now },
+    sheetTitle: { type: String, default: null },
   },
   { timestamps: true },
 );

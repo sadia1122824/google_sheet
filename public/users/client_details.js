@@ -1009,6 +1009,25 @@ function resetAllFilters() {
   }
   updatePills();
 }
+
+// 🆕 Document title/subtitle ko backend se aaye "sheetTitle" se set karta hai
+function applyDocTitle(sheetTitle) {
+  const titleEl = document.getElementById("docTitle");
+  const subtitleEl = document.getElementById("docSubtitle");
+  if (!titleEl || !subtitleEl) return;
+
+  let title = "";
+  let subtitle = "";
+
+  if (sheetTitle && typeof sheetTitle === "string" && sheetTitle.trim() !== "") {
+    const parts = sheetTitle.split(" - ").map((s) => s.trim()).filter(Boolean);
+    title = parts[0] || "";
+    subtitle = parts.slice(1).join(" - ") || "";
+  }
+
+  titleEl.textContent = title || "—";
+  subtitleEl.textContent = subtitle || "";
+}
 async function loadSheetData() {
   try {
     const clientId = localStorage.getItem("clientId");
@@ -1044,6 +1063,9 @@ async function loadSheetData() {
       return;
     }
 
+    // 🆕 Document title/subtitle DB se set karo
+    applyDocTitle(result.sheetTitle);
+
     const data = rawData.map((row) => {
       if (Array.isArray(row)) return row;
       return Object.entries(row)
@@ -1051,7 +1073,7 @@ async function loadSheetData() {
         .map(([, val]) => val);
     });
 
-   infoRows = data.slice(0, 3);
+    infoRows = data.slice(0, 3);
     headers = data[3] || [];
     allDataRows = data.slice(4);
 
@@ -1197,7 +1219,6 @@ async function loadSheetData() {
 //   renderPagination();
 // }
 
-
 function renderTable() {
   const tbody = document.getElementById("tableBody");
   const thead = document.getElementById("tableHead");
@@ -1217,13 +1238,14 @@ function renderTable() {
     const oldCg = table.querySelector("colgroup");
     if (oldCg) oldCg.remove();
     const cg = document.createElement("colgroup");
-  visHeaders.forEach((_, i) => {
-  const colAbsIndex = colOffset + i;
-  const col = document.createElement("col");
-  if (colAbsIndex === 0) col.style.width = "240px";   // label/code column — ab poora text show hoga
-  else col.style.width = "110px";                     // baqi sab (year, month, %) normal width
-  cg.appendChild(col);
-});
+    visHeaders.forEach((_, i) => {
+      const colAbsIndex = colOffset + i;
+      const col = document.createElement("col");
+      if (colAbsIndex === 0)
+        col.style.width = "240px"; // label/code column — ab poora text show hoga
+      else col.style.width = "110px"; // baqi sab (year, month, %) normal width
+      cg.appendChild(col);
+    });
     table.insertBefore(cg, table.firstChild);
     table.style.tableLayout = "fixed";
     table.style.width = "100%";
@@ -1231,7 +1253,7 @@ function renderTable() {
   }
 
   // Detects labels like "1. Importe neto de la cifra de negocios", "4. Aprovisionamientos", etc.
-// Detects labels like "1. Importe neto...", "4. Aprovisionamientos", "B) RESULTADO..." etc.
+  // Detects labels like "1. Importe neto...", "4. Aprovisionamientos", "B) RESULTADO..." etc.
   const NUMBERED_LABEL_RE = /^(?:\d{1,2}[\.\s]+|[A-Z]\)\s*)[A-Za-zÀ-ÿ]/;
   function isNumberedLabel(val) {
     return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
@@ -1239,19 +1261,19 @@ function renderTable() {
 
   const colCount = visHeaders.length || 1;
   let html = "";
- infoRows.forEach((row) => {
+  infoRows.forEach((row) => {
     const text = row.filter((c) => c !== "").join(" ");
-    if (!text.trim()) return;   // ← yeh line add karein: blank row ko skip karo
+    if (!text.trim()) return; // ← yeh line add karein: blank row ko skip karo
     const isLabel = isNumberedLabel(text);
     html += `<tr class="info-row"><td colspan="${colCount}" style="text-align:left;font-weight:${isLabel ? "600" : "400"};">${text}</td></tr>`;
-});
+  });
   html += `<tr class="header-row">${visHeaders.map((h) => `<th title="${h}" style="padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.3;vertical-align:middle;">${h}</th>`).join("")}</tr>`;
 
   const start = (currentPage - 1) * rowsPerPage;
   const end = start + rowsPerPage;
   const pageRows = allDataRows.slice(start, end);
 
-const CODE_COL = findCodeColIndex();
+  const CODE_COL = findCodeColIndex();
 
   if (pageRows.length === 0) {
     html += `<tr><td colspan="${colCount}" style="text-align:center;color:#888;padding:20px;">No data available</td></tr>`;
@@ -1316,9 +1338,10 @@ function shiftColumns(dir) {
     // Backward
     if (colOffset <= 0) return;
     const alignedOffset = Math.floor(colOffset / cpp) * cpp;
-    colOffset = (alignedOffset === colOffset)
-      ? Math.max(0, colOffset - cpp)   // already aligned, normal step back
-      : alignedOffset;                 // misaligned (last page) — snap to aligned boundary
+    colOffset =
+      alignedOffset === colOffset
+        ? Math.max(0, colOffset - cpp) // already aligned, normal step back
+        : alignedOffset; // misaligned (last page) — snap to aligned boundary
   }
 
   renderTable();
@@ -1372,9 +1395,9 @@ function openFullscreenTable() {
   if (!overlay || !fsHead || !fsBody) return;
 
   // Build header row
-// Build info/title rows first (yeh thead ke andar, header row se pehle jayenge)
- // Detects label rows — same regex jo renderTable() mein use hoti hai
-// Detects label rows — same regex jo renderTable() mein use hoti hai
+  // Build info/title rows first (yeh thead ke andar, header row se pehle jayenge)
+  // Detects label rows — same regex jo renderTable() mein use hoti hai
+  // Detects label rows — same regex jo renderTable() mein use hoti hai
   const NUMBERED_LABEL_RE = /^(?:\d{1,2}[\.\s]+|[A-Z]\)\s*)[A-Za-zÀ-ÿ]/;
   function isNumberedLabel(val) {
     return NUMBERED_LABEL_RE.test((val ?? "").toString().trim());
@@ -1389,13 +1412,16 @@ function openFullscreenTable() {
     let styleStr;
     if (idx === 0) {
       // Main title — bold aur bada
-      styleStr = "text-align:left;font-size:15px;font-weight:700;color:#0d3b8c;padding:8px 10px;";
+      styleStr =
+        "text-align:left;font-size:15px;font-weight:700;color:#0d3b8c;padding:8px 10px;";
     } else if (idx === 1) {
       // Company/subtitle line — medium weight
-      styleStr = "text-align:left;font-size:12.5px;font-weight:600;color:#333;padding:4px 10px;";
+      styleStr =
+        "text-align:left;font-size:12.5px;font-weight:600;color:#333;padding:4px 10px;";
     } else {
       // Baaki lines — halki/italic
-      styleStr = "text-align:left;font-size:11.5px;font-weight:400;font-style:italic;color:#666;padding:4px 10px;";
+      styleStr =
+        "text-align:left;font-size:11.5px;font-weight:400;font-style:italic;color:#666;padding:4px 10px;";
     }
 
     infoHtml += `<tr class="info-row"><td colspan="${headers.length || 1}" style="${styleStr}">${text}</td></tr>`;
@@ -1411,8 +1437,8 @@ function openFullscreenTable() {
   let bodyHtml = "";
 
   // All data rows (no pagination limit)
-// Detects label rows — same regex jo renderTable() mein use hoti hai
- 
+  // Detects label rows — same regex jo renderTable() mein use hoti hai
+
   const CODE_COL = findCodeColIndex();
 
   // All data rows (no pagination limit)
@@ -1921,7 +1947,9 @@ function appendBotMsg(text, isError = false) {
       <div class="cd-bubble ${isError ? "error" : ""}">${fmtBotText(safeText)}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
         <div class="cd-msg-time">${time}</div>
-        ${!isError ? `
+        ${
+          !isError
+            ? `
         <button 
           id="${speakId}"
           class="cd-speak-btn"
@@ -1942,7 +1970,9 @@ function appendBotMsg(text, isError = false) {
           onmouseout="this.style.opacity='0.7'"
         >
           <i class="bi bi-volume-up-fill"></i>
-        </button>` : ""}
+        </button>`
+            : ""
+        }
       </div>
     </div>`;
 
@@ -2119,14 +2149,18 @@ async function speakText(text) {
 
   // ✅ Pehle ek silent audio se browser ko "unlock" karo
   try {
-    const unlock = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAA"
-      + "EAAQARTsAAIAQAAEABAAEACAAIABAAAAAAAAAAAAAAAAAAAAAA==");
+    const unlock = new Audio(
+      "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAA" +
+        "EAAQARTsAAIAQAAEABAAEACAAIABAAAAAAAAAAAAAAAAAAAAAA==",
+    );
     unlock.volume = 0;
     await unlock.play().catch(() => {});
-  } catch(e) {}
+  } catch (e) {}
 
   const allBtns = document.querySelectorAll(".cd-speak-btn");
-  allBtns.forEach(b => b.innerHTML = `<i class="bi bi-hourglass-split"></i>`);
+  allBtns.forEach(
+    (b) => (b.innerHTML = `<i class="bi bi-hourglass-split"></i>`),
+  );
 
   try {
     const clean = text
@@ -2172,7 +2206,6 @@ async function speakText(text) {
 
     // ✅ User interaction ke andar directly play karo
     await currentAudio.play();
-
   } catch (err) {
     console.error("TTS error:", err.message);
     updateAllSpeakBtns(false);
@@ -2180,7 +2213,9 @@ async function speakText(text) {
     // ✅ Agar autoplay block hua toh user ko batao
     if (err.name === "NotAllowedError") {
       setCdStatus("⚠ Click anywhere on page first, then try again");
-      alert("Browser ne audio block kiya! Page pe kuch aur click karo pehle, phir dobara try karo.");
+      alert(
+        "Browser ne audio block kiya! Page pe kuch aur click karo pehle, phir dobara try karo.",
+      );
     } else {
       setCdStatus("⚠ Audio error: " + err.message);
     }
