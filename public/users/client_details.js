@@ -1493,6 +1493,7 @@ allDataRows.forEach((row) => {
     wrapper.scrollLeft = 0;
   }
 }
+
 function closeFullscreenTable() {
   const overlay = document.getElementById("fullscreenOverlay");
   if (overlay) overlay.classList.remove("open");

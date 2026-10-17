@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Google Sheet registro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="../admin/assets/images/favicon.ico">
+
+    <!-- App css -->
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @media (max-width: 576px) {
+            .col-lg-5 {
+                padding: 0 0.75rem;
+            }
+
+            .card {
+                margin: 0.5rem;
+            }
+
+            .card-body {
+                padding: 1rem !important;
+            }
+
+            .auth-header-box .p-3 {
+                padding: 1rem !important;
+            }
+
+            .btn-block {
+                font-size: 0.9rem;
+                padding: 0.6rem;
+            }
+
+            .form-control {
+                font-size: 16px; /* evita el zoom en iOS */
+            }
+        }
+
+        .pass-toggle {
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body class="account-body accountbg">
+
+    <!-- Página de registro -->
+    <div class="container">
+        <div class="row vh-100 d-flex justify-content-center">
+            <div class="col-12 align-self-center">
+                <div class="row">
+                    <div class="col-lg-5 mx-auto">
+                        <div class="card">
+                            <div class="card-body p-0 auth-header-box">
+                                <div class="text-center p-3">
+                                    <a href="/login" class="logo logo-admin">
+                                        <img src="../admin/assets/images/logo-sm-dark.png" height="50" alt="logo"
+                                            class="auth-logo">
+                                    </a>
+                                    <h4 class="mt-3 mb-1 font-weight-semibold text-white font-18">Crea tu cuenta
+                                    </h4>
+                                    <p class="text-muted mb-0">Regístrate para acceder al panel de Google Sheet.</p>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="nav-border nav nav-pills" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active font-weight-semibold" href="#Register_Tab"
+                                            role="tab">Registrarse</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div class="tab-pane active p-3" id="Register_Tab" role="tabpanel">
+                                        <form class="form-horizontal auth-form" id="registerForm" novalidate>
+
+                                            <div class="form-group mb-2">
+                                                <label for="username">Nombre</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" name="name"
+                                                        id="username" placeholder="Ingresa tu nombre"
+                                                        autocomplete="name">
+                                                </div>
+                                            </div><!--end form-group-->
+
+                                            <div class="form-group mb-2">
+                                                <label for="useremail">Correo electrónico</label>
+                                                <div class="input-group">
+                                                    <input type="email" class="form-control" name="email"
+                                                        id="useremail" placeholder="Ingresa tu correo electrónico"
+                                                        autocomplete="email">
+                                                </div>
+                                            </div><!--end form-group-->
+
+                                            <div class="form-group mb-3">
+                                                <label for="userpassword">Contraseña</label>
+                                                <div class="input-group">
+                                                    <input type="password" class="form-control" name="password"
+                                                        id="userpassword" placeholder="Mínimo 6 caracteres"
+                                                        autocomplete="new-password">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text pass-toggle"
+                                                            onclick="togglePassword()">
+                                                            <i class="fas fa-eye-slash" id="toggleIcon"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div><!--end form-group-->
+
+                                            <div class="form-group mb-0 row">
+                                                <div class="col-12">
+                                                    <button id="registerBtn"
+                                                        class="btn btn-primary btn-block waves-effect waves-light"
+                                                        type="button">Registrarse <i
+                                                            class="fas fa-user-plus ml-1"></i></button>
+                                                </div><!--end col-->
+                                            </div> <!--end form-group-->
+                                        </form><!--end form-->
+
+                                        <p class="mt-3 mb-0 text-muted text-center">¿Ya tienes una cuenta? <a
+                                                href="/login" class="text-primary ml-2">Inicia sesión</a></p>
+                                    </div>
+                                </div>
+                            </div><!--end card-body-->
+
+                        </div><!--end card-->
+                    </div><!--end col-->
+                </div><!--end row-->
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+    <!-- Fin de la página de registro -->
+
+    <!-- jQuery  -->
+    <script src="../admin/assets/js/jquery.min.js"></script>
+    <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../admin/assets/js/waves.js"></script>
+    <script src="../admin/assets/js/feather.min.js"></script>
+    <script src="../admin/assets/js/simplebar.min.js"></script>
+
+ <script>
+        // Register ke baad is page par redirect hoga (token cookie already set ho chuki hoti hai)
+        const REDIRECT_AFTER_REGISTER = '/';
+
+        const registerBtn = document.getElementById('registerBtn');
+        const registerForm = document.getElementById('registerForm');
+
+        registerBtn.addEventListener('click', handleRegister);
+
+        // Enter dabane par bhi submit ho
+        registerForm.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleRegister();
+            }
+        });
+
+        function handleRegister() {
+            if (registerBtn.disabled) return;
+
+            const data = {
+                name: document.getElementById('username').value.trim(),
+                useremail: document.getElementById('useremail').value.trim().toLowerCase(),
+                // Password trim nahi kiya, taake login me bhi bilkul wahi password match ho
+                userpassword: document.getElementById('userpassword').value
+            };
+
+            if (!data.name || !data.useremail || !data.userpassword) {
+                sweetAlert('warning', 'Por favor completa todos los campos');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.useremail)) {
+                sweetAlert('warning', 'Ingresa un correo electrónico válido');
+                return;
+            }
+
+            if (data.userpassword.length < 6) {
+                sweetAlert('warning', 'La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+
+            registerBtn.disabled = true;
+
+            fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin', // accessToken cookie browser me save hone ke liye
+                body: JSON.stringify(data),
+            })
+                .then(res =>
+                    res.json().catch(() => ({
+                        success: false,
+                        message: 'Respuesta inválida del servidor'
+                    }))
+                )
+                .then(response => {
+                    if (response.success) {
+                        registerForm.reset();
+                        sweetAlert('success', response.message, () => {
+                            window.location.href = REDIRECT_AFTER_REGISTER;
+                        });
+                    } else {
+                        sweetAlert('error', response.message || 'No se pudo completar el registro');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error de fetch:', err);
+                    sweetAlert('error', 'Algo salió mal');
+                })
+                .finally(() => {
+                    registerBtn.disabled = false;
+                });
+        }
+
+        // Función SweetAlert con callback opcional
+        function sweetAlert(icon, title, callback) {
+            Swal.fire({
+                icon,
+                title,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didClose: () => {
+                    if (callback) callback();
+                }
+            });
+        }
+
+        // Alternar visibilidad de contraseña
+        function togglePassword() {
+            const input = document.getElementById('userpassword');
+            const icon = document.getElementById('toggleIcon');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const clientSchema = new mongoose.Schema(
@@ -35,6 +36,27 @@ const clientSchema = new mongoose.Schema(
         assignStaff: {
             type: String,
             required: true
+        },
+
+        // OTP verification fields
+        otp: {
+            type: String,
+            default: null
+        },
+
+        otpExpires: {
+            type: Date,
+            default: null
+        },
+
+        otpAttempts: {
+            type: Number,
+            default: 0
+        },
+
+        otpLastSent: {
+            type: Date,
+            default: null
         }
     },
     {

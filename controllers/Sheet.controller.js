@@ -7,8 +7,8 @@ const axios = require("axios");
 const XLSX = require("xlsx");
 const mongoose = require("mongoose");
 
-const showDashboard = async (request, reply) => {
-  return reply.sendFile("admin/googleSheet.html");
+const showDashboard = async (req, reply) => {
+  return reply.sendFile("staff/staff_dashboard.html");
 };
 
 const uploadExcell = async (req, reply) => {

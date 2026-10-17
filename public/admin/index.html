@@ -18,7 +18,6 @@
     <link href="../admin/assets/css/app.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        /* CSS mein yeh add karein */
         @media (max-width: 576px) {
             .col-lg-5 {
                 padding: 0 0.75rem;
@@ -71,7 +70,7 @@
 
 <body class="account-body accountbg">
 
-    <!-- Página de inicio de sesión -->
+    <!-- Página de inicio de sesión (Admin + Staff) -->
     <div class="container">
         <div class="row vh-100 d-flex justify-content-center">
             <div class="col-12 align-self-center">
@@ -95,18 +94,18 @@
                                         <a class="nav-link active font-weight-semibold" data-toggle="tab"
                                             href="#LogIn_Tab" role="tab">Iniciar Sesión</a>
                                     </li>
-
                                 </ul>
-                                <!-- Paneles de pestañas -->
+
                                 <div class="tab-content">
                                     <div class="tab-pane active p-3" id="LogIn_Tab" role="tabpanel">
-                                        <form class="form-horizontal auth-form" action="index.html">
+                                        <form class="form-horizontal auth-form" id="loginForm" autocomplete="on" novalidate>
 
                                             <div class="form-group mb-2">
-                                                <label for="username">Correo electrónico</label>
+                                                <label for="useremail">Correo electrónico o ID de personal</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control" name="username"
-                                                        id="useremail" placeholder="Ingresa tu correo electrónico">
+                                                        id="useremail" autocomplete="username"
+                                                        placeholder="Ingresa tu correo electrónico o ID">
                                                 </div>
                                             </div><!--end form-group-->
 
@@ -114,99 +113,29 @@
                                                 <label for="userpassword">Contraseña</label>
                                                 <div class="input-group">
                                                     <input type="password" class="form-control" name="password"
-                                                        id="userpassword" placeholder="Ingresa tu contraseña">
+                                                        id="userpassword" autocomplete="current-password"
+                                                        placeholder="Ingresa tu contraseña">
                                                 </div>
                                             </div><!--end form-group-->
 
                                             <div class="form-group row my-3">
-                                                <div class="col-sm-6">
-
-                                                </div><!--end col-->
-
+                                                <div class="col-sm-6"></div>
                                             </div><!--end form-group-->
 
                                             <div class="form-group mb-0 row">
                                                 <div class="col-12">
                                                     <button id="submitBtn"
                                                         class="btn btn-primary btn-block waves-effect waves-light"
-                                                        type="button">Iniciar Sesión <i
+                                                        type="submit">Iniciar Sesión <i
                                                             class="fas fa-sign-in-alt ml-1"></i></button>
                                                 </div><!--end col-->
                                             </div> <!--end form-group-->
                                         </form><!--end form-->
-                                        <div class="m-3 text-center text-muted">
 
-                                        </div>
+                                        <div class="m-3 text-center text-muted"></div>
                                         <div class="account-social">
                                             <h6 class="mb-3">O inicia sesión con</h6>
                                         </div>
-
-                                    </div>
-                                    <div class="tab-pane px-3 pt-3" id="Register_Tab" role="tabpanel">
-                                        <form class="form-horizontal auth-form" action="index.html">
-
-                                            <div class="form-group mb-2">
-                                                <label for="username">Nombre de usuario</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" name="username"
-                                                        id="username" placeholder="Ingresa tu nombre de usuario">
-                                                </div>
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group mb-2">
-                                                <label for="useremail">Correo electrónico</label>
-                                                <div class="input-group">
-                                                    <input type="email" class="form-control" name="email" id="useremail"
-                                                        placeholder="Ingresa tu correo electrónico">
-                                                </div>
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group mb-2">
-                                                <label for="userpassword">Contraseña</label>
-                                                <div class="input-group">
-                                                    <input type="password" class="form-control" name="password"
-                                                        id="userpassword" placeholder="Ingresa tu contraseña">
-                                                </div>
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group mb-2">
-                                                <label for="conf_password">Confirmar contraseña</label>
-                                                <div class="input-group">
-                                                    <input type="password" class="form-control" name="conf-password"
-                                                        id="conf_password" placeholder="Ingresa tu contraseña de confirmación">
-                                                </div>
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group mb-2">
-                                                <label for="mo_number">Número de teléfono móvil</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" name="mobile number"
-                                                        id="mo_number" placeholder="Ingresa tu número de teléfono móvil">
-                                                </div>
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group row my-3">
-                                                <div class="col-sm-12">
-                                                    <div class="custom-control custom-switch switch-success">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="customSwitchSuccess2">
-                                                        <label class="custom-control-label text-muted"
-                                                            for="customSwitchSuccess2">Aceptas los <a
-                                                                href="#" class="text-primary">Términos de Uso</a> de Metrica</label>
-                                                    </div>
-                                                </div><!--end col-->
-                                            </div><!--end form-group-->
-
-                                            <div class="form-group mb-0 row">
-                                                <div class="col-12">
-                                                    <button class="btn btn-primary btn-block waves-effect waves-light"
-                                                        type="button">Registrarse <i
-                                                            class="fas fa-sign-in-alt ml-1"></i></button>
-                                                </div><!--end col-->
-                                            </div> <!--end form-group-->
-                                        </form><!--end form-->
-                                        <p class="my-3 text-muted">¿Ya tienes una cuenta? <a href="login.html"
-                                                class="text-primary ml-2">Inicia sesión</a></p>
                                     </div>
                                 </div>
                             </div><!--end card-body-->
@@ -220,8 +149,6 @@
     <!-- Fin de la página de inicio de sesión -->
 
 
-
-
     <!-- jQuery  -->
     <script src="../admin/assets/js/jquery.min.js"></script>
     <script src="../admin/assets/js/bootstrap.bundle.min.js"></script>
@@ -229,44 +156,11 @@
     <script src="../admin/assets/js/feather.min.js"></script>
     <script src="../admin/assets/js/simplebar.min.js"></script>
 
-
-
     <script>
-        document.getElementById('submitBtn').addEventListener('click', function () {
-            const data = {
-                useremail: document.getElementById('useremail').value.trim(),
-                userpassword: document.getElementById('userpassword').value.trim()
-            };
-
-            if (!data.useremail || !data.userpassword) {
-                sweetAlert('warning', 'Por favor completa todos los campos');
-                return;
-            }
-
-            fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            })
-                .then(res => res.json())
-                .then(response => {
-                    document.getElementById('useremail').value = '';
-                    document.getElementById('userpassword').value = '';
-
-                    if (response.success) {
-                        sweetAlert('success', response.message, () => {
-                            // Redirigir a la página de inicio después de cerrar SweetAlert
-                            window.location.href = '/';
-                        });
-                    } else {
-                        sweetAlert('error', response.message);
-                    }
-                })
-                .catch(err => {
-                    console.error('Error de fetch:', err);
-                    sweetAlert('error', 'Algo salió mal');
-                });
-        });
+        const form = document.getElementById('loginForm');
+        const emailInput = document.getElementById('useremail');
+        const passInput = document.getElementById('userpassword');
+        const btn = document.getElementById('submitBtn');
 
         // Función SweetAlert con callback opcional
         function sweetAlert(icon, title, callback) {
@@ -284,23 +178,52 @@
             });
         }
 
-        // Alternar visibilidad de contraseña
-        function toggleUser() {
-            const passwordInput = document.getElementById('userpassword');
-            const toggleIcon = document.getElementById('toggleIcon');
+        // Login (admin + staff) - Enter key bhi chalega (type="submit")
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
+            const data = {
+                useremail: emailInput.value.trim(),
+                userpassword: passInput.value.trim()
+            };
+
+            if (!data.useremail || !data.userpassword) {
+                sweetAlert('warning', 'Por favor completa todos los campos');
+                return;
             }
-        }
-    </script>
 
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data),
+                });
+                const response = await res.json();
+
+                if (response.success) {
+                    // Purane staff login ki tarah data save karo.
+                    // Keys wahi rakho jo staff_dashboard.html padhta hai.
+                    localStorage.setItem('role', response.role);
+                    localStorage.setItem('user', JSON.stringify(response.user));
+
+                    sweetAlert('success', response.message, () => {
+                        window.location.href = response.redirect || '/';
+                    });
+                } else {
+                    passInput.value = '';
+                    sweetAlert('error', response.message);
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                console.error('Error de fetch:', err);
+                sweetAlert('error', 'Algo salió mal');
+                btn.disabled = false;
+            }
+        });
+    </script>
 
 </body>
 

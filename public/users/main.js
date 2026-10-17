@@ -68,35 +68,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
       const data = await res.json();
 
-      if (data.success) {
-        loginForm.querySelector('input[type="text"]').value = "";
-        loginForm.querySelector('input[type="password"]').value = "";
+     if (data.success) {
+  loginForm.querySelector('input[type="text"]').value = "";
+  loginForm.querySelector('input[type="password"]').value = "";
 
-        // Save Client Data
-        localStorage.setItem("clientId", data.client.clientId);
-        localStorage.setItem("clientName", data.client.fullName);
-        localStorage.setItem("clientEmail", data.client.email);
-
-        Swal.fire({
-          icon: "success",
-          title: data.message,
-          toast: true,
-          position: "top-end",
-          timer: 2000,
-          timerProgressBar: true,
-        }).then(() => {
-          window.location.href = "/liveSheetGraphs";
-        });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: data.message,
-          toast: true,
-          position: "top-end",
-          timer: 2000,
-          timerProgressBar: true,
-        });
-      }
+  Swal.fire({
+    icon: "success",
+    title: data.message,
+    toast: true,
+    position: "top-end",
+    timer: 1500,
+    timerProgressBar: true,
+  }).then(() => {
+    window.location.href = data.redirect; // /clientOtp
+  });
+} else {
+  Swal.fire({
+    icon: "error",
+    title: data.message,
+    toast: true,
+    position: "top-end",
+    timer: 2000,
+    timerProgressBar: true,
+  });
+}
     } catch (err) {
       console.error(err);
       Swal.fire({

@@ -1732,14 +1732,22 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
     observer.observe(document.body, { childList: true, subtree: true });
 
-    const staffName = localStorage.getItem('staffName');
-    console.log('🚀 Página cargada — staffName:', staffName);
+    let staffName = localStorage.getItem('staffName');
 
-    if (!staffName || staffName === 'null') {
-        console.warn('Sin staffName — redirigiendo al login');
-        window.location.href = '/login';
-        return;
-    }
+// Fallback: "user" se nikaal lo
+if (!staffName || staffName === 'null') {
+    try {
+        staffName = JSON.parse(localStorage.getItem('user') || '{}').fullName;
+    } catch (e) {}
+    if (staffName) localStorage.setItem('staffName', staffName);
+}
+
+if (!staffName) {
+    // Pehle cookie hatao, warna /login wapas "/" par bhej deta hai (loop)
+    await fetch('/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/login';
+    return;
+}
 
     await Promise.all([
         loadDashboard(staffName),

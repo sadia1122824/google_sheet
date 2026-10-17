@@ -50,30 +50,38 @@ app.register(fastifyJwt, {
 });
 
 // ---------- AUTH DECORATOR ----------
+// Apni app file me JWT + cookie plugins ke BAAD, aur routes register karne se PEHLE:
+//   require("./plugins/auth")(app);
+
+
+ // ---------- AUTH DECORATOR ----------
+
 app.decorate("authenticate", async (req, reply) => {
-  try {
-    await req.jwtVerify(); 
-  } catch (err) {
-    return reply.redirect("/login"); 
-  }
+    try {
+        await req.jwtVerify();
+    } catch (err) {
+        return reply.redirect("/login");
+    }
+});
+
+app.decorate("authorize", (...roles) => async (req, reply) => {
+    if (!roles.includes(req.user && req.user.role)) {
+        return reply.redirect("/");
+    }
 });
 
 app.decorate("webauthenticate", async (req, reply) => {
-  try {
-    await req.jwtVerify(); 
-  } catch (err) {
-    return reply.redirect("/webLogin"); 
-  }
+    try {
+        await req.jwtVerify();
+    } catch (err) {
+        return reply.redirect("/webLogin");
+    }
 });
 
 
-app.decorate("staffauthenticate", async (req, reply) => {
-  try {
-    await req.jwtVerify(); 
-  } catch (err) {
-    return reply.redirect("/loginStaff"); 
-  }
-});
+
+
+
 
 
 app.register(userRouts)

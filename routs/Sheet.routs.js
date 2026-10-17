@@ -1,6 +1,6 @@
  const { 
     
-    showDashboard, 
+   
     importExcelFile,
     getLatestSheetResult,
     LiveSheetData,
@@ -44,7 +44,7 @@ AssignedClients
     // })
 
   // admin prehandler
-  app.get("/", { preHandler: [app.authenticate] }, showDashboard); 
+  
   
   app.post("/importExcelFile", importExcelFile);
   app.post("/AI_chat", AI_chat);
@@ -61,16 +61,17 @@ AssignedClients
   app.get("/getPreviousdeptResult", getPreviousdeptResult);
 
   // staff prehandler
-  app.get('/uploadExcell',{ preHandler: [app.staffauthenticate] }, uploadExcell);
-   app.get('/AssignedClients/:staffName',{ preHandler: [app.staffauthenticate] }, AssignedClients);
+  
+  app.get('/uploadExcell',{ preHandler: [app.authenticate] }, uploadExcell);
+   app.get('/AssignedClients/:staffName',{ preHandler: [app.authenticate] }, AssignedClients);
    app.get('/getMostRecentSheet/:clientId',getMostRecentSheet);
-    app.get('/showTable',{ preHandler: [app.staffauthenticate] }, showTable);
+    app.get('/showTable',{ preHandler: [app.authenticate] }, showTable);
     app.delete('/deleteSheetData/:clientId', deleteSheetData);
 
   app.get('/liveSheetGraphs',{ preHandler: [app.webauthenticate] }, liveSheetGraphs);
   app.get('/previousSheetGraphs',{ preHandler: [app.webauthenticate] }, previousSheetGraphs);
 
-  app.get('/loanSheet',{ preHandler: [app.staffauthenticate] }, loanSheet);
+  app.get('/loanSheet',{ preHandler: [app.authenticate] }, loanSheet);
   app.post('/importDebtFile', importDebtFile);
 }
 

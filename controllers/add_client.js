@@ -2,6 +2,8 @@ const ClientRecord = require('../models/clientData');
 const StaffRecord = require("../models/staffData");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require("mongodb");
+const crypto = require("crypto");
+const sendOtpMail = require("../utils/sendOtpMail");
 
 
 
@@ -237,104 +239,65 @@ const webLogin = async(req,reply)=>{
   return reply.sendFile("users/index.html");
 }
 
+
+
 const clientLogin = async (request, reply) => {
+  try {
+    const { useremail, userpassword } = request.body;
 
-    try {
-
-        const { useremail, userpassword } = request.body;
-
-        // Validation
-        if (!useremail || !userpassword) {
-
-            return reply.code(400).send({
-                success: false,
-                message: "All fields are required"
-            });
-        }
-
-        // Find Client By Email OR Client ID
-        const client = await ClientRecord.findOne({
-            $or: [
-                { email: useremail },
-                { clientId: useremail }
-            ]
-        });
-
-        // Client Not Found
-        if (!client) {
-
-            return reply.code(401).send({
-                success: false,
-                message: "Invalid email or password"
-            });
-        }
-
-        // Compare Password
-        const isMatch = await bcrypt.compare(
-            userpassword,
-            client.password
-        );
-
-        if (!isMatch) {
-
-            return reply.code(401).send({
-                success: false,
-                message: "Invalid email or password"
-            });
-        }
-
-        // JWT Token
-        const token = request.server.jwt.sign({
-
-            id: client._id,
-            email: client.email,
-            clientId: client.clientId,
-            role: "client"
-
-        });
-
-        // Cookie
-        reply.setCookie("accessToken", token, {
-
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            path: "/"
-
-        });
-
-        // Last Login
-        client.lastLogin = new Date();
-
-        await client.save();
-
-        // Response
-        return reply.send({
-
-            success: true,
-            message: "Client login successful",
-
-            client: {
-
-                _id: client._id,
-                fullName: client.fullName,
-                email: client.email,
-                clientId: client.clientId,
-                assignStaff: client.assignStaff,
-                role: "client"
-            }
-        });
-
-    } catch (err) {
-
-        console.log(err);
-
-        return reply.code(500).send({
-            success: false,
-            message: "Internal server error"
-        });
+    if (!useremail || !userpassword) {
+      return reply.code(400).send({ success: false, message: "All fields are required" });
     }
+
+    const client = await ClientRecord.findOne({
+      $or: [{ email: useremail }, { clientId: useremail }],
+    });
+
+    if (!client) {
+      return reply.code(401).send({ success: false, message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(userpassword, client.password);
+    if (!isMatch) {
+      return reply.code(401).send({ success: false, message: "Invalid email or password" });
+    }
+
+    // OTP generate (6 digit, secure random)
+    const otp = crypto.randomInt(100000, 999999).toString();
+
+    client.otp = await bcrypt.hash(otp, 10);
+    client.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 min
+    client.otpAttempts = 0;
+    await client.save();
+
+    await sendOtpMail(client.email, otp);
+
+    // Temporary token (sirf OTP verify ke liye, 10 min)
+    const otpToken = request.server.jwt.sign(
+      { id: client._id, purpose: "otp" },
+      { expiresIn: "10m" }
+    );
+
+    reply.setCookie("otpToken", otpToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 600,
+    });
+
+  return reply.send({
+  success: true,
+  message: "OTP sent to your email",
+  redirect: "/clientOtp",   // /otp ki jagah
+});
+  } catch (err) {
+    console.log(err);
+    return reply.code(500).send({ success: false, message: "Internal server error" });
+  }
 };
+
+
 
 // Get Dashboard Stats
 const getDashboardStats = async (request, reply) => {
@@ -422,32 +385,27 @@ const getDashboardStats = async (request, reply) => {
 
 async function logoutController(request, reply) {
   try {
-    // Case 1: Agar cookie-based auth hai (httpOnly cookie me token)
-    reply.clearCookie("token", {
+    const opts = {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
+      sameSite: "lax", // login me bhi lax hai, match hona chahiye
+    };
 
-    reply.clearCookie("refreshToken", {
-      path: "/",
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict"
-    });
+    reply.clearCookie("accessToken", opts);
+    reply.clearCookie("otpToken", opts);
+    reply.clearCookie("token", opts);
+    reply.clearCookie("refreshToken", opts);
 
-   
     return reply.status(200).send({
       success: true,
-      message: "Logout successful"
+      message: "Logout successful",
     });
-
   } catch (error) {
     request.log.error(error);
     return reply.status(500).send({
       success: false,
-      message: "Something went wrong during logout"
+      message: "Something went wrong during logout",
     });
   }
 }
@@ -455,6 +413,139 @@ async function logoutController(request, reply) {
 const AI_Assistant = async (request, reply) => {
     return reply.sendFile('users/Ai_assistant.html');
 }
+
+const clientOtp = async (request, reply) => {
+    return reply.sendFile('users/userOtp.html');
+}
+const generateOtp = async (client) => {
+  const otp = crypto.randomInt(100000, 999999).toString();
+  client.otp = await bcrypt.hash(otp, 10);
+  client.otpExpires = new Date(Date.now() + 5 * 60 * 1000);
+  client.otpAttempts = 0;
+  client.otpLastSent = new Date();
+  await client.save();
+  return otp;
+};
+
+const verifyOtp = async (request, reply) => {
+  try {
+    const { otp } = request.body;
+    const otpToken = request.cookies.otpToken;
+
+    if (!otp || !otpToken) {
+      return reply.code(400).send({ success: false, message: "OTP is required" });
+    }
+
+    let decoded;
+    try {
+      decoded = request.server.jwt.verify(otpToken);
+    } catch {
+      return reply.code(401).send({ success: false, message: "Session expired, login again" });
+    }
+
+    if (decoded.purpose !== "otp") {
+      return reply.code(401).send({ success: false, message: "Invalid session" });
+    }
+
+    const client = await ClientRecord.findById(decoded.id);
+    if (!client || !client.otp) {
+      return reply.code(401).send({ success: false, message: "Invalid request" });
+    }
+
+    if (client.otpAttempts >= 5) {
+      return reply.code(429).send({ success: false, message: "Too many attempts, login again" });
+    }
+
+    if (!client.otpExpires || client.otpExpires < new Date()) {
+      return reply.code(400).send({ success: false, message: "OTP expired" });
+    }
+
+    const valid = await bcrypt.compare(otp.toString(), client.otp);
+    if (!valid) {
+      client.otpAttempts += 1;
+      await client.save();
+      return reply.code(401).send({ success: false, message: "Invalid OTP" });
+    }
+
+    // OTP sahi: OTP data clear + asli login token
+    client.otp = undefined;
+    client.otpExpires = undefined;
+    client.otpAttempts = 0;
+    client.otpLastSent = undefined;
+    client.lastLogin = new Date();
+    await client.save();
+
+    const token = request.server.jwt.sign({
+      id: client._id,
+      email: client.email,
+      clientId: client.clientId,
+      role: "client",
+    });
+
+    reply.clearCookie("otpToken", { path: "/" });
+    reply.setCookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return reply.send({
+      success: true,
+      message: "Login successful",
+      redirect: "/liveSheetGraphs", // apna dashboard route yahan dalein
+      client: {
+        _id: client._id,
+        fullName: client.fullName,
+        email: client.email,
+        clientId: client.clientId,
+        assignStaff: client.assignStaff,
+        role: "client",
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    return reply.code(500).send({ success: false, message: "Internal server error" });
+  }
+};
+
+const resendOtp = async (request, reply) => {
+  try {
+    const otpToken = request.cookies.otpToken;
+    if (!otpToken) {
+      return reply.code(401).send({ success: false, message: "Login again" });
+    }
+
+    let decoded;
+    try {
+      decoded = request.server.jwt.verify(otpToken);
+    } catch {
+      return reply.code(401).send({ success: false, message: "Session expired, login again" });
+    }
+
+    if (decoded.purpose !== "otp") {
+      return reply.code(401).send({ success: false, message: "Invalid session" });
+    }
+
+    const client = await ClientRecord.findById(decoded.id);
+    if (!client) {
+      return reply.code(401).send({ success: false, message: "Invalid request" });
+    }
+
+    // 30 second cooldown
+    if (client.otpLastSent && Date.now() - client.otpLastSent.getTime() < 30 * 1000) {
+      return reply.code(429).send({ success: false, message: "Please wait before requesting a new OTP" });
+    }
+
+    const otp = await generateOtp(client);
+    await sendOtpMail(client.email, otp);
+
+    return reply.send({ success: true, message: "New OTP sent" });
+  } catch (err) {
+    console.log(err);
+    return reply.code(500).send({ success: false, message: "Internal server error" });
+  }
+};
 
 
 module.exports = {
@@ -468,5 +559,8 @@ module.exports = {
     webLogin,
     clientLogin,
     logoutController,
-    AI_Assistant
+    AI_Assistant,
+    clientOtp,
+    verifyOtp,
+    resendOtp
 }

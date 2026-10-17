@@ -1,5 +1,5 @@
 
- const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient,updateClient ,getDashboardStats,logoutController,AI_Assistant} = require('../controllers/add_client');
+ const { client , addClient ,webLogin,clientLogin , getClients,showClients,deleteClient,updateClient ,getDashboardStats,logoutController,AI_Assistant ,clientOtp,verifyOtp,resendOtp} = require('../controllers/add_client');
 
 
 const clientRouts = async(app,options)=>{
@@ -21,7 +21,9 @@ const clientRouts = async(app,options)=>{
   app.get('/dashboard',getDashboardStats);
   app.post('/logoutController',logoutController);
   app.get('/AI_Assistant',AI_Assistant);
-
+  app.get('/clientOtp',clientOtp);
+  app.post("/api/client/verify-otp", verifyOtp);
+  app.post("/api/client/resend-otp", resendOtp);
 }
 
 module.exports = clientRouts
