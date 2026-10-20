@@ -3870,3 +3870,81 @@ html:not([data-theme="dark"]) #sheetTable tbody td.val-pos,
 html:not([data-theme="dark"]) #fullscreenTable tbody td.val-pos {
   color: #16a34a !important;
 }
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR MENU — COMPACT SIZE
+═══════════════════════════════════════════════ */
+
+/* Sidebar ke andar side spacing barha di taake boxes ki width kam ho */
+.sidebar-body {
+  padding: 6px 18px 14px !important;
+}
+
+/* Main menu links (Dashboard, Graphs, Google Sheet, Deudas) */
+.sb-nav-link {
+  padding: 7px 10px !important;      /* height + width kam */
+  font-size: 13px !important;
+  gap: 10px !important;
+  margin-bottom: 2px !important;
+  border-radius: 8px !important;
+  line-height: 1.3 !important;
+}
+
+.sb-nav-link i {
+  font-size: 15px !important;
+  width: 16px;
+}
+
+/* Hover par jo padding-left barh rahi thi wo band */
+.sb-nav-link:hover {
+  padding-left: 10px !important;
+}
+
+/* Sub menu (Live Graphs, Previous Graphs) */
+.sb-dropdown-menu {
+  margin: 2px 0 4px 14px !important;
+  padding-left: 8px !important;
+}
+
+.sb-dropdown-menu .sb-nav-link {
+  padding: 5px 8px !important;       /* sub menu aur chota */
+  font-size: 12.5px !important;
+  border-radius: 6px !important;
+}
+
+.sb-dropdown-menu .sb-nav-link:hover {
+  padding-left: 8px !important;
+}
+
+.sb-dropdown-menu .sb-nav-link i.bi-dot {
+  font-size: 16px !important;
+}
+
+/* Dropdown group ke darmiyan gap */
+.sb-dropdown {
+  margin-bottom: 2px !important;
+}
+
+/* Section title ("NAVIGATION") ka gap */
+.sidebar-section-title {
+  margin: 2px 4px 8px !important;
+}
+
+/* ═══════════════════════════════════════════════
+   MENU ↔ SUBMENU GAP
+═══════════════════════════════════════════════ */
+
+/* Submenu ke upar gap (Graphs aur Live Graphs ke beech) */
+.sb-dropdown-menu {
+  margin: 6px 0 8px 14px !important;
+}
+
+/* Submenu items ke darmiyan gap (Live Graphs aur Previous Graphs ke beech) */
+.sb-dropdown-menu .sb-nav-link {
+  margin-bottom: 4px !important;
+}
+
+/* Dropdown group ke baad gap (Previous Graphs aur Google Sheet ke beech) */
+.sb-dropdown {
+  margin-bottom: 6px !important;
+}
